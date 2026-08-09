@@ -13,18 +13,37 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 20px 16px 40px;
-            
-            /* 可更換的背景圖與遮罩：未來換背景只需替換 url 即可 */
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.15) 0%, rgba(15, 23, 42, 0.3) 100%),
-                        url('images/background.jpg') center/cover no-repeat fixed;
-        }
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px 16px 40px;
+    margin: 0;
+    position: relative;
+    background-color: #0f172a; /* 預設底色 */
+}
+
+/* === 獨立背景層：解決視窗縮放不跟隨的 Bug === */
+body::before {
+    content: "";
+    position: fixed; /* 固定滿版 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* 放在所有文字與卡片下方 */
+    
+    /* 🌟 背景圖片與漸層遮罩 🌟 */
+    background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.35) 100%),
+                      url('images/background.jpg'); /* 替換成你的圖片檔名 */
+    
+    background-position: center top; /* 圖片以上方中間為基準 */
+    background-repeat: no-repeat;
+    background-size: cover;          /* 自動隨視窗尺寸按比例縮放填滿 */
+    pointer-events: none;            /* 避免干擾滑鼠點擊 */
+}
 
         .container {
             width: 100%;
