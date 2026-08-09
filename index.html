@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《無限元素》</title>
+    <style>
+        /* === 全局樣式設定 === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 16px 40px;
+            
+            /* 可更換的背景圖與遮罩：未來換背景只需替換 url 即可 */
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.15) 0%, rgba(15, 23, 42, 0.3) 100%),
+                        url('images/background.jpg') center/cover no-repeat fixed;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        /* === 標題與主題簡介區 === */
+        .header {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 55vh;
+        }
+
+        .main-title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            margin-bottom: 6px;
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            color: #8fb7dd;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .event-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            backdrop-filter: blur(8px);
+            text-align: left;
+        }
+
+        .event-badge {
+            display: inline-block;
+            background: #0284c7;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+
+        .event-text {
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        /* === 分類標題 === */
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 22px 4px 10px;
+        }
+/* === 可折疊卡片 (Details & Summary) === */
+.link-card-dropdown {
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(6px);
+}
+
+/* 關閉預設的網頁原生箭頭 */
+.link-card-dropdown summary::-webkit-details-marker {
+    display: none;
+}
+
+.link-card-summary {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.link-card-summary:hover {
+    background: rgba(51, 65, 85, 0.95);
+}
+
+/* 展開時箭頭旋轉動畫 */
+.arrow-icon {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+}
+
+.link-card-dropdown[open] .arrow-icon {
+    transform: rotate(180deg);
+    color: #38bdf8;
+}
+
+/* === 展開後的頭像小圖網格 (Avatar Grid) === */
+.avatar-grid {
+    display: grid;
+    /* 自動適應寬度，每個小頭像寬度約 68px */
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 12px;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.avatar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.avatar-item:hover {
+    transform: scale(1.2); /* 滑鼠懸停微放大 */
+}
+
+.avatar-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.avatar-label {
+    font-size: 0.75rem;
+    color: #e2e8f0;
+    margin-top: 6px;
+    text-align: center;
+    white-space: nowrap;
+}
+        /* === 連結卡片清單 === */
+        .link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-card {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .link-card:hover {
+            background: rgba(51, 65, 85, 0.95);
+            border-color: rgba(56, 189, 248, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 焦點卡片亮色突顯 */
+        .link-card.highlight {
+            background: linear-gradient(135deg, rgba(14, 116, 144, 0.85) 0%, rgba(30, 41, 59, 0.85) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+        }
+
+        /* 角色頭像圖片 */
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+            margin-right: 14px;
+            background-color: #475569;
+        }
+
+        .link-info {
+            flex-grow: 1;
+        }
+
+        .link-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 2px;
+        }
+
+        .link-desc {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .arrow {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-left: 8px;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .link-card:hover .arrow {
+            color: #38bdf8;
+            transform: translateX(3px);
+        }
+
+        /* === 頁尾 === */
+        .footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 32px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 頂部標題與精神短語 -->
+        <header class="header">
+            <h1 class="main-title">《無限元素》</h1>
+            <div class="tagline">與賦形者相遇，踏入遼闊的世界和獸人夥伴們展開無盡冒險</div>
+
+            <!-- 當前主題/篇章動態簡介 -->
+            <div class="event-card">
+                <span class="event-badge">CURRENT EVENT</span>
+                <p class="event-text">
+                    <strong>學園祭篇章熱烈進行中</strong><br>
+                    無限量級的極速競跑、熱血沸騰的籃球賽事，還有響徹夜晚的樂團對決，精彩活動令人目不暇給！<br>
+                    然而，在校園熱鬧喧囂的氣氛背後，似乎正醞釀著未知危機……
+                    立即觀看最新故事章節與活動！
+                </p>
+            </div>
+        </header>
+
+        <!-- 焦點互動與實體周邊 -->
+        <div class="section-title">作品專頁 / 互動體驗</div>
+        <div class="link-list">
+            <a href="https://www.bookwalker.com.tw/search?v=1147&series_display=1" target="_blank" class="link-card highlight">
+                <img src="images/lanlan.jpg" alt="嵐懶" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">BookWalker 作品專頁</div>
+                    <div class="link-desc">內容豐富的本傳、免費連載的外傳一次滿足你的閱讀興致</div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61572883663242" target="_blank" class="link-card">
+                <img src="images/kulu.jpg" alt="克爾" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">Facebook 官方粉絲專頁</div>
+                    <div class="link-desc">第一時間獲取最新消息</div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+            <a href="https://rhoxdra.github.io/endless-element-quiz/" target="_blank" class="link-card">
+                <img src="images/arc.jpg" alt="亞爾克" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">與你契合的夥伴心理測驗</div>
+                    <div class="link-desc">測測看你在這個世界裡最適合與誰同行？</div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+
+
+        </div>
+
+        <!-- 社群內容與圖鑑 (主要社群導流) -->
+        <div class="section-title">角色圖鑑</div>
+        <div class="link-list">
+<!-- 角色介紹：可點擊展開的卡片區域 -->
+<details class="link-card-dropdown">
+    <!-- 點擊這塊區域會展開下方的小圖 -->
+    <summary class="link-card-summary">
+        <img src="images/koushou.jpg" alt="高翔" class="avatar">
+        <div class="link-info">
+            <div class="link-title">角色詳細介紹</div>
+            <div class="link-desc">展開夥伴圖鑑，點選圖像看深度設定</div>
+        </div>
+        <div class="arrow-icon">▼</div>
+    </summary>
+
+    <!-- 展開後出現的小圖片連結牆 (Avatar Grid) -->
+    <div class="avatar-grid">
+        <!-- 克爾 -->
+        <a href="https://www.facebook.com/photo/?fbid=122191294082762788" target="_blank" class="avatar-item">
+            <img src="images/lanlan.jpg" alt="嵐懶">
+            <span class="avatar-label">嵐懶</span>
+        </a>
+
+        <!-- 阿風 -->
+        <a href="https://www.facebook.com/photo/?fbid=122165897174762788" target="_blank" class="avatar-item">
+            <img src="images/kulu.jpg" alt="克爾">
+            <span class="avatar-label">克爾</span>
+        </a>
+
+        <!-- 澤里恩 -->
+        <a href="https://www.facebook.com/photo/?fbid=122167822712762788" target="_blank" class="avatar-item">
+            <img src="images/arc.jpg" alt="亞爾克">
+            <span class="avatar-label">亞爾克</span>
+        </a>
+        <a href="https://www.facebook.com/photo/?fbid=122167572638762788" target="_blank" class="avatar-item">
+            <img src="images/roar.jpg" alt="洛爾">
+            <span class="avatar-label">洛爾</span>
+        <!-- 崩 -->
+        </a>
+        <a href="https://www.facebook.com/photo/?fbid=122166716972762788" target="_blank" class="avatar-item">
+            <img src="images/kokumei.jpg" alt="克明">
+            <span class="avatar-label">克明</span>
+        </a>        
+        <a href="https://www.facebook.com/photo/?fbid=122170253744762788" target="_blank" class="avatar-item">
+            <img src="images/koushou.jpg" alt="高翔">
+            <span class="avatar-label">高翔</span>
+        </a>        
+        <a href="https://www.facebook.com/photo/?fbid=122169295940762788" target="_blank" class="avatar-item">
+            <img src="images/takawa.jpg" alt="高和">
+            <span class="avatar-label">高和</span>
+        </a>           
+        <a href="https://www.facebook.com/photo/?fbid=122169559898762788" target="_blank" class="avatar-item">
+            <img src="images/igarashi.jpg" alt="五十嵐">
+            <span class="avatar-label">五十嵐</span>
+        </a>        
+        <a href="https://www.facebook.com/photo/?fbid=122172051302762788" target="_blank" class="avatar-item">
+            <img src="images/area.jpg" alt="艾瑞爾">
+            <span class="avatar-label">艾瑞爾</span>
+        </a> 
+        <a href="https://www.facebook.com/photo/?fbid=122131250900762788" target="_blank" class="avatar-item">
+            <img src="images/wakima.jpg" alt="瓦奇瑪">
+            <span class="avatar-label">瓦奇瑪</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122180904512762788" target="_blank" class="avatar-item">
+            <img src="images/volt.jpg" alt="弗爾特">
+            <span class="avatar-label">弗爾特</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122181234542762788" target="_blank" class="avatar-item">
+            <img src="images/proto.jpg" alt="普洛特">
+            <span class="avatar-label">普洛特</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122181704300762788" target="_blank" class="avatar-item">
+            <img src="images/zoma.jpg" alt="詛碼">
+            <span class="avatar-label">詛碼</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122181479240762788" target="_blank" class="avatar-item">
+            <img src="images/veil.jpg" alt="白珥">
+            <span class="avatar-label">白珥</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122191781516762788" target="_blank" class="avatar-item">
+            <img src="images/ultima.jpg" alt="阿爾提瑪">
+            <span class="avatar-label">阿爾提瑪</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122126345360762788" target="_blank" class="avatar-item">
+            <img src="images/jareth.jpg" alt="賈瑞斯">
+            <span class="avatar-label">賈瑞斯</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122193487850762788" target="_blank" class="avatar-item">
+            <img src="images/zarion.jpg" alt="澤里恩">
+            <span class="avatar-label">澤里恩</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122191979426762788" target="_blank" class="avatar-item">
+            <img src="images/kuzure.jpg" alt="崩">
+            <span class="avatar-label">崩</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122192539094762788" target="_blank" class="avatar-item">
+            <img src="images/osae.jpg" alt="制">
+            <span class="avatar-label">制</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122192751764762788" target="_blank" class="avatar-item">
+            <img src="images/kage.jpg" alt="影">
+            <span class="avatar-label">影</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122193285932762788" target="_blank" class="avatar-item">
+            <img src="images/rub.jpg" alt="劫">
+            <span class="avatar-label">劫</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122153995586762788" target="_blank" class="avatar-item">
+            <img src="images/electric.jpg" alt="伊蕾琪">
+            <span class="avatar-label">伊蕾琪</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122131326110762788" target="_blank" class="avatar-item">
+            <img src="images/tia.jpg" alt="提婭">
+            <span class="avatar-label">提婭</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122153307056762788" target="_blank" class="avatar-item">
+            <img src="images/rofena.jpg" alt="羅菲娜">
+            <span class="avatar-label">羅菲娜</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122145284876762788" target="_blank" class="avatar-item">
+            <img src="images/arashiyama.jpg" alt="嵐山">
+            <span class="avatar-label">嵐山</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122140517690762788" target="_blank" class="avatar-item">
+            <img src="images/sugar.jpg" alt="霜糖紗母">
+            <span class="avatar-label">霜糖紗母</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122145828422762788" target="_blank" class="avatar-item">
+            <img src="images/deer.jpg" alt="繪靈鹿茲">
+            <span class="avatar-label">繪靈鹿茲</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122146340162762788" target="_blank" class="avatar-item">
+            <img src="images/owl.jpg" alt="夜瞳梟賢">
+            <span class="avatar-label">夜瞳梟賢</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122149126052762788" target="_blank" class="avatar-item">
+            <img src="images/teiner.jpg" alt="翠芽泰納">
+            <span class="avatar-label">翠芽泰納</span>
+        </a> 
+                <a href="https://www.facebook.com/photo/?fbid=122153025842762788" target="_blank" class="avatar-item">
+            <img src="images/doutou.jpg" alt="怒濤銳步">
+            <span class="avatar-label">怒濤銳步</span>
+        </a> 
+        <a href="https://www.facebook.com/photo/?fbid=122154925850762788" target="_blank" class="avatar-item">
+            <img src="images/kaiden.jpg" alt="凱登">
+            <span class="avatar-label">凱登</span>
+        </a>
+        <a href="https://www.facebook.com/photo/?fbid=122194740764762788" target="_blank" class="avatar-item">
+            <img src="images/chitar.jpg" alt="瞬介">
+            <span class="avatar-label">瞬介</span>
+        </a>
+                <a href="https://www.facebook.com/photo/?fbid=122194936784762788" target="_blank" class="avatar-item">
+            <img src="images/horse.jpg" alt="颯太">
+            <span class="avatar-label">颯太</span>
+        </a>
+                <a href="https://www.facebook.com/photo/?fbid=122168323052762788" target="_blank" class="avatar-item">
+            <img src="images/raku.jpg" alt="埒">
+            <span class="avatar-label">埒</span>
+        </a>
+                <a href="https://www.facebook.com/photo/?fbid=122168558486762788" target="_blank" class="avatar-item">
+            <img src="images/garoz.jpg" alt="犺">
+            <span class="avatar-label">犺</span>
+        </a>
+                <a href="https://www.facebook.com/photo/?fbid=122179990832762788" target="_blank" class="avatar-item">
+            <img src="images/sinn.jpg" alt="泊信">
+            <span class="avatar-label">泊信</span>
+        </a>
+                <a href="https://www.facebook.com/photo/?fbid=122180425466762788" target="_blank" class="avatar-item">
+            <img src="images/gorilla.jpg" alt="烈塵巡衛">
+            <span class="avatar-label">烈塵巡衛</span>
+        </a>
+                <a href="https://www.facebook.com/photo/?fbid=122193990416762788" target="_blank" class="avatar-item">
+            <img src="images/boar.jpg" alt="鍛魂獷牙">
+            <span class="avatar-label">鍛魂獷牙</span>
+        </a>
+                <a href="https://www.facebook.com/photo/?fbid=122180662058762788" target="_blank" class="avatar-item">
+            <img src="images/whissel.jpg" alt="旭言">
+            <span class="avatar-label">旭言</span>
+        </a>
+                <a href="https://www.facebook.com/photo/?fbid=122194183652762788" target="_blank" class="avatar-item">
+            <img src="images/rin.jpg" alt="嶙安">
+            <span class="avatar-label">嶙安</span>
+        </a>
+        <!-- 未來有新角色，直接複製這區塊即可 -->
+    </div>
+</details>
+        <!-- 社群內容與圖鑑 (主要社群導流) -->
+        <div class="section-title">社群專題</div>
+        <div class="link-list">
+<a href="https://www.facebook.com/media/set/?set=a.122147818568762788&type=3" target="_blank" class="link-card">
+                <img src="images/kokumei.jpg" alt="克明" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">FB專題文章</div>
+                    <div class="link-desc">迴聲殘響、學園祭主題進展</div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+<a href="https://myship.7-11.com.tw/general/detail/GM2608074156966" target="_blank" class="link-card">
+                <img src="images/zarion.jpg" alt="澤里恩" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">7-11 賣貨便周邊賣場</div>
+                    <div class="link-desc">精美透卡與限量特典貼紙現貨發售中！</div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+            <a href="https://patreon.com" target="_blank" class="link-card">
+                <img src="images/ura.jpg" alt="克爾" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">Patreon 專區</div>
+                    <div class="link-desc">收錄《無限元素》的相關插圖作品集，以及角色們不曾公開的一面</div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+        </div>
+
+        <!-- 小說閱讀平台 -->
+        <div class="section-title">其他各大線上閱讀平台</div>
+        <div class="link-list">
+            <a href="https://readmoo.com/publisher/8667" target="_blank" class="link-card">
+                <img src="images/area.jpg" alt="艾瑞爾" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">Readmoo</div>
+                    <div class="link-desc"></div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+            <a href="https://www.books.com.tw/web/sys_puballb/books/?pubid=bookwalker137" target="_blank" class="link-card">
+                <img src="images/igarashi.jpg" alt="五十嵐" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">博客來</div>
+                    <div class="link-desc"></div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>            
+            <a href="https://ebook.hyread.com.tw/searchList.jsp?search_field=FullText&search_input=%E7%84%A1%E9%99%90%E5%85%83%E7%B4%A0&search_field=PU&search_input=%E5%B5%90%E6%87%B6%E6%9B%B8" target="_blank" class="link-card">
+                <img src="images/kuzure.jpg" alt="崩" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">Hyread</div>
+                    <div class="link-desc"></div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>            
+            <a href="https://play.google.com/store/search?q=%E7%84%A1%E9%99%90%E5%85%83%E7%B4%A0&c=books&hl=zh-TW" target="_blank" class="link-card">
+                <img src="images/osae.jpg" alt="制" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">Google Play</div>
+                    <div class="link-desc"></div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>            
+            <a href="https://tw.myrenta.com/search2?keyword=%E7%84%A1%E9%99%90%E5%85%83%E7%B4%A0&field=name" target="_blank" class="link-card">
+                <img src="images/kaiden.jpg" alt="凱登" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">MyRenta</div>
+                    <div class="link-desc"></div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>            
+            <a href="https://www.kobo.com/tw/zh/series/1GoXVrlB21SC9am6qDfZ9Q" target="_blank" class="link-card">
+                <img src="images/gousuke.jpg" alt="豪助" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">Kobo</div>
+                    <div class="link-desc"></div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+        </div>
+
+        <footer class="footer">
+            <p>© 2026 嵐懶書 All Rights Reserved.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
