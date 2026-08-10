@@ -1057,8 +1057,11 @@
             "area": { 
                 name: "艾瑞爾", 
                 quote: "「我是暗夜中展翅翱翔的恐怖，自奈落之淵而來的『黑夜魔君』。所有徬徨、心懷歹念的惡徒啊，接受我的睥睨吧！」",
+                form1Label: "🐱 獸人型態",   // 切換回預設型態時顯示的按鈕
+                form2Label: "👤 人類型態",   // 切換至第二型態時顯示的按鈕
                 tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["艾瑞爾軍", "十三元素"], type: ["斷元素賦形者", "權能：斷裂 / 襲轉"], element: ["光", "重力"] },
                 bgImage: "images/area_bg.jpg", 
+                beastBgImage: "images/area_human_bg.jpg",
                 desc: `艾瑞爾，斷元素賦形者。他是艾瑞爾城的掌權總督，亦為遊走於城內各大實驗室的科學家。原本只是一隻小山貓族的他，藉由自己發明的「賦形晶」獲得了人類的「外設」形貌，得以從容遊走於政商往來之間，與官員與各方勢力周旋，將真實的自己隱沒在一層沉穩又冷靜的外殼之下。
 
 最初，他受制於阿爾提瑪的操控，整座城市的資源因此傾向於發展「人工創造元素使用者」以及「汲取元素的能源計畫」之中。然而，理智尚未被完全控制的他，總在關鍵節點暗中攪動局勢，悄然干擾計畫的推進。正是這些細微卻致命的偏移，讓掌控星球的野心藍圖無法迅速成形，也為五十嵐爭取到時間，四處尋訪當年四散各地、由賈瑞斯留下的年輕賦形者們，一同集結力量對抗迫近的威脅。
@@ -1249,6 +1252,8 @@
             "rub": { 
                 name: "劫", 
                 quote: "「真是悲慘的下場呢，這就是和你扯上關係的後果，你的存在，根本不會帶給任何人幸福！」",
+                form1Label: "🐺 成年型態",   // 切換回預設型態時顯示的按鈕
+                form2Label: "⏳ 少年型態",   // 切換至第二型態時顯示的按鈕
                 tags: {
                     chapter: ["再契選篇", "荒野焰嵐", "無盡探途"],
                     faction: ["誓奪爪盟", "無盡元素"],
@@ -1256,6 +1261,7 @@
                     element: ["無"]
                 },
                 bgImage: "images/rub_bg.jpg", 
+                beastBgImage: "images/rub_young_bg.jpg",  // 第二背景（少年）
                 desc: `劫，狼犬族獸人。體幹高大、肩膀寬闊，身披深黑色長大衣，一舉一動皆散發著冷冽、高傲且不容置疑的絕對領袖威嚴。
 
 在《無盡探途》中，他曾是最為怯懦退縮、極度依賴戴爾莫格的少年。在無名引導下克服心魔，並正式開啟探索隊的探尋之途。
@@ -1697,12 +1703,14 @@
                 <div class="tag-group"><span class="tag-label">擅長屬性：</span>${renderBadges(tags.element, 'element')}</div>
             `;
 
-            // 判斷型態切換按鈕
+            // 🌟 判斷型態切換按鈕（支援自訂按鈕文字） 🌟
             const switchContainer = document.getElementById('char-switch-container');
             if (char && char.beastBgImage) {
+                // 如果角色有設定 form2Label 就用專屬文字，沒有就預設用 🐾 切換為獸化型態
+                const labelText = char.form2Label || "🐾 切換為獸化型態";
                 switchContainer.innerHTML = `
                     <button id="form-toggle-btn" class="form-switch-btn" onclick="toggleCharForm()">
-                        🐾 切換為獸化型態
+                        ${labelText}
                     </button>
                 `;
             } else {
@@ -1712,19 +1720,26 @@
             document.getElementById('char-modal').style.display = 'flex';
         }
 
+        // 🌟 切換背景大圖與動態按鈕文字 🌟
         function toggleCharForm() {
             const char = characterData[currentModalCharKey];
             if (!char || !char.beastBgImage) return;
 
             const toggleBtn = document.getElementById('form-toggle-btn');
             
+            // 讀取專屬按鈕文字（若無則套用預設值）
+            const f1Label = char.form1Label || "👤 切換為人類型態";
+            const f2Label = char.form2Label || "🐾 切換為獸化型態";
+
             if (!isBeastFormActive) {
+                // 切換至第二型態背景
                 document.body.style.setProperty('--bg-image', `url('${char.beastBgImage}')`);
-                toggleBtn.innerText = "👤 切換為人類型態";
+                toggleBtn.innerText = f1Label; // 按鈕顯示切換回預設型態的文字
                 isBeastFormActive = true;
             } else {
+                // 切換回預設型態背景
                 document.body.style.setProperty('--bg-image', `url('${char.bgImage}')`);
-                toggleBtn.innerText = "🐾 切換為獸化型態";
+                toggleBtn.innerText = f2Label; // 按鈕顯示切換至第二型態的文字
                 isBeastFormActive = false;
             }
         }
