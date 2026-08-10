@@ -22,28 +22,30 @@
             padding: 20px 16px 40px;
             margin: 0;
             position: relative;
-            background-color: #0f172a; /* 預設底色 */
+            background-color: transparent; /* 🌟 改為透明，防止深藍色底色閃爍或遮擋 */
         }
-
         /* === 獨立背景層：解決視窗縮放不跟隨的 Bug === */
         body::before {
             content: "";
-            position: fixed; /* 固定滿版 */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* 放在所有文字與卡片下方 */
+            z-index: -2; /* 🌟 改為 -2，確保永遠死死釘在最底層 */
             
-            /* 🌟 背景圖片與漸層遮罩 🌟 */
+            /* 🌟 在此處加上背景底色，圖片載入前或極速載入時不會閃黑 */
+            background-color: #0f172a; 
+            
             background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.35) 100%),
-                              var(--bg-image, url('images/background.jpg')); /* 支援動態更換 */
+                              var(--bg-image, url('images/background.jpg'));
             
-            background-position: center top; /* 圖片以上方中間為基準 */
+            background-position: center top;
             background-repeat: no-repeat;
-            background-size: cover;          /* 自動隨視窗尺寸按比例縮放填滿 */
-            pointer-events: none;            /* 避免干擾滑鼠點擊 */
+            background-size: cover;
+            pointer-events: none;
             transition: background-image 0.5s ease-in-out;
+            will-change: background-image; /* 🌟 提醒 Edge 等瀏覽器優化 GPU 背景圖繪製 */
         }
 
         .container {
@@ -427,13 +429,23 @@
             overflow-y: auto;
         }
 
-        /* 🌟 手機螢幕（小於 640px）自動隱藏側邊欄，避免版面壅擠 🌟 */
+        /* 🌟 1. 直向手機（寬度小於 640px）一律隱藏側邊欄 🌟 */
         @media (max-width: 640px) {
             .event-sidebar {
-                display: none !important; /* 直接隱藏側边欄 */
+                display: none !important;
             }
             .event-main-body {
-                padding: 18px 16px; /* 稍微縮減手機版的邊距，讓閱讀空間更大 */
+                padding: 18px 16px;
+            }
+        }
+
+        /* 🌟 2. 橫向手機（高度小於 500px）不論寬度多寬，也一律隱藏側邊欄 🌟 */
+        @media (max-height: 500px) {
+            .event-sidebar {
+                display: none !important;
+            }
+            .event-main-body {
+                padding: 14px 16px;
             }
         }
 
