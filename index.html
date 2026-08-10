@@ -573,7 +573,7 @@
 <body>
 
     <!-- 🌟 右上角懸浮「隱藏 UI 眼睛按鈕（純淨觀圖模式）」 🌟 -->
-    <button class="ui-toggle-btn" onclick="toggleUI()" title="切換純淨觀圖模式">👁</button>
+<button id="ui-toggle-btn" class="ui-toggle-btn" onclick="toggleUI()" title="觀看全幅背景圖">📷</button>
 
     <div id="main-container" class="container">
         <!-- 頂部標題與精神短語 -->
@@ -1611,8 +1611,17 @@
 
         // 🌟 純淨觀圖模式開關：切換 body 的 ui-hidden 🌟
         function toggleUI() {
-            document.body.classList.toggle('ui-hidden');
-        }
+        const isHidden = document.body.classList.toggle('ui-hidden');
+        const toggleBtn = document.getElementById('ui-toggle-btn');
+    
+        if (isHidden) {
+            toggleBtn.innerHTML = '↩'; // 隱藏卡片後，按鈕顯示返回圖示
+            toggleBtn.title = '點擊恢復選單卡片';
+        } else {
+            toggleBtn.innerHTML = '📷'; // 顯示卡片時，按鈕顯示相機圖示
+            toggleBtn.title = '觀看全幅背景圖';
+    }
+}
 
         // 🌟 出版排程彈窗控制 🌟
         function openScheduleModal() {
