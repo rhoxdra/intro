@@ -630,9 +630,17 @@
                 </div>
                 <div class="arrow">➔</div>
             </a>
-
-            <a href="https://rhoxdra.github.io/endless-element-quiz/" target="_blank" class="link-card">
+            <!-- 🌟 2. 每日元素共鳴籤（已移至心理測驗上方，且移除 highlight 高光） 🌟 -->
+            <div class="link-card" onclick="drawDailyFortune()" style="cursor: pointer;">
                 <img src="images/arc.jpg" alt="亞爾克" class="avatar">
+                <div class="link-info">
+                    <div class="link-title">每日元素共鳴籤</div>
+                    <div class="link-desc">點擊抽取今日幸運夥伴與元素開運指引！</div>
+                </div>
+                <div class="arrow">➔</div>
+            </div>
+            <a href="https://rhoxdra.github.io/endless-element-quiz/" target="_blank" class="link-card">
+                <img src="images/jareth.jpg" alt="賈瑞斯" class="avatar">
                 <div class="link-info">
                     <div class="link-title">與你契合的夥伴心理測驗</div>
                     <div class="link-desc">測測看你在這個世界裡最適合與誰同行？</div>
@@ -692,7 +700,7 @@
                     <div class="avatar-item" onclick="openCharModal('tia')"><img src="images/tia.jpg" alt="提婭"><span class="avatar-label">提婭</span></div>
                     <div class="avatar-item" onclick="openCharModal('rofena')"><img src="images/rofena.jpg" alt="羅菲娜"><span class="avatar-label">羅菲娜</span></div>
                     <div class="avatar-item" onclick="openCharModal('arashiyama')"><img src="images/arashiyama.jpg" alt="嵐山"><span class="avatar-label">嵐山</span></div>
-                    <div class="avatar-item" onclick="openCharModal('fox')"><img src="images/fox.jpg" alt="睿策樺林"><span class="avatar-label">睿策樺林</span></div>
+                    <div class="avatar-item" onclick="openCharModal('fox')"><img src="images/fox.jpg" alt="睿策樺霖"><span class="avatar-label">睿策樺林</span></div>
                     <div class="avatar-item" onclick="openCharModal('sugar')"><img src="images/sugar.jpg" alt="霜糖紗母"><span class="avatar-label">霜糖紗母</span></div>
                     <div class="avatar-item" onclick="openCharModal('deer')"><img src="images/deer.jpg" alt="繪靈鹿茲"><span class="avatar-label">繪靈鹿茲</span></div>
                     <div class="avatar-item" onclick="openCharModal('owl')"><img src="images/owl.jpg" alt="夜瞳梟賢"><span class="avatar-label">夜瞳梟賢</span></div>
@@ -898,6 +906,33 @@
         </div>
     </div>
 
+    <!-- 🌟 每日元素共鳴籤彈出面板 🌟 -->
+    <div id="fortune-modal" class="char-modal-overlay" style="display: none;">
+        <div class="char-modal-content" style="text-align: center; align-items: center;">
+            <button class="close-btn" onclick="closeFortuneModal()">✕</button>
+            <span class="event-badge" style="background: #a855f7;">DAILY FORTUNE</span>
+            <h2 id="fortune-title" class="modal-title" style="margin-bottom: 12px;">今日共鳴指引</h2>
+            
+            <!-- 直接沿用圖鑑大頭像 -->
+            <img id="fortune-avatar" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #38bdf8; margin: 8px 0; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+            
+            <div id="fortune-char-name" style="font-weight: 700; font-size: 1.15rem; color: #f8fafc; margin-top: 4px;"></div>
+            
+            <!-- 共鳴元素與類型標籤 -->
+            <div id="fortune-element-type" style="font-size: 0.82rem; color: #38bdf8; margin: 4px 0 10px; font-weight: 600;"></div>
+            
+            <!-- 今日指引與名言 -->
+            <div id="fortune-quote" class="char-quote" style="margin: 10px 0; text-align: left; width: 100%;"></div>
+            
+            <!-- 幸運小物與地點 -->
+            <div id="fortune-lucky-info" style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 18px; text-align: left; width: 100%; background: rgba(15, 23, 42, 0.4); padding: 8px 12px; border-radius: 8px;"></div>
+            
+            <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
+                <button class="form-switch-btn" onclick="drawDailyFortune()" style="margin-bottom: 0;">🎲 再抽一次</button>
+                <button class="form-switch-btn" onclick="copyFortuneResult()" style="margin-bottom: 0; background: linear-gradient(135deg, #059669 0%, #047857 100%); border-color: rgba(52, 211, 153, 0.5);">📋 複製籤詩結果</button>
+            </div>
+        </div>
+    </div>
     <!-- 🌟 JS 控制腳本 🌟 -->
     <script>
 // === 角色專屬資料庫（已將長篇介紹完整照搬，並預留 4 組 Tag 供填寫） ===
@@ -1504,11 +1539,11 @@
 在如此泥濘而窒息的生活中，摯友旭言是他生命中唯一且最溫暖的寄託。那名心思細膩、充滿正義感的記者，甚至期盼有朝一日能帶嶙安離開燼鐵鎮，一起坐上跑車到處去旅行……` 
             },
             "fox": { 
-                name: "睿策樺林", 
+                name: "睿策樺霖", 
                 quote: "「希望我們能合作愉快，共創生靈與元素和諧共存的新未來。」",
                 tags: { chapter: ["聚學舍篇", "再契選篇"], faction: ["聚學舍"], type: ["元素使用者"], element: [] },
                 bgImage: "images/fox_bg.jpg", 
-                desc: `睿策樺林 ，狐狸族獸人，身著規整優雅的學者禮服，眼神深邃、神態溫文爾雅，舉手投足間散發著極具遠見的睿智與領導氣場。
+                desc: `睿策樺霖 ，狐狸族獸人，身著規整優雅的學者禮服，眼神深邃、神態溫文爾雅，舉手投足間散發著極具遠見的睿智與領導氣場。
 
 現任最高學府「聚學舍」的校長。憑藉著博識的學問、縝密的思維以及宏觀的政治智慧，他在眾人與評議會的一致推舉下坐上高位，成為掌管全星球最高知識殿堂的關鍵核心。
 
@@ -2322,6 +2357,747 @@
             const scheduleModal = document.getElementById('schedule-modal');
             if (e.target === scheduleModal) {
                 closeScheduleModal();
+            }
+        });
+        // ==========================================
+        // 💬 世界觀簡介與點擊後隨機對白
+        // ==========================================
+        const originalStoryText = "從最初的元素冒險，到如今在聚學舍修練、參與再契選的漫長旅程，賦形者們將在這片世界中探索力量、羈絆，以及隱藏於歷史深處的真相。";
+
+        const randomDialogues = [
+        // 嵐懶（紅焰 / 無名）
+            "嵐懶：「唔……克爾你剛剛有叫我嗎？沒有的話我要繼續睡了喔……」",
+            "嵐懶：「作詞這種事需要靈感跟氛圍，絕對不是因為我想偷吃熱炒麵喔！」",
+            "嵐懶：「就算權能被地脈壓制有點痛……但只要大夥都在，就覺得好像也還撐得住。」",
+
+            // 克爾（融元素）
+            "克爾：「喂，別靠我太近。……話說回來，你今天看著我的眼神怎麼怪怪的？」",
+            "克爾：「主唱什麼的我才不在乎，我只是把那些發不出來的悶氣全吼在麥克風上而已。」",
+            "克爾：「阿風那傢伙，最近好像越來越懂得怎麼直接把想法講出來了，還算有點進步。」",
+
+            // 亞爾克 / 阿風（震元素）
+            "亞爾克：「今天天氣不錯，要不要跟我去山路跑個幾公里？高速奔馳時心情會變好喔！」",
+            "亞爾克：「以前我總是在看別人的臉色，但現在……我有自己想守護的人跟信念了。」",
+            "亞爾克：「洛爾，今天的餐館備料我已經處理好了，你放心休息吧。」",
+
+            // 洛爾（零元素）
+            "洛爾：「大家！今晚小餐館有新品試吃，練完團後記得全部過來幫我品嚐看看喔！」",
+            "洛爾：「雖然學園祭跟再契選搞得大家壓力很大，但只要能跟大家待在一起，我就充滿幹勁。」",
+            "洛爾：「克爾跟阿風又在較勁了？哈哈，這表示他們兩個今天精力依然很充沛呢。」",
+
+            // 克明（沌元素）
+            "克明：「作為狼人村的村長，我會繼續證明給大夥看，我們能和人類建立起美好的信任。」",
+            "克明：「沌元素偶爾還是會帶來些許反噬……不過別擔心，我現在已經能很好地壓制它了。」",
+
+            // 高翔（極元素）
+            "高翔：「比起死板板的課本，我還是比較喜歡在野外跑跳啊！今天放學要不要去體育場投個籃？」",
+            "高翔：「上次在遺跡發現那本日記時真的嚇了一跳，沒想到我們又被捲入新的風暴了呢。」",
+
+            // 高和（恆元素）
+            "高和：「做研究跟處理公務雖然忙碌，但看到兩族能平穩交流，這一切辛苦就都值得了。」",
+            "高和：「阿翔那傢伙又在課堂上打瞌睡了吧？真希望他對書本能有對野外探險一半的熱情。」",
+
+            // 五十嵐（嵐元素）
+            "五十嵐：「作為你們的導師，看著你們一個個獨當一面……心裡還真是有點捨不得放手呢。」",
+            "五十嵐：「聚學舍的戰鬥訓練課可不輕鬆，大家今天也要打起十二分精神過來練習喔！」",
+
+            // 艾瑞爾（斷元素）
+            "艾瑞爾：「本總督的事務可是很繁忙的。不過……偶爾關心一下你們這群年輕人也無妨。」",
+            "艾瑞爾：「賦形晶的技術又有了微小的突破，這下某些暗處的傢伙又要睡不著覺了吧。」",
+
+            // 瓦奇瑪（位元素）
+            "瓦奇瑪：「本大明神宣告！今日的幸運甜點是賽錢箱焦糖派！不吃的傢伙要受罰喔！」",
+            "瓦奇瑪：「霜糖紗母教授今天的烘焙課簡直是天堂！我決定要在課堂上記滿整整三頁筆記！」",
+
+            // 弗爾特（滅元素）
+            "弗爾特：「裏網的數據流今天依然很平靜。誰要是敢在系統裡耍花招，我的映像者會立刻解決他。」",
+            "弗爾特：「去聚學舍當訓練對手？哼，希望那些學生不會被我的滅盡波動嚇到拔腿就跑。」",
+
+            // 普洛特（毀元素）
+            "普洛特：「這座雕像是我們三族友誼的證明。只要有我在，就絕不允許任何人破壞這份平靜。」",
+            "普洛特：「昔日的恩怨雖然沉重，但現在……我想用這雙手去親手雕刻屬於我們的未來。」",
+
+            // 詛碼（究極元素）
+            "詛碼：「新生詛碼團的重組一切都在計畫之中。誓奪爪盟的那群傢伙，未免把事情想得太簡單了。」",
+            "詛碼：「究極元素的碎片正悄然共鳴。這場契選之爭，將會呈現出最完美優雅的結局。」",
+
+            // 白珥（命元素）
+            "白珥：「呵呵，聚學舍的助教生活比想像中更有趣呢，能近距離觀察這群年輕人的成長。」",
+            "白珥：「在逆光探照燈下看著台下的黑影……這種掌控局勢的感覺，真是讓人百看不厭。」",
+
+            // 阿爾提瑪（救世學者 / 奧提斯教授）
+            "阿爾提瑪：「量識紊亂與熵增定理是元素運行的基礎，同學們，今天的通識課可別遲到了。」",
+            "阿爾提瑪：「以奧提斯之名站在講台上傳授知識……或許這就是我能為這顆星球做的一點贖罪吧。」",
+
+            // 賈瑞斯（創元素）
+            "賈瑞斯：「哦呀？今天夜市的章魚燒跟八寶糕看起來都好美味，到底該先吃哪一個呢？」",
+            "賈瑞斯：「再契選的對局已經過半了啊……無論結果如何，這顆星球的未來終究屬於萬物生靈。」",
+
+            // 澤里恩（耀元素）
+            "澤里恩：「那個……今天的蘊華罐微縮景觀做得很成功喔！如果你想看的話，我可以拿給你……」",
+            "澤里恩：「我……我會努力發揮成長權能的！只要能幫上大家跟嵐懶的忙，我什麼都願意做！」",
+
+            // 崩（崩元素）
+            "崩：「我的崩壞重拳可不是開玩笑的！……但是，為什麼大家都一直在直播間刷『崩哞』啊？！」",
+            "崩：「脖子上的紅色圍巾是我最珍視的東西。不論戰況有多激烈，我都絕不會讓它沾上一絲灰塵。」",
+
+            // 制（制元素）
+            "制：「嘿嘿！我的《無垠號》又進行了超絕性能改裝！要不要上車感受一下極速的快感啊？」",
+            "制：「只要是為了劫哥跟誓奪爪盟的大家，就算滿身機油整夜不睡，我也要把設備搞定！」",
+
+            // 影（影元素）
+            "影：「今晚『豹飲豹食』的電音派對即將爆滿～要不要替你在VIP區留個好位置啊？」",
+            "影：「漫長的人生就是要充滿刺激跟混亂才有趣嘛，太死板的生活可不適合我。」",
+
+            // 劫（劫元素）
+            "劫：「誓奪爪盟可不是什麼慈善機構。想要得到尊重，就用你的實力跟忠誠來換。」",
+            "劫：「千年前沒能做到的事，這一次……我會把所有屬於元素一族的榮耀親手奪回來。」",
+
+            // 伊蕾琪（白狼特務）
+            "伊蕾琪：「哈囉～各位蕾寶！今天的直播也很熱鬧呢，記得要點讚跟課金喔～」",
+            "伊蕾琪：「在暗處執行任務時，重力跟闇元素的配合可是最優雅、最不會留下破綻的呢。」",
+
+            // 提婭（黑狼獵牙）
+            "提婭：「當克爾頭領不在村裡時，防衛事務就由我來扛。這裡的平靜絕不容許外人侵犯。」",
+            "提婭：「戰鬥之餘，撫摸吉他弦能讓我的心靜下來……音樂真是有種不可思義的力量呢。」",
+
+            // 羅菲娜（獅族首席）
+            "羅菲娜：「歡迎來到今天的賽事轉播！今天的『菲羅蕾寶』嘴砲對決，我可是準備充足呢！」",
+            "羅菲娜：「近身格鬥跟土元素飛石鏢的結合非常實用，有興趣的話我也能在學舍指導你喔。」",
+
+            // 嵐山（貓族村長）
+            "嵐山：「孩子，這座村子的門永遠為你敞開。無論外界經歷了什麼，這裡都是你的家。」",
+            "嵐山：「老夫這把骨頭雖然不中用了，但為了守護兒子的未來，老夫絕不退縮半步。」",
+
+            // 霜糖紗母（白綿羊烘焙教授）
+            "霜糖紗母：「聽～剛出爐的麵包正發出輕微的香氣呢，快趁熱嚐一塊剛烤好的吐司吧。」",
+            "霜糖紗母：「揉麵團需要細緻的溫度，引導水與火的結合，就能做出一等一的美味喔。」",
+
+            // 繪靈鹿茲（藝術教授）
+            "繪靈鹿茲：「藝術就是力量！看我用顏料引靈與靈彩陣式，在戰場上揮灑出最華麗的畫卷！」",
+            "繪靈鹿茲：「博物館裡每件展品背後都藏著迷人的歷史，要不要聽我娓娓道來啊？」",
+
+            // 夜瞳梟賢（醫學教授）
+            "夜瞳梟賢：「急救的關鍵在於爭分奪秒。結合風元素導流與擬似體液，就能挽救更多生命。」",
+            "夜瞳梟賢：「作為外科主治醫師，看到學生們在醫學系踏實成長，是我最高興的事。」",
+
+            // 翠芽泰納（農藝教授）
+            "翠芽泰納：「哈哈，別看這片荒地現在光禿禿的，只要精準調配土元素養分，很快就能長出綠意喔！」",
+            "翠芽泰納：「行走於各大部族之間傳授種植技術，能看到大家吃飽喝足的笑容，最讓人滿足了。」",
+
+            // 怒濤銳步（體適能教授）
+            "怒濤銳步：「跑步時要注意調節自身與周遭『氣』的流動，這樣才能在極速下保持最敏銳的洞察。」",
+            "怒濤銳步：「我手上的競賽紀錄可沒那麼容易被打破！年輕人，再加快你們的步伐吧！」",
+
+            // 凱登（藍鯊舉重/籃球好手）
+            "凱登：「哈哈！這點重量算什麼！咱在海岸邊推過的石頭可比這重多了！」",
+            "凱登：「球場上只要把球交給咱跟豪助，對面的防線就等著被咱猛烈的衝鋒給撕裂吧！」",
+
+            // 豪助（白熊溫和優等生）
+            "豪助：「凱登哥總是衝得太快，所以我必須在球場上做好卡位跟擋拆，成為大家最堅實的後盾。」",
+            "豪助：「今天我做了多餘的便當，如果不介意的話，要不要一起分著吃呢？」",
+
+            // 瞬介（獵豹隨性運動員）
+            "瞬介：「晨跑第一名又是我的啦！對自己經由千錘百鍊的肉體，我可是非常有自信的！」",
+            "瞬介：「生活就是要隨心所欲才痛快啊～偶爾打破一下緊繃的氣氛，大家才會笑出來嘛！」",
+
+            // 颯太（棕馬豪爽體力怪）
+            "颯太：「馬族的耐力可不是蓋的！只要能幫隊友爭取到積分，再苦的拉鋸戰我也會咬牙撐下去！」",
+            "颯太：「豪助做的料理味道真是一絕！每次運動完能吃到他煮的東西，整天的疲勞都飛光了。」",
+
+            // 埒（綠狼上古元素）
+            "埒：「這條圍巾承載著最深的守望。無論歷經多少歲月，我都會在時空中默默庇佑著你。」",
+            "埒：「探索外界的決定雖然伴隨著未知與危險，但只要信念不滅，羈絆就不會斷裂。」",
+
+            // 犺（灰狼背叛者）
+            "犺：「《亞榭洛》的筆記上記錄著預言的軌跡……我所選的路，從不需要向外界解釋。」",
+            "犺：「同為灰狼族，克明選擇了溫和共存，而我……則選擇直奔未知的終點。」",
+
+            // 泊信（新生詛碼團分隊長）
+            "泊信：「跟著普洛特隊長在戰場上橫掃敵人的英姿，至今依然讓我熱血沸騰啊！」",
+            "泊信：「長年在傭兵隊流浪，如今重回熟悉的旗幟下，這份兄弟情誼可比什麼都珍貴。」",
+
+            // 烈塵巡衛（黑猩猩信差）
+            "烈塵巡衛：「少廢話，我還有好幾個礦區的信件跟共鳴石資料要親自遞送，別擋我的路。」",
+            "烈塵巡衛：「用最原始的腳步跋涉險地，才是避開裏網監控最安全的傳送方式。」",
+
+            // 鍛魂獷牙（野豬工匠巨頭）
+            "鍛魂獷牙：「哼！科學跟效率可不能隨便端走工匠的心血！在砧鍛坊裡，一切憑真本事說話！」",
+            "鍛魂獷牙：「一擊『土岩』重如泰山，一招『火星』崩破千軍！這就是我熔鑄在鐵鎚裡的霸氣！」",
+
+            // 旭言（黃鼠狼王牌記者）
+            "旭言：「不允許資訊只在少數人之間流動！為了揭露真相，就算是再危險的臥底任務我也去！」",
+            "旭言：「嶙安！等這陣子忙完，我們就一起坐上跑車，去尼爾桑看環輝樹脊、聽嵐光的演唱會！」",
+
+            // 嶙安（蜥蜴工坊雜工）
+            "嶙安：「長年在煤灰與嘲弄中生活……但旭言的話，讓我第一次覺得自己好像也能被看見。」",
+            "嶙安：「如果有一天……真的能離開燼鐵鎮去看看外面的世界，那該有多好啊……」",
+
+            // 睿策樺林（狐狸校長）
+            "睿策樺林：「聚學舍是知識與包容的搖籃。面對時代浪潮，我們將始終保持開明與中立的信念。」",
+            "睿策樺林：「讓十三元素與年輕生靈們在此共同修練，這將是共創和諧新未來的關鍵一步。」",
+
+            // 影識秘爪（浣熊創校三巨頭）
+            "影識秘爪：「學識之庫僅保存與驗證既有歷史。靜下心來，答案自然會在碑文間浮現。」",
+            "影識秘爪：「地脈的微弱脈動正悄然變化……這顆星球的萬物演化史，正記載著我們當下的選擇。」",
+
+            // 瑟莉雅（灰虎斑貓族少女）
+            "瑟莉雅：「當熟悉的信仰跟記憶變成謊言時……真的很讓人恐懼，我只是想找到真正的答案而已。」",
+            "瑟莉雅：「雖然對五十嵐老師還有很多猶豫跟背叛感，但我也想學著坦然面對未來啊……」",
+
+            // 雷瓦維那（人類舊領主）
+            "雷瓦維那：「將魔法與地脈技術分享給探索隊，這是對等的信任。人類與異族總有一天能和平共處。」",
+            "雷瓦維那：「綠石礦種的栽培非常成功呢，希望這些成果能為遠道而來的客人們提供協助。」",
+
+            // 萊昂維那（人類現任領主）
+            "萊昂維那：「《無垠號》的懸浮飛艇技術令人驚嘆！推動人類科技與元素超科學結合是我們的責任。」",
+            "萊昂維那：「身為領主，護衛領民是第一要務！只要能討伐禍源熔岩龍，我們願意提供一切後勤支援。」",
+
+            // 拓穆恩（野豬霸潮盟分會長）
+            "拓穆恩：「霸潮盟講求利益、規則與對等交換。只要能為艾瑞拉帶來繁榮，我們樂意與任何人談判。」",
+            "拓穆恩：「在嚴酷的極北之地，秩序與先進的保溫設施才是維繫龐大都市運作的基石。」",
+
+            // 格洛薩（黑猩猩霸潮盟老大）
+            "格洛薩：「在港鎮我的地盤上，講求的就是極致的務實與道義！敢賴帳的人就準備去海底觀光吧！」",
+            "格洛薩：「敢在我的賭局上出千翻盤，嘿……這種膽識跟手腕，我格洛薩可是相當欣賞呢！」",
+
+            // 伊格拉罕（白狼白原行族族長）
+            "伊格拉罕：「遵循自然的法則與先祖的智慧，全族才能在極北風雪中得以延續。外來者，肅靜！」",
+            "伊格拉罕：「塔芙琳那孩子總是嚷著要向外冒險……哎，真是個不讓人省心的理想派丫頭。」",
+
+            // 塔芙琳（白狼地脈紀錄者）
+            "塔芙琳：「北原資源正日益枯竭，我們不能一昧逃避！我一定要向父親證明，主動交流才是未來！」",
+            "塔芙琳：「哼哼～我的地脈感應手杖可是很靈敏的！暴虐的地脈狂潮在我面前也得乖乖聽話！」"
+        ];
+
+        // 確保函數在 HTML 載入完成後立即執行
+        function initStoryIntro() {
+            const storyIntroElem = document.querySelector('.story-intro');
+            if (storyIntroElem) {
+                // 🌟 預設保持原本的敘述句 🌟
+                storyIntroElem.innerHTML = `
+                    <p style="font-size: 0.9rem; line-height: 1.65; color: #e2e8f0; margin-bottom: 6px;">${originalStoryText}</p>
+                    <p style="font-size: 0.75rem; color: #38bdf8; opacity: 0.85; margin-bottom: 0; text-align: right;">( ✦ 點擊開啟夥伴對話 ✦ )</p>
+                `;
+
+                // 🌟 點擊後才開啟隨機對白切換 🌟
+                storyIntroElem.style.cursor = 'pointer';
+                storyIntroElem.onclick = function() {
+                    const randomIndex = Math.floor(Math.random() * randomDialogues.length);
+                    storyIntroElem.innerHTML = `
+                        <p style="font-weight: 600; color: #f8fafc; margin-bottom: 6px;">${randomDialogues[randomIndex]}</p>
+                        <p style="font-size: 0.75rem; color: #38bdf8; opacity: 0.85; margin-bottom: 0; text-align: right;">( ✦ 點擊切換下一句對話 ✦ )</p>
+                    `;
+                };
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initStoryIntro);
+        } else {
+            initStoryIntro();
+        }
+
+
+        // ==========================================
+        // 🔮 每日元素共鳴籤資料庫（所有角色完整覆蓋）
+        // ==========================================
+        const fortuneDatabase = [
+            // --- 嵐懶 (多套備選) ---
+            {
+                charKey: "lanlan",
+                name: "嵐懶",
+                typeCategory: "賦形者",
+                elementName: "無名",
+                quote: "「奇蹟並非出自一人之力，而是每位夥伴以情感與理解共同成就的成果。今天也慢慢來吧～」",
+                lucky: "🍀 幸運地點：樹蔭下／無名河畔 ｜ 幸運物品：日式炒麵"
+            },
+            {
+                charKey: "lanlan",
+                name: "嵐懶",
+                typeCategory: "賦形者",
+                elementName: "無名",
+                quote: "「還是等我不懶的時候再開始動工吧……偶爾給自己放個假也是很重要的喔。」",
+                lucky: "🍀 幸運地點：聚學舍助教休息室 ｜ 幸運物品：慵懶抱枕"
+            },
+            // --- 克爾 (多套備選) ---
+            {
+                charKey: "kulu",
+                name: "克爾",
+                typeCategory: "賦形者",
+                elementName: "融",
+                quote: "「如果有什麼被壓抑的情緒與痛楚，別憋在心裡，試著全吼出來吧！」",
+                lucky: "🍀 幸運地點：樂團團練室 ｜ 幸運物品：特製熱咖啡"
+            },
+            {
+                charKey: "kulu",
+                name: "克爾",
+                typeCategory: "賦形者",
+                elementName: "融",
+                quote: "「理解一個人需要時間，不用急著給自己下定論，慢慢走總會找到方向的。」",
+                lucky: "🍀 幸運地點：狼人村狩獵邊界 ｜ 幸運物品：特製藥草菸"
+            },
+            // --- 亞爾克 / 阿風 (多套備選) ---
+            {
+                charKey: "arc",
+                name: "亞爾克",
+                typeCategory: "賦形者",
+                elementName: "震",
+                quote: "「今天如果感到些許不安，試著跟隨自己的節奏去跑道上限速奔馳一段吧。」",
+                lucky: "🍀 幸運地點：山間跑道 ｜ 幸運物品：運動頭巾"
+            },
+            {
+                charKey: "arc",
+                name: "亞爾克",
+                typeCategory: "賦形者",
+                elementName: "震",
+                quote: "「若是為了守護如今陪在身旁的夥伴，我會毫不猶豫地踏入險境。今天我也在身後支持你。」",
+                lucky: "🍀 幸運地點：極速賽道 ｜ 幸運物品：貝斯琴撥片"
+            },
+            // --- 洛爾 (多套備選) ---
+            {
+                charKey: "roar",
+                name: "洛爾",
+                typeCategory: "賦形者",
+                elementName: "零",
+                quote: "「只要大家聚在一起，就沒有跨不過去的難關！今天也一起充滿活力地出發吧！」",
+                lucky: "🍀 幸運地點：嵐光鎮小餐館 ｜ 幸運物品：特製鼓棒"
+            },
+            {
+                charKey: "roar",
+                name: "洛爾",
+                typeCategory: "賦形者",
+                elementName: "零",
+                quote: "「累了的話就回餐館坐坐吧！我會準備好熱氣騰騰的餐點等著你。」",
+                lucky: "🍀 幸運地點：聚學舍醫學系教室 ｜ 幸運物品：急救藥箱"
+            },
+            // --- 核心角色群 ---
+            {
+                charKey: "kokumei",
+                name: "克明",
+                typeCategory: "賦形者",
+                elementName: "沌",
+                quote: "「即使力量帶有反噬，只要心懷理性與溫柔，就能開創跨越隔閡的新時代。」",
+                lucky: "🍀 幸運地點：狼人村農耕田園 ｜ 幸運物品：美工繪圖板"
+            },
+            {
+                charKey: "koushou",
+                name: "高翔",
+                typeCategory: "賦形者",
+                elementName: "極",
+                quote: "「去野外走走吧！別讓書本和煩惱框住了你，體育場上揮灑汗水才是最棒的解藥！」",
+                lucky: "🍀 幸運地點：尼爾桑廣袤荒野 ｜ 幸運物品：吉他彈片"
+            },
+            {
+                charKey: "takawa",
+                name: "高和",
+                typeCategory: "賦形者",
+                elementName: "恆",
+                quote: "「創造希望的人怎麼可以放棄希望？保持踏實的步調，今天的事務也能井井有條。」",
+                lucky: "🍀 幸運地點：艾瑞爾市政廳實驗室 ｜ 幸運物品：研究筆記本"
+            },
+            {
+                charKey: "igarashi",
+                name: "五十嵐",
+                typeCategory: "賦形者",
+                elementName: "嵐",
+                quote: "「我是你們的燈塔，無論前路風浪多大，我都堅信你們能走出屬於自己的昂揚道路。」",
+                lucky: "🍀 幸運地點：嵐光鎮學堂 ｜ 幸運物品：講義教案"
+            },
+            {
+                charKey: "area",
+                name: "艾瑞爾",
+                typeCategory: "賦形者",
+                elementName: "斷",
+                quote: "「運籌帷幄乃本總督之日常。偶爾展露一下睥睨之氣，也能讓複雜的局勢迎刃而解喔。」",
+                lucky: "🍀 幸運地點：艾瑞爾城高樓辦公室 ｜ 幸運物品：賦形晶樣品"
+            },
+            {
+                charKey: "wakima",
+                name: "瓦奇瑪",
+                typeCategory: "賦形者",
+                elementName: "位",
+                quote: "「今天的心情需要甜點來拯救！快嚐嚐本大明神親自推薦的賽錢箱焦糖派吧！」",
+                lucky: "🍀 幸運地點：豐漁甘神教祭壇 ｜ 幸運物品：手工烤布丁"
+            },
+            {
+                charKey: "volt",
+                name: "弗爾特",
+                typeCategory: "賦形者",
+                elementName: "滅",
+                quote: "「這是我支配的場域。只要冷靜觀察資訊流向，沒有任何干擾能動搖你。」",
+                lucky: "🍀 幸運地點：裏網核心節點 ｜ 幸運物品：數據傳輸硬碟"
+            },
+            {
+                charKey: "proto",
+                name: "普洛特",
+                typeCategory: "賦形者",
+                elementName: "毀",
+                quote: "「用實力證明一切。當你專注於雕琢自身技藝時，過去的陰影便無法將你困住。」",
+                lucky: "🍀 幸運地點：野性之聲團練室 ｜ 幸運物品：木雕工具套組"
+            },
+            {
+                charKey: "zoma",
+                name: "詛碼",
+                typeCategory: "賦形者",
+                elementName: "究極",
+                quote: "「遵循自身的獨到美學，哪怕走在暗處，也能展現凌駕一切的威嚴。」",
+                lucky: "🍀 幸運地點：新生詛碼團指揮部 ｜ 幸運物品：究極元素碎片"
+            },
+            {
+                charKey: "veil",
+                name: "白珥",
+                typeCategory: "賦形者",
+                elementName: "命",
+                quote: "「哎呀，真是精采的表演呢。保持沉穩與謀略，局勢自然會朝你傾斜。」",
+                lucky: "🍀 幸運地點：地下演講集會廳 ｜ 幸運物品：微型探照燈"
+            },
+            {
+                charKey: "ultima",
+                name: "阿爾提瑪",
+                typeCategory: "使用者",
+                elementName: "究極",
+                quote: "「知識是理解世界的鑰匙。掌握量識與半衰期的法則，今天也能理性地面對考驗。」",
+                lucky: "🍀 幸運地點：聚學舍元素通識講堂 ｜ 幸運物品：粉筆與定理講義"
+            },
+            {
+                charKey: "jareth",
+                name: "賈瑞斯",
+                typeCategory: "賦形者",
+                elementName: "創",
+                quote: "「這顆星球該屬於其上的萬物。記得——你值得被重視，去享受平凡而美好的一天吧！」",
+                lucky: "🍀 幸運地點：熱鬧夜市攤位 ｜ 幸運物品：章魚燒與八寶糕"
+            },
+            {
+                charKey: "zarion",
+                name: "澤里恩",
+                typeCategory: "賦形者",
+                elementName: "耀",
+                quote: "「請相信你自己！每天累積的微小努力，一定會像種子一樣綻放出無比耀眼的光芒！」",
+                lucky: "🍀 幸運地點：狼人村邊緣農田 ｜ 幸運物品：蘊華微縮罐"
+            },
+            {
+                charKey: "kuzure",
+                name: "崩",
+                typeCategory: "賦形者",
+                elementName: "崩",
+                quote: "「堅守原則，用剛毅的信念擊碎阻礙！……就算被捉弄，責任感也絕不妥協！」",
+                lucky: "🍀 幸運地點：深山吹風眺望台 ｜ 幸運物品：紅色針織圍巾"
+            },
+            {
+                charKey: "osae",
+                name: "制",
+                typeCategory: "賦形者",
+                elementName: "制",
+                quote: "「發揮工藝匠魂吧！只要滿懷熱情，再困難的改裝與挑戰都能順利搞定！」",
+                lucky: "🍀 幸運地點：改裝車工坊 ｜ 幸運物品：組裝扳手與機油"
+            },
+            {
+                charKey: "kage",
+                name: "影",
+                typeCategory: "賦形者",
+                elementName: "影",
+                quote: "「人生就是一場遊戲～用優雅又玩世不恭的態度享受音樂與派對吧！」",
+                lucky: "🍀 幸運地點：地下夜店 DJ 台 ｜ 幸運物品：黑膠唱片"
+            },
+            {
+                charKey: "rub",
+                name: "劫",
+                typeCategory: "賦形者",
+                elementName: "劫",
+                quote: "「將掌控權握在自己手中。對於想要守護的事物與榮耀，就靠實力親手奪回來！」",
+                lucky: "🍀 幸運地點：黑幫總部大樓 ｜ 幸運物品：黑色長大衣"
+            },
+            {
+                charKey: "electric",
+                name: "伊蕾琪",
+                typeCategory: "使用者",
+                elementName: "雷、闇、重力",
+                quote: "「掌握話語權與自信，今天在任何場合你都能展現極致的魅力與光彩～」",
+                lucky: "🍀 幸運地點：蕾寶來電直播間 ｜ 幸運物品：高音質麥克風"
+            },
+            {
+                charKey: "tia",
+                name: "提婭",
+                typeCategory: "使用者",
+                elementName: "冰",
+                quote: "「保持理性與冷靜。戰鬥之外，別忘了給自己一段彈吉他沉思的音樂時光。」",
+                lucky: "🍀 幸運地點：狼人村防衛據點 ｜ 幸運物品：木吉他"
+            },
+            {
+                charKey: "rofena",
+                name: "羅菲娜",
+                typeCategory: "使用者",
+                elementName: "土、風、光",
+                quote: "「用清晰的條理與氣場掌控全場！今天也是展現專業與渲染力的大好時機！」",
+                lucky: "🍀 幸運地點：賽事主播播報台 ｜ 幸運物品：法政法規彙編"
+            },
+            {
+                charKey: "arashiyama",
+                name: "嵐山",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「歡迎回家。無論外面的風浪多大，長者深沉的包容與堅毅永遠是你最堅實的後盾。」",
+                lucky: "🍀 幸運地點：貓族村村長宅邸 ｜ 幸運物品：溫熱茶湯"
+            },
+            {
+                charKey: "sugar",
+                name: "霜糖紗母",
+                typeCategory: "使用者",
+                elementName: "水、火",
+                quote: "「傾聽食材與生活微溫的氣息，用心付出烘焙出來的成果，最能療癒人心。」",
+                lucky: "🍀 幸運地點：聚學舍烘焙教室 ｜ 幸運物品：熱氣騰騰的麵包籃"
+            },
+            {
+                charKey: "deer",
+                name: "繪靈鹿茲",
+                typeCategory: "使用者",
+                elementName: "水",
+                quote: "「有謎題的地方就必定有解答！用優雅而靈動的藝術視角，解開眼前的懸案吧！」",
+                lucky: "🍀 幸運地點：嵐光城博物館 ｜ 幸運物品：調色盤與水彩筆"
+            },
+            {
+                charKey: "owl",
+                name: "夜瞳梟賢",
+                typeCategory: "使用者",
+                elementName: "風、水",
+                quote: "「沉著果斷地做出判斷。就算世界陷入失序，你的專長也能成為別人的方向指引。」",
+                lucky: "🍀 幸運地點：附設醫院手術室 ｜ 幸運物品：聽診器"
+            },
+            {
+                charKey: "teiner",
+                name: "翠芽泰納",
+                typeCategory: "使用者",
+                elementName: "土",
+                quote: "「細心呵護當下的泥土與養分，夢想的綠意終會在荒蕪中茁壯生長。」",
+                lucky: "🍀 幸運地點：自然保留區苗圃 ｜ 幸運物品：園藝小鐵鏟"
+            },
+            {
+                charKey: "doutou",
+                name: "怒濤銳步",
+                typeCategory: "使用者",
+                elementName: "風",
+                quote: "「調整好自身的『氣』與呼吸。如風般敏銳精準地捕捉每個細節，勝利就在掌握中！」",
+                lucky: "🍀 幸運地點：聚學舍田徑跑道 ｜ 幸運物品：專業碼錶"
+            },
+            {
+                charKey: "kaiden",
+                name: "凱登",
+                typeCategory: "使用者",
+                elementName: "水、土",
+                quote: "「豪爽直率地面對挑戰！拿出肌力與氣勢，沒什麼坍方是我們推不開的！」",
+                lucky: "🍀 幸運地點：炙海獵者籃球場 ｜ 幸運物品：舉重腰帶"
+            },
+            {
+                charKey: "gousuke",
+                name: "豪助",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「雖然我沒有強大的元素，但憑藉嚴謹的智慧與溫和的陪伴，也能成為隊友最踏實的基座。」",
+                lucky: "🍀 幸運地點：聚學舍圖書館 ｜ 幸運物品：手作便當盒"
+            },
+            {
+                charKey: "chitar",
+                name: "瞬介",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「相信千錘百鍊的自己！自信隨性地揮灑熱情，打破壓迫與緊繃的氣氛吧！」",
+                lucky: "🍀 幸運地點：晨跑林蔭大道 ｜ 幸運物品：跑鞋"
+            },
+            {
+                charKey: "horse",
+                name: "颯太",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「豪爽踏實地走每一步！認準了目標就不服輸，珍惜難得的翻盤機會！」",
+                lucky: "🍀 幸運地點：體能集社活動場 ｜ 幸運物品：運動水壺"
+            },
+            {
+                charKey: "raku",
+                name: "埒",
+                typeCategory: "賦形者",
+                elementName: "埒",
+                quote: "「沉穩內斂地守候。不管身在何處，真心為對方製作的羈絆永遠不會消逝。」",
+                lucky: "🍀 幸運地點：無名河畔大樹下 ｜ 幸運物品：手作圍巾"
+            },
+            {
+                charKey: "garoz",
+                name: "犺",
+                typeCategory: "賦形者",
+                elementName: "犺",
+                quote: "「果斷行動，朝著目標邁進。有些看似脫離大眾的選擇，只有自己知道其意義。」",
+                lucky: "🍀 幸運地點：北原遺跡碑文前 ｜ 幸運物品：預言筆記本"
+            },
+            {
+                charKey: "sinn",
+                name: "泊信",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「老練地在混亂中求生。珍惜並肩作戰累積起來的信任與兄弟情誼吧！」",
+                lucky: "🍀 幸運地點：傭兵休息營地 ｜ 幸運物品：軍用麥重酒杯"
+            },
+            {
+                charKey: "gorilla",
+                name: "烈塵巡衛",
+                typeCategory: "使用者",
+                elementName: "土",
+                quote: "「長途奔走、踏實扎根。避開浮躁的喧囂，用最原始可靠的方式完成託付。」",
+                lucky: "🍀 幸運地點：山岩礦石加工廠 ｜ 幸運物品：信差皮包"
+            },
+            {
+                charKey: "boar",
+                name: "鍛魂獷牙",
+                typeCategory: "使用者",
+                elementName: "火、土",
+                quote: "「把熱血與硬沉熔鑄一體！用長年累積的無撼底蘊，一鎚敲響屬於你的霸氣！」",
+                lucky: "🍀 幸運地點：燼鐵鎮砧鍛坊 ｜ 幸運物品：鍛造鐵鎚"
+            },
+            {
+                charKey: "whissel",
+                name: "旭言",
+                typeCategory: "無能力",
+                elementName: "",
+                quote: "「追求真相與知識的平等！勇敢地跨出腳步，用雙眼去記錄真實的世界吧！」",
+                lucky: "🍀 幸運地點：晝光時報採訪現場 ｜ 幸運物品：新聞攝影機"
+            },
+            {
+                charKey: "rin",
+                name: "嶙安",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「就算現在身處泥濘與壓抑中，也別否定自己，溫暖的陪伴會帶你看到遠方的光。」",
+                lucky: "🍀 幸運地點：燼鐵鎮小巷 ｜ 幸運物品：跑車模型"
+            },
+            {
+                charKey: "fox",
+                name: "睿策樺霖",
+                typeCategory: "使用者",
+                elementName: "光",
+                quote: "「處變不驚、睿智遠見。在波濤湧動的局勢中保持中立與理智，指引方向。」",
+                lucky: "🍀 幸運地點：聚學舍校長室 ｜ 幸運物品：學者禮服羽毛筆"
+            },
+            {
+                charKey: "racoon",
+                name: "影識秘爪",
+                typeCategory: "使用者",
+                elementName: "土、光",
+                quote: "「紀錄只呈現可能性。遠離塵囂喧鬧，在密林與碑文間守護最純粹的真實。」",
+                lucky: "🍀 幸運地點：尼爾桑學識之庫 ｜ 幸運物品：古老古籍羊皮紙"
+            },
+            {
+                charKey: "cat",
+                name: "瑟莉雅",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「縱使面對認知的拆解與不安，用真摯的目光去尋找屬於自己的真實答案吧。」",
+                lucky: "🍀 幸運地點：貓族村集市擺攤區 ｜ 幸運物品：手工手飾"
+            },
+            {
+                charKey: "reva",
+                name: "雷瓦維那",
+                typeCategory: "地脈操流者",
+                elementName: "火",
+                quote: "「以等價交換與大氣包容待人，只要願意溝通，總能找到和平共處的契機。」",
+                lucky: "🍀 幸運地點：維那嶺城堡圖書館 ｜ 幸運物品：雕花魔法法杖"
+            },
+            {
+                charKey: "leon",
+                name: "萊昂維那",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「果斷決策、責任克制。用開明與尊重異族的姿態，守護身邊重視的人。」",
+                lucky: "🍀 幸運地點：維那嶺避難所工坊 ｜ 幸運物品：領主銀釦外衣"
+            },
+            {
+                charKey: "tormunn",
+                name: "拓穆恩",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「講求規則與對等交換。冷靜評估價值，成為連結不同文明之間不可或缺的橋樑。」",
+                lucky: "🍀 幸運地點：艾瑞拉商會總部 ｜ 幸運物品：防風保溫斗篷"
+            },
+            {
+                charKey: "grossa",
+                name: "格洛薩",
+                typeCategory: "無能力",
+                elementName: "無",
+                quote: "「務實且極守信用！拿出梟雄大人物的肚量與道義，欣賞有膽識的合作者。」",
+                lucky: "🍀 幸運地點：港鎮霸潮盟賭場 ｜ 幸運物品：五芒重鑄撲克牌"
+            },
+            {
+                charKey: "igrahhan",
+                name: "伊格拉罕",
+                typeCategory: "地脈操流者",
+                elementName: "風",
+                quote: "「恪守規矩與自然法則。看似嚴厲的外表下，隱藏著守護家人最沉重的愛。」",
+                lucky: "🍀 幸運地點：純白茫區祭典冰谷 ｜ 幸運物品：骨製古老骨笛"
+            },
+            {
+                charKey: "touphrin",
+                name: "塔芙琳",
+                typeCategory: "地脈操流者",
+                elementName: "土、光",
+                quote: "「昂揚樂觀地面對生活！憑藉勇氣與溫柔的堅毅，為主動開創嶄新道路而努力吧！」",
+                lucky: "🍀 幸運地點：極北純白茫區導流點 ｜ 幸運物品：地脈引流晶手杖"
+            }
+        ];
+
+        let lastFortuneResult = ""; // 紀錄複製籤詩內容
+
+        // 🌟 執行抽籤與動態邏輯判斷 🌟
+        function drawDailyFortune() {
+            const randomIndex = Math.floor(Math.random() * fortuneDatabase.length);
+            const item = fortuneDatabase[randomIndex];
+
+            // 1. 大頭像直接抓圖鑑路徑
+            document.getElementById('fortune-avatar').src = `images/${item.charKey}.jpg`;
+            document.getElementById('fortune-char-name').innerText = item.name;
+
+            // 2. 依照能力類型動態判斷共鳴文字
+            const typeElem = document.getElementById('fortune-element-type');
+            if (item.typeCategory === "賦形者") {
+                typeElem.innerText = `⚡ 賦形元素共鳴：${item.elementName}`;
+            } else if (item.typeCategory === "使用者") {
+                typeElem.innerText = `🔥 屬性元素共鳴：${item.elementName}`;
+            } else if (item.typeCategory === "地脈操流者") {
+                typeElem.innerText = `🌌 你今天居然與地脈共鳴，真是稀奇！（${item.elementName}）`;
+            } else {
+                typeElem.innerText = `🌱 沒關係，我們就這樣度過平淡美好的一天也不錯～`;
+            }
+
+            // 3. 帶入籤詩對白與幸運物
+            document.getElementById('fortune-quote').innerText = item.quote;
+            document.getElementById('fortune-lucky-info').innerText = item.lucky;
+
+            // 4. 更換背景大圖
+            const bgImg = (characterData[item.charKey] && characterData[item.charKey].bgImage) ? characterData[item.charKey].bgImage : `images/${item.charKey}_bg.jpg`;
+            document.body.style.setProperty('--bg-image', `url('${bgImg}')`);
+
+            // 存入待複製文字
+            lastFortuneResult = `【《無限元素》今日元素共鳴籤】\n幸運夥伴：${item.name}\n${typeElem.innerText}\n指引：${item.quote}\n${item.lucky}\n👉 點擊連結抽你的今日共鳴： https://rhoxdra.github.io/intro/`;
+
+            document.getElementById('fortune-modal').style.display = 'flex';
+        }
+
+        // 🌟 一鍵複製結果 🌟
+        function copyFortuneResult() {
+            if (!lastFortuneResult) return;
+            navigator.clipboard.writeText(lastFortuneResult).then(() => {
+                alert("籤詩結果已成功複製到剪貼簿！快去分享給朋友吧！");
+            }).catch(err => {
+                alert("複製失敗，請手動截圖分享喔！");
+            });
+        }
+
+        function closeFortuneModal() {
+            document.getElementById('fortune-modal').style.display = 'none';
+        }
+
+        // 點擊彈窗外部關閉抽籤彈窗
+        window.addEventListener('click', function(e) {
+            const fortuneModal = document.getElementById('fortune-modal');
+            if (e.target === fortuneModal) {
+                closeFortuneModal();
             }
         });
     </script>
