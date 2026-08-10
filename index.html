@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>《無限元素》</title>
     <style>
-        /* 🌟 浮動音樂播放器樣式 🌟 */
+        /* 🌟 浮動音樂播放器樣式（預設改至左下角，放在相機按鈕右側） 🌟 */
         .music-player-container {
             position: fixed;
-            top: 18px;
-            right: 70px; /* 放在相機按鈕左側 */
+            bottom: 20px;
+            left: 68px; /* 釘在相機按鈕右側 */
+            top: auto;
+            right: auto;
             z-index: 200;
             display: flex;
             align-items: center;
@@ -186,12 +188,14 @@
             transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        /* 🌟 右上角懸浮「隱藏 UI 眼睛按鈕」：置頂於所有彈窗上方 🌟 */
+        /* 🌟 右上角懸浮「隱藏 UI 眼睛按鈕」：改至左下角最外側 🌟 */
         .ui-toggle-btn {
             position: fixed;
-            top: 18px;
-            right: 18px;
-            z-index: 200; /* 🌟 確保高於所有彈窗(100) */
+            bottom: 20px;
+            left: 16px; /* 釘在畫面最左側邊緣 */
+            top: auto;
+            right: auto;
+            z-index: 200;
             width: 44px;
             height: 44px;
             border-radius: 50%;
@@ -206,7 +210,7 @@
             backdrop-filter: blur(8px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             transition: all 0.25s ease;
-            
+            padding-bottom: 2px !important;
         }
 
         .ui-toggle-btn:hover {
@@ -776,36 +780,52 @@
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 6px 16px rgba(56, 189, 248, 0.4);
         }
-        /* 🌟 手機版專屬：避免音樂播放器與相機按鈕遮擋《無限元素》標題 🌟 */
+        /* 🌟 手機版專屬：將按鈕移至左下方（相機按鈕在最左外側，音樂按鈕在其右側） 🌟 */
         @media (max-width: 640px) {
-            /* 1. 讓頂部標題與內文區塊往下推，避免被固定在頂部的按鈕壓到 */
+            /* 1. 標題保持原本最上方位置 */
             .header {
-                margin-top: 50px !important;
+                margin-top: 20px !important;
             }
 
-            /* 2. 稍微縮小標題字級，避免手機上太寬擠到兩側 */
             .main-title {
-                font-size: 1.6rem !important;
+                font-size: 1.75rem !important;
             }
 
-            /* 3. 手機版音樂播放器與相機按鈕間距微調 */
-            .music-player-container {
-                right: 66px !important;
-                top: 16px !important;
-            }
-
+            /* 2. 隱藏 UI 相機按鈕：放在畫面左下角最外側 */
             .ui-toggle-btn {
-                top: 16px !important;
-                right: 14px !important;
+                top: auto !important;
+                bottom: 20px !important;
+                left: 16px !important; /* 釘在左側邊緣 16px */
+                right: auto !important;
+                transform: none !important;
             }
 
-            /* 4. 手機版隱藏歌名，只留音樂按鈕與上下首控制，避免橫向佔據太大空間 */
+            .ui-toggle-btn:hover {
+                transform: scale(1.1) !important;
+            }
+
+            /* 3. 音樂播放器：放在相機按鈕右側（相機按鈕寬 44px + 邊距 16px + 間距 8px = 68px） */
+            .music-player-container {
+                top: auto !important;
+                bottom: 20px !important;
+                left: 68px !important; /* 緊貼在相機按鈕右側 */
+                right: auto !important;
+                transform: none !important;
+            }
+
+            /* 手機版隱藏長歌名，維持極簡圖示按鈕組 */
             .music-title-text {
                 display: none !important;
             }
 
             .music-info-panel {
                 padding: 4px 8px !important;
+            }
+
+            /* 4. 回到頂部按鈕：順延微調，放在畫面右下角，避免與左側按鈕衝突 */
+            .back-to-top-btn {
+                bottom: 20px !important;
+                right: 16px !important;
             }
         }
     </style>
