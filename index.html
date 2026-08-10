@@ -215,25 +215,28 @@
             transform: scale(1.1);
         }
 
-        /* 🌟 純淨觀圖模式：隱藏卡片與彈窗，但保留頂部標題與精神短語 🌟 */
+        /* 🌟 純淨觀圖模式：一次性順暢隱藏所有卡片、標題與按鈕 🌟 */
         body.ui-hidden .story-intro,
         body.ui-hidden .event-card,
         body.ui-hidden .section-title,
         body.ui-hidden .link-list,
         body.ui-hidden .footer,
+        body.ui-hidden .music-player-container,
+        body.ui-hidden .back-to-top-btn,
         body.ui-hidden .event-modal-overlay,
         body.ui-hidden .char-modal-overlay,
-        body.ui-hidden .schedule-modal-overlay,
-        body.ui-hidden .back-to-top-btn {
+        body.ui-hidden .schedule-modal-overlay {
             opacity: 0 !important;
+            visibility: hidden !important;
             pointer-events: none !important;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
         /* 強制確保頂部標題與副標題在觀圖模式下依然清晰可見 */
         body.ui-hidden .main-title,
         body.ui-hidden .tagline {
             opacity: 1 !important;
+            visibility: visible !important;
             transition: opacity 0.4s ease;
         }
 
@@ -578,23 +581,52 @@
             overflow-y: auto;
         }
 
-        /* 🌟 1. 直向手機（寬度小於 640px）一律隱藏側邊欄 🌟 */
+        /* 🌟 手機版專屬：將音樂與相機按鈕移至底部中間懸浮 🌟 */
         @media (max-width: 640px) {
-            .event-sidebar {
-                display: none !important;
+            /* 1. 恢復頂部標題正常留白 */
+            .header {
+                margin-top: 20px !important;
             }
-            .event-main-body {
-                padding: 18px 16px;
-            }
-        }
 
-        /* 🌟 2. 橫向手機（高度小於 500px）不論寬度多寬，也一律隱藏側邊欄 🌟 */
-        @media (max-height: 500px) {
-            .event-sidebar {
+            .main-title {
+                font-size: 1.75rem !important;
+            }
+
+            /* 2. 相機隱藏 UI 按鈕移至手機底部中間偏右懸浮 */
+            .ui-toggle-btn {
+                top: auto !important;
+                bottom: 20px !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(35px) !important; /* 置中向右偏移 */
+            }
+
+            .ui-toggle-btn:hover {
+                transform: translateX(35px) scale(1.1) !important;
+            }
+
+            /* 3. 音樂播放器移至手機底部中間偏左懸浮 */
+            .music-player-container {
+                top: auto !important;
+                bottom: 20px !important;
+                left: 50% !important;
+                right: auto !important;
+                transform: translateX(-110px) !important; /* 置中向左偏移 */
+            }
+
+            /* 手機版隱藏歌名，保持極簡圖示按鈕組 */
+            .music-title-text {
                 display: none !important;
             }
-            .event-main-body {
-                padding: 14px 16px;
+
+            .music-info-panel {
+                padding: 4px 8px !important;
+            }
+
+            /* 4. 手機版回到頂部按鈕微調，避免與底部懸浮按鈕重疊 */
+            .back-to-top-btn {
+                bottom: 78px !important;
+                right: 16px !important;
             }
         }
 
