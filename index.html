@@ -5,11 +5,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>《無限元素》</title>
     <style>
+        /* 🌟 浮動音樂播放器樣式 🌟 */
+        .music-player-container {
+            position: fixed;
+            top: 18px;
+            right: 70px; /* 放在相機按鈕左側 */
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .music-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            color: #38bdf8;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: all 0.25s ease;
+            line-height: 1 !important;
+            padding: 0 !important;
+        }
+
+        .music-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            transform: scale(1.05);
+        }
+
+        .music-info-panel {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 20px;
+            padding: 4px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .music-title-text {
+            font-size: 0.75rem;
+            color: #e2e8f0;
+            max-width: 110px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .music-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .music-sub-btn {
+            background: none;
+            border: none;
+            color: #38bdf8;
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 2px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .music-sub-btn:hover {
+            opacity: 1;
+        }
+
+        /* 手機版適配：若螢幕太窄可自動縮小歌名 */
+        @media (max-width: 480px) {
+            .music-title-text {
+                max-width: 70px;
+            }
+        }
+        /* 🌟 角色圖鑑篩選按鈕樣式 🌟 */
+        .char-filter-container {
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.75);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 700;
+            min-width: 68px;
+            flex-shrink: 0;
+        }
+
+        .filter-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .filter-btn.active {
+            background: #0284c7;
+            color: #ffffff;
+            font-weight: 700;
+            border-color: #38bdf8;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+        }
         /* === 全局樣式設定 === */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-text-size-adjust: 100%; /* 🌟 核心：禁止 iOS/Android 在橫向時自動放大字體 */
+            text-size-adjust: 100%;
         }
 
         body {
@@ -75,6 +206,7 @@
             backdrop-filter: blur(8px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             transition: all 0.25s ease;
+            
         }
 
         .ui-toggle-btn:hover {
@@ -476,6 +608,7 @@
             white-space: pre-line;
             overflow-y: auto;
             flex-grow: 1;
+            -webkit-text-size-adjust: none;
         }
 
         /* 🌟 角色彈窗 4 組標籤 (Tags) 樣式 🌟 */
@@ -584,6 +717,21 @@
 
     <!-- 🌟 右上角懸浮「隱藏 UI 眼睛按鈕（純淨觀圖模式）」 🌟 -->
 <button id="ui-toggle-btn" class="ui-toggle-btn" onclick="toggleUI()" title="觀看全幅背景圖">📷</button>
+<!-- 🌟 浮動音樂播放器 🌟 -->
+<div class="music-player-container">
+    <button id="music-toggle-btn" class="music-btn" onclick="togglePlayMusic()" title="播放/暫停背景音樂">🎵</button>
+    
+    <div id="music-info-panel" class="music-info-panel">
+        <span id="music-title" class="music-title-text">點擊播放 BGM</span>
+        <div class="music-controls">
+            <button class="music-sub-btn" onclick="playPrevTrack()" title="上一首">⏮</button>
+            <button class="music-sub-btn" onclick="playNextTrack()" title="下一首">⏭</button>
+        </div>
+    </div>
+</div>
+
+<!-- HTML5 音訊標籤 -->
+<audio id="bgm-audio" onended="playNextTrack()"></audio>
 
     <div id="main-container" class="container">
         <!-- 頂部標題與精神短語 -->
@@ -661,7 +809,7 @@
             </div>
         </div>
 
-        <!-- 社群內容與圖鑑 -->
+<!-- 社群內容與圖鑑 -->
         <div class="section-title">角色圖鑑</div>
         <div class="link-list">
             <details class="link-card-dropdown">
@@ -674,88 +822,94 @@
                     <div class="arrow-icon">▼</div>
                 </summary>
 
-                <div class="avatar-grid">
-                    <div class="avatar-item" onclick="openCharModal('lanlan')"><img src="images/lanlan.jpg" alt="嵐懶"><span class="avatar-label">嵐懶</span></div>
-                    <div class="avatar-item" onclick="openCharModal('kulu')"><img src="images/kulu.jpg" alt="克爾"><span class="avatar-label">克爾</span></div>
-                    <div class="avatar-item" onclick="openCharModal('arc')"><img src="images/arc.jpg" alt="亞爾克"><span class="avatar-label">亞爾克</span></div>
-                    <div class="avatar-item" onclick="openCharModal('roar')"><img src="images/roar.jpg" alt="洛爾"><span class="avatar-label">洛爾</span></div>
-                    <div class="avatar-item" onclick="openCharModal('kokumei')"><img src="images/kokumei.jpg" alt="克明"><span class="avatar-label">克明</span></div>
-                    <div class="avatar-item" onclick="openCharModal('koushou')"><img src="images/koushou.jpg" alt="高翔"><span class="avatar-label">高翔</span></div>
-                    <div class="avatar-item" onclick="openCharModal('takawa')"><img src="images/takawa.jpg" alt="高和"><span class="avatar-label">高和</span></div>
-                    <div class="avatar-item" onclick="openCharModal('igarashi')"><img src="images/igarashi.jpg" alt="五十嵐"><span class="avatar-label">五十嵐</span></div>
-                    <div class="avatar-item" onclick="openCharModal('area')"><img src="images/area.jpg" alt="艾瑞爾"><span class="avatar-label">艾瑞爾</span></div>
-                    <div class="avatar-item" onclick="openCharModal('wakima')"><img src="images/wakima.jpg" alt="瓦奇瑪"><span class="avatar-label">瓦奇瑪</span></div>
-                    <div class="avatar-item" onclick="openCharModal('volt')"><img src="images/volt.jpg" alt="弗爾特"><span class="avatar-label">弗爾特</span></div>
-                    <div class="avatar-item" onclick="openCharModal('proto')"><img src="images/proto.jpg" alt="普洛特"><span class="avatar-label">普洛特</span></div>
-                    <div class="avatar-item" onclick="openCharModal('zoma')"><img src="images/zoma.jpg" alt="詛碼"><span class="avatar-label">詛碼</span></div>
-                    <div class="avatar-item" onclick="openCharModal('veil')"><img src="images/veil.jpg" alt="白珥"><span class="avatar-label">白珥</span></div>
-                    <div class="avatar-item" onclick="openCharModal('ultima')"><img src="images/ultima.jpg" alt="阿爾提瑪"><span class="avatar-label">阿爾提瑪</span></div>
-                    <div class="avatar-item" onclick="openCharModal('jareth')"><img src="images/jareth.jpg" alt="賈瑞斯"><span class="avatar-label">賈瑞斯</span></div>
-                    <div class="avatar-item" onclick="openCharModal('zarion')"><img src="images/zarion.jpg" alt="澤里恩"><span class="avatar-label">澤里恩</span></div>
-                    <div class="avatar-item" onclick="openCharModal('kuzure')"><img src="images/kuzure.jpg" alt="崩"><span class="avatar-label">崩</span></div>
-                    <div class="avatar-item" onclick="openCharModal('osae')"><img src="images/osae.jpg" alt="制"><span class="avatar-label">制</span></div>
-                    <div class="avatar-item" onclick="openCharModal('kage')"><img src="images/kage.jpg" alt="影"><span class="avatar-label">影</span></div>
-                    <div class="avatar-item" onclick="openCharModal('rub')"><img src="images/rub.jpg" alt="劫"><span class="avatar-label">劫</span></div>
-                    <div class="avatar-item" onclick="openCharModal('electric')"><img src="images/electric.jpg" alt="伊蕾琪"><span class="avatar-label">伊蕾琪</span></div>
-                    <div class="avatar-item" onclick="openCharModal('tia')"><img src="images/tia.jpg" alt="提婭"><span class="avatar-label">提婭</span></div>
-                    <div class="avatar-item" onclick="openCharModal('rofena')"><img src="images/rofena.jpg" alt="羅菲娜"><span class="avatar-label">羅菲娜</span></div>
-                    <div class="avatar-item" onclick="openCharModal('arashiyama')"><img src="images/arashiyama.jpg" alt="嵐山"><span class="avatar-label">嵐山</span></div>
-                    <div class="avatar-item" onclick="openCharModal('fox')"><img src="images/fox.jpg" alt="睿策樺霖"><span class="avatar-label">睿策樺林</span></div>
-                    <div class="avatar-item" onclick="openCharModal('sugar')"><img src="images/sugar.jpg" alt="霜糖紗母"><span class="avatar-label">霜糖紗母</span></div>
-                    <div class="avatar-item" onclick="openCharModal('deer')"><img src="images/deer.jpg" alt="繪靈鹿茲"><span class="avatar-label">繪靈鹿茲</span></div>
-                    <div class="avatar-item" onclick="openCharModal('owl')"><img src="images/owl.jpg" alt="夜瞳梟賢"><span class="avatar-label">夜瞳梟賢</span></div>
-                    <div class="avatar-item" onclick="openCharModal('teiner')"><img src="images/teiner.jpg" alt="翠芽泰納"><span class="avatar-label">翠芽泰納</span></div>
-                    <div class="avatar-item" onclick="openCharModal('doutou')"><img src="images/doutou.jpg" alt="怒濤銳步"><span class="avatar-label">怒濤銳步</span></div>
-                    <div class="avatar-item" onclick="openCharModal('kaiden')"><img src="images/kaiden.jpg" alt="凱登"><span class="avatar-label">凱登</span></div>
-                    <div class="avatar-item" onclick="openCharModal('gousuke')"><img src="images/gousuke.jpg" alt="豪助"><span class="avatar-label">豪助</span></div>
-                    <div class="avatar-item" onclick="openCharModal('chitar')"><img src="images/chitar.jpg" alt="瞬介"><span class="avatar-label">瞬介</span></div>
-                    <div class="avatar-item" onclick="openCharModal('horse')"><img src="images/horse.jpg" alt="颯太"><span class="avatar-label">颯太</span></div>
-                    <div class="avatar-item" onclick="openCharModal('raku')"><img src="images/raku.jpg" alt="埒"><span class="avatar-label">埒</span></div>
-                    <div class="avatar-item" onclick="openCharModal('garoz')"><img src="images/garoz.jpg" alt="犺"><span class="avatar-label">犺</span></div>
-                    <div class="avatar-item" onclick="openCharModal('sinn')"><img src="images/sinn.jpg" alt="泊信"><span class="avatar-label">泊信</span></div>
-                    <div class="avatar-item" onclick="openCharModal('gorilla')"><img src="images/gorilla.jpg" alt="烈塵巡衛"><span class="avatar-label">烈塵巡衛</span></div>
-                    <div class="avatar-item" onclick="openCharModal('boar')"><img src="images/boar.jpg" alt="鍛魂獷牙"><span class="avatar-label">鍛魂獷牙</span></div>
-                    <div class="avatar-item" onclick="openCharModal('racoon')"><img src="images/racoon.jpg" alt="影識秘爪"><span class="avatar-label">影識秘爪</span></div>
-                    <div class="avatar-item" onclick="openCharModal('whissel')"><img src="images/whissel.jpg" alt="旭言"><span class="avatar-label">旭言</span></div>
-                    <div class="avatar-item" onclick="openCharModal('rin')"><img src="images/rin.jpg" alt="嶙安"><span class="avatar-label">嶙安</span></div>
-                    <div class="avatar-item" onclick="openCharModal('cat')"><img src="images/cat.jpg" alt="瑟莉雅"><span class="avatar-label">瑟莉雅</span></div>
-                    <div class="avatar-item" onclick="openCharModal('reva')"><img src="images/reva.jpg" alt="雷瓦維那"><span class="avatar-label">雷瓦維那</span></div>
-                    <div class="avatar-item" onclick="openCharModal('leon')"><img src="images/leon.jpg" alt="萊昂維那"><span class="avatar-label">萊昂維那</span></div>
-                    <div class="avatar-item" onclick="openCharModal('tormunn')"><img src="images/tormunn.jpg" alt="拓穆恩"><span class="avatar-label">拓穆恩</span></div>
-                    <div class="avatar-item" onclick="openCharModal('grossa')"><img src="images/grossa.jpg" alt="格洛薩"><span class="avatar-label">格洛薩</span></div>
-                    <div class="avatar-item" onclick="openCharModal('igrahhan')"><img src="images/igrahhan.jpg" alt="伊格拉罕"><span class="avatar-label">伊格拉罕</span></div>
-                    <div class="avatar-item" onclick="openCharModal('touphrin')"><img src="images/touphrin.jpg" alt="塔芙琳"><span class="avatar-label">塔芙琳</span></div>
+                <!-- 🌟 陣營與能力類型雙重篩選按鈕區塊 🌟 -->
+                <div class="char-filter-container">
+                    <!-- 第一排：陣營篩選 -->
+                    <div class="filter-group">
+                        <span class="filter-label">所屬陣營：</span>
+                        <button class="filter-btn active" onclick="filterCharacters('faction', 'all', this)">全部</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '十三元素', this)">十三元素</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '上古元素', this)">上古元素</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '野性之聲', this)">野性之聲</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '艾瑞爾軍', this)">艾瑞爾軍</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '聯合陣線', this)">聯合陣線</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '誓奪爪盟', this)">誓奪爪盟</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '詛碼團', this)">詛碼團</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '聚學舍', this)">聚學舍</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '狼人村', this)">狼人村</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '貓族村', this)">貓族村</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '晝光時報', this)">晝光時報</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '砧鍛坊', this)">砧鍛坊</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '無盡元素', this)">無盡元素</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '白原行族', this)">白原行族</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '霸潮盟', this)">霸潮盟</button>
+                        <button class="filter-btn" onclick="filterCharacters('faction', '維那嶺', this)">維那嶺</button>
+                    </div>
+
+                    <!-- 第二排：能力類型篩選 -->
+                    <div class="filter-group" style="margin-top: 8px;">
+                        <span class="filter-label">能力類型：</span>
+                        <button class="filter-btn active" onclick="filterCharacters('type', 'all', this)">全部</button>
+                        <button class="filter-btn" onclick="filterCharacters('type', '賦形者', this)">元素賦形者</button>
+                        <button class="filter-btn" onclick="filterCharacters('type', '使用者', this)">元素使用者</button>
+                        <button class="filter-btn" onclick="filterCharacters('type', '地脈操流者', this)">地脈操流者</button>
+                        <button class="filter-btn" onclick="filterCharacters('type', 'none', this)">無能力者</button>
+                    </div>
+                </div>
+
+                <div class="avatar-grid" id="avatar-grid">
+                    <div class="avatar-item" data-key="lanlan" onclick="openCharModal('lanlan')"><img src="images/lanlan.jpg" alt="嵐懶"><span class="avatar-label">嵐懶</span></div>
+                    <div class="avatar-item" data-key="kulu" onclick="openCharModal('kulu')"><img src="images/kulu.jpg" alt="克爾"><span class="avatar-label">克爾</span></div>
+                    <div class="avatar-item" data-key="arc" onclick="openCharModal('arc')"><img src="images/arc.jpg" alt="亞爾克"><span class="avatar-label">亞爾克</span></div>
+                    <div class="avatar-item" data-key="roar" onclick="openCharModal('roar')"><img src="images/roar.jpg" alt="洛爾"><span class="avatar-label">洛爾</span></div>
+                    <div class="avatar-item" data-key="kokumei" onclick="openCharModal('kokumei')"><img src="images/kokumei.jpg" alt="克明"><span class="avatar-label">克明</span></div>
+                    <div class="avatar-item" data-key="koushou" onclick="openCharModal('koushou')"><img src="images/koushou.jpg" alt="高翔"><span class="avatar-label">高翔</span></div>
+                    <div class="avatar-item" data-key="takawa" onclick="openCharModal('takawa')"><img src="images/takawa.jpg" alt="高和"><span class="avatar-label">高和</span></div>
+                    <div class="avatar-item" data-key="igarashi" onclick="openCharModal('igarashi')"><img src="images/igarashi.jpg" alt="五十嵐"><span class="avatar-label">五十嵐</span></div>
+                    <div class="avatar-item" data-key="area" onclick="openCharModal('area')"><img src="images/area.jpg" alt="艾瑞爾"><span class="avatar-label">艾瑞爾</span></div>
+                    <div class="avatar-item" data-key="wakima" onclick="openCharModal('wakima')"><img src="images/wakima.jpg" alt="瓦奇瑪"><span class="avatar-label">瓦奇瑪</span></div>
+                    <div class="avatar-item" data-key="volt" onclick="openCharModal('volt')"><img src="images/volt.jpg" alt="弗爾特"><span class="avatar-label">弗爾特</span></div>
+                    <div class="avatar-item" data-key="proto" onclick="openCharModal('proto')"><img src="images/proto.jpg" alt="普洛特"><span class="avatar-label">普洛特</span></div>
+                    <div class="avatar-item" data-key="zoma" onclick="openCharModal('zoma')"><img src="images/zoma.jpg" alt="詛碼"><span class="avatar-label">詛碼</span></div>
+                    <div class="avatar-item" data-key="veil" onclick="openCharModal('veil')"><img src="images/veil.jpg" alt="白珥"><span class="avatar-label">白珥</span></div>
+                    <div class="avatar-item" data-key="ultima" onclick="openCharModal('ultima')"><img src="images/ultima.jpg" alt="阿爾提瑪"><span class="avatar-label">阿爾提瑪</span></div>
+                    <div class="avatar-item" data-key="jareth" onclick="openCharModal('jareth')"><img src="images/jareth.jpg" alt="賈瑞斯"><span class="avatar-label">賈瑞斯</span></div>
+                    <div class="avatar-item" data-key="zarion" onclick="openCharModal('zarion')"><img src="images/zarion.jpg" alt="澤里恩"><span class="avatar-label">澤里恩</span></div>
+                    <div class="avatar-item" data-key="kuzure" onclick="openCharModal('kuzure')"><img src="images/kuzure.jpg" alt="崩"><span class="avatar-label">崩</span></div>
+                    <div class="avatar-item" data-key="osae" onclick="openCharModal('osae')"><img src="images/osae.jpg" alt="制"><span class="avatar-label">制</span></div>
+                    <div class="avatar-item" data-key="kage" onclick="openCharModal('kage')"><img src="images/kage.jpg" alt="影"><span class="avatar-label">影</span></div>
+                    <div class="avatar-item" data-key="rub" onclick="openCharModal('rub')"><img src="images/rub.jpg" alt="劫"><span class="avatar-label">劫</span></div>
+                    <div class="avatar-item" data-key="electric" onclick="openCharModal('electric')"><img src="images/electric.jpg" alt="伊蕾琪"><span class="avatar-label">伊蕾琪</span></div>
+                    <div class="avatar-item" data-key="tia" onclick="openCharModal('tia')"><img src="images/tia.jpg" alt="提婭"><span class="avatar-label">提婭</span></div>
+                    <div class="avatar-item" data-key="rofena" onclick="openCharModal('rofena')"><img src="images/rofena.jpg" alt="羅菲娜"><span class="avatar-label">羅菲娜</span></div>
+                    <div class="avatar-item" data-key="arashiyama" onclick="openCharModal('arashiyama')"><img src="images/arashiyama.jpg" alt="嵐山"><span class="avatar-label">嵐山</span></div>
+                    <div class="avatar-item" data-key="fox" onclick="openCharModal('fox')"><img src="images/fox.jpg" alt="睿策樺霖"><span class="avatar-label">睿策樺霖</span></div>
+                    <div class="avatar-item" data-key="sugar" onclick="openCharModal('sugar')"><img src="images/sugar.jpg" alt="霜糖紗母"><span class="avatar-label">霜糖紗母</span></div>
+                    <div class="avatar-item" data-key="deer" onclick="openCharModal('deer')"><img src="images/deer.jpg" alt="繪靈鹿茲"><span class="avatar-label">繪靈鹿茲</span></div>
+                    <div class="avatar-item" data-key="owl" onclick="openCharModal('owl')"><img src="images/owl.jpg" alt="夜瞳梟賢"><span class="avatar-label">夜瞳梟賢</span></div>
+                    <div class="avatar-item" data-key="teiner" onclick="openCharModal('teiner')"><img src="images/teiner.jpg" alt="翠芽泰納"><span class="avatar-label">翠芽泰納</span></div>
+                    <div class="avatar-item" data-key="doutou" onclick="openCharModal('doutou')"><img src="images/doutou.jpg" alt="怒濤銳步"><span class="avatar-label">怒濤銳步</span></div>
+                    <div class="avatar-item" data-key="kaiden" onclick="openCharModal('kaiden')"><img src="images/kaiden.jpg" alt="凱登"><span class="avatar-label">凱登</span></div>
+                    <div class="avatar-item" data-key="gousuke" onclick="openCharModal('gousuke')"><img src="images/gousuke.jpg" alt="豪助"><span class="avatar-label">豪助</span></div>
+                    <div class="avatar-item" data-key="chitar" onclick="openCharModal('chitar')"><img src="images/chitar.jpg" alt="瞬介"><span class="avatar-label">瞬介</span></div>
+                    <div class="avatar-item" data-key="horse" onclick="openCharModal('horse')"><img src="images/horse.jpg" alt="颯太"><span class="avatar-label">颯太</span></div>
+                    <div class="avatar-item" data-key="raku" onclick="openCharModal('raku')"><img src="images/raku.jpg" alt="埒"><span class="avatar-label">埒</span></div>
+                    <div class="avatar-item" data-key="garoz" onclick="openCharModal('garoz')"><img src="images/garoz.jpg" alt="犺"><span class="avatar-label">犺</span></div>
+                    <div class="avatar-item" data-key="sinn" onclick="openCharModal('sinn')"><img src="images/sinn.jpg" alt="泊信"><span class="avatar-label">泊信</span></div>
+                    <div class="avatar-item" data-key="gorilla" onclick="openCharModal('gorilla')"><img src="images/gorilla.jpg" alt="烈塵巡衛"><span class="avatar-label">烈塵巡衛</span></div>
+                    <div class="avatar-item" data-key="boar" onclick="openCharModal('boar')"><img src="images/boar.jpg" alt="鍛魂獷牙"><span class="avatar-label">鍛魂獷牙</span></div>
+                    <div class="avatar-item" data-key="racoon" onclick="openCharModal('racoon')"><img src="images/racoon.jpg" alt="影識秘爪"><span class="avatar-label">影識秘爪</span></div>
+                    <div class="avatar-item" data-key="whissel" onclick="openCharModal('whissel')"><img src="images/whissel.jpg" alt="旭言"><span class="avatar-label">旭言</span></div>
+                    <div class="avatar-item" data-key="rin" onclick="openCharModal('rin')"><img src="images/rin.jpg" alt="嶙安"><span class="avatar-label">嶙安</span></div>
+                    <div class="avatar-item" data-key="cat" onclick="openCharModal('cat')"><img src="images/cat.jpg" alt="瑟莉雅"><span class="avatar-label">瑟莉雅</span></div>
+                    <div class="avatar-item" data-key="reva" onclick="openCharModal('reva')"><img src="images/reva.jpg" alt="雷瓦維那"><span class="avatar-label">雷瓦維那</span></div>
+                    <div class="avatar-item" data-key="leon" onclick="openCharModal('leon')"><img src="images/leon.jpg" alt="萊昂維那"><span class="avatar-label">萊昂維那</span></div>
+                    <div class="avatar-item" data-key="tormunn" onclick="openCharModal('tormunn')"><img src="images/tormunn.jpg" alt="拓穆恩"><span class="avatar-label">拓穆恩</span></div>
+                    <div class="avatar-item" data-key="grossa" onclick="openCharModal('grossa')"><img src="images/grossa.jpg" alt="格洛薩"><span class="avatar-label">格洛薩</span></div>
+                    <div class="avatar-item" data-key="igrahhan" onclick="openCharModal('igrahhan')"><img src="images/igrahhan.jpg" alt="伊格拉罕"><span class="avatar-label">伊格拉罕</span></div>
+                    <div class="avatar-item" data-key="touphrin" onclick="openCharModal('touphrin')"><img src="images/touphrin.jpg" alt="塔芙琳"><span class="avatar-label">塔芙琳</span></div>
                 </div>
             </details>
-        </div>
-
-        <!-- 社群專題與賣場連結 -->
-        <div class="section-title">社群專題</div>
-        <div class="link-list">
-            <a href="https://www.facebook.com/profile.php?id=61572883663242" target="_blank" class="link-card">
-                <img src="images/zarion.jpg" alt="澤里恩" class="avatar">
-                <div class="link-info">
-                    <div class="link-title">Facebook 官方粉絲專頁</div>
-                    <div class="link-desc">第一時間獲取最新消息</div>
-                </div>
-                <div class="arrow">➔</div>
-            </a>
-            <a href="https://myship.7-11.com.tw/general/detail/GM2608074156966" target="_blank" class="link-card">
-                <img src="images/proto_beast.jpg" alt="普洛特" class="avatar">
-                <div class="link-info">
-                    <div class="link-title">7-11 賣貨便周邊賣場</div>
-                    <div class="link-desc">精美透卡與限量特典貼紙現貨發售中！</div>
-                </div>
-                <div class="arrow">➔</div>
-            </a>
-            <a href="http://patreon.com/rhoxine" target="_blank" class="link-card">
-                <img src="images/ura.jpg" alt="克爾" class="avatar">
-                <div class="link-info">
-                    <div class="link-title">Patreon 專區</div>
-                    <div class="link-desc">收錄《無限元素》的相關插圖作品集，以及角色們不曾公開的一面</div>
-                </div>
-                <div class="arrow">➔</div>
-            </a>
         </div>
 
         <!-- 小說閱讀平台 -->
@@ -936,6 +1090,113 @@
     </div>
     <!-- 🌟 JS 控制腳本 🌟 -->
     <script>
+
+
+// ==========================================
+        // 🎵 背景音樂播放器 logic
+        // ==========================================
+        const playlist = [
+            {
+                title: "嵐光城的早晨慢跑",
+                src: "music/bgm1.mp3"
+            },
+            {
+                title: "尼爾桑夏日時光",
+                src: "music/bgm2.mp3"
+            },
+            {
+                title: "聚學舍午後一隅",
+                src: "music/bgm3.mp3"
+            },
+            {
+                title: "艾瑞爾城市政廳",
+                src: "music/bgm4.mp3"
+            },
+            {
+                title: "蕾寶來電",
+                src: "music/bgm5.mp3"
+            }
+        ];
+
+        let currentTrackIndex = 0;
+        let isMusicPlaying = false;
+
+        function loadTrack(index) {
+            const audio = document.getElementById('bgm-audio');
+            const titleElem = document.getElementById('music-title');
+            
+            if (playlist[index] && audio) {
+                audio.src = playlist[index].src;
+                audio.load(); // 強制重新載入檔案
+                if (titleElem) {
+                    titleElem.innerText = playlist[index].title;
+                }
+            }
+        }
+
+        function togglePlayMusic() {
+            const audio = document.getElementById('bgm-audio');
+            const btn = document.getElementById('music-toggle-btn');
+
+            if (!audio) {
+                alert("找不到 <audio id='bgm-audio'> 標籤，請檢查 HTML！");
+                return;
+            }
+
+            // 初次點擊若尚未載入 src，先載入第一首
+            if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.href) {
+                loadTrack(currentTrackIndex);
+        }
+
+            if (isMusicPlaying) {
+                audio.pause();
+                btn.innerText = "🎵";
+                btn.style.borderColor = "rgba(56, 189, 248, 0.5)";
+                isMusicPlaying = false;
+            } else {
+                // 嘗試播放音樂
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        btn.innerText = "⏸";
+                        btn.style.borderColor = "#34d399"; // 播放中變綠色
+                        isMusicPlaying = true;
+                    }).catch(error => {
+                        console.error("音樂播放失敗：", error);
+                        alert(`無法播放音樂！\n可能原因：\n1. 找不到檔案 (${playlist[currentTrackIndex].src})\n2. 檔案格式不支援\n3. 瀏覽器阻擋自動播放`);
+                    });
+                }
+            }
+        }
+
+        function playNextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            
+            const audio = document.getElementById('bgm-audio');
+            if (isMusicPlaying && audio) {
+                audio.play().catch(err => console.log("切換下一首失敗：", err));
+            }
+        }
+
+        function playPrevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrackIndex);
+            
+            const audio = document.getElementById('bgm-audio');
+            if (isMusicPlaying && audio) {
+                audio.play().catch(err => console.log("切換上一首失敗：", err));
+            }
+        }
+
+        // 頁面載入時初始化預設歌名
+        window.addEventListener('DOMContentLoaded', () => {
+            const titleElem = document.getElementById('music-title');
+            if (titleElem && playlist[0]) {
+                titleElem.innerText = playlist[0].title;
+            }
+        });
 // === 角色專屬資料庫（已將長篇介紹完整照搬，並預留 4 組 Tag 供填寫） ===
         const characterData = {
             "lanlan": { 
@@ -943,7 +1204,7 @@
                 quote: "「還是等我不懶的時候吧……」",
                 tags: {
                     chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐", "無盡探途"],
-                    faction: ["野性之聲", "無盡元素"],
+                    faction: ["野性之聲", "無盡元素", "上古元素", "聯合陣線"],
                     type: ["無名元素賦形者", "權能：重生 / 連結"],
                     element: ["火", "風"]
                 },
@@ -965,7 +1226,7 @@
                 quote: "「你們這些人類，我恨死了！」",
                 tags: {
                     chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"],
-                    faction: ["野性之聲", "十三元素"],
+                    faction: ["野性之聲", "十三元素", "狼人村"],
                     type: ["融元素賦形者", "權能：理解 / 迫察"],
                     element: ["火", "雷"]
                 },
@@ -1027,7 +1288,7 @@
             "kokumei": { 
                 name: "克明", 
                 quote: "「我會盡村長之責攜手抵抗威脅，也會開啟與外族共存的新時代！」",
-                tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["野性之聲", "十三元素"], type: ["沌元素賦形者", "權能：混沌 / 懾魂"], element: ["闇"] },
+                tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["野性之聲", "十三元素", "狼人村"], type: ["沌元素賦形者", "權能：混沌 / 懾魂"], element: ["闇"] },
                 bgImage: "images/kokumei_bg.jpg", 
                 desc: `克明，沌元素賦形者，同時也是克爾的弟弟。他個性溫和而沉穩，與狼人村內狩獵派獵者對人類普遍抱持警戒的態度不同，克明對人類懷有純粹而強烈的好奇心。他率先向身為人類的高翔伸出友誼之手，跨出打破種族隔閡的第一步。
 
@@ -1042,7 +1303,7 @@
             "koushou": { 
                 name: "高翔", 
                 quote: "「上次我讓你離我而去。但這一次……我要把你帶回身邊！」",
-                tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["野性之聲", "十三元素"], type: ["極元素賦形者", "權能：極限 / 昇華"], element: ["風", "水", "火"] },
+                tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["野性之聲", "十三元素", "狼人村"], type: ["極元素賦形者", "權能：極限 / 昇華"], element: ["風", "水", "火"] },
                 bgImage: "images/koushou_bg.jpg", 
                 beastBgImage: "images/koushou_beast_bg.jpg", 
                 desc: `高翔，極元素賦形者，自幼成長於嵐光村。與性格沉穩的兄長高和不同，他天性外向，熱衷於野外活動。年少時便經常與普洛特學長一同離村探險，在一次次踏入未知的過程中，逐漸愛上了自由而粗獷的野外生活。也因此，在村中幾乎難得一見他的身影，總是把時間花在山林與荒野之間。
@@ -1115,7 +1376,7 @@
             "wakima": { 
                 name: "瓦奇瑪", 
                 quote: "「你這個甜點叛徒，接受本大明神的制裁吧！」",
-                tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["艾瑞爾軍", "十三元素"], type: ["位元素賦形者", "權能：權位 / 適應"], element: ["光"] },
+                tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["艾瑞爾軍", "十三元素", "聯合陣線"], type: ["位元素賦形者", "權能：權位 / 適應"], element: ["光"] },
                 bgImage: "images/wakima_bg.jpg", 
                 desc: `瓦奇瑪，位元素賦形者，鯰魚精族。
 他是眾人與賈瑞斯意志溝通的渠道，負責將龍神的心念連結、轉化為現世行動的媒介。自「薄明之戰」落幕後，瓦奇瑪選擇了與眾不同的道路——他將自身對甜點的極致熱愛與推廣野心昇華為大眾信仰，建立起獨樹一格的「豐漁甘神教」並廣納信徒，以天真又驕傲的「本大明神」自居。
@@ -1127,7 +1388,7 @@
             "volt": { 
                 name: "弗爾特", 
                 quote: "「這裡是任我支配的世界，想耍的花招全都會化為徒勞無用！」",
-                tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["艾瑞爾軍", "十三元素"], type: ["滅元素賦形者", "權能：寂滅 / 洄流"], element: ["闇"] },
+                tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["詛碼團", "十三元素"], type: ["滅元素賦形者", "權能：寂滅 / 洄流"], element: ["闇"] },
                 bgImage: "images/volt_bg.jpg", 
                 desc: `弗爾特，滅元素賦形者。身為詛碼團的幹部，他向來習慣獨自行動，任憑本能中的破壞慾驅使，遊走於人類城鎮與獸人聚落之間肆意毀滅。那段無差別的侵襲，不僅留下遍地殘痕，也促成了洛爾與高和踏上復興之路的契機。
 
@@ -1195,7 +1456,7 @@
             "jareth": { 
                 name: "賈瑞斯", 
                 quote: "「我只想讓你記得一件事，你值得我的重視，這是我沒有後悔過的選擇。」",
-                tags: { chapter: ["薄明之戰", "再契選篇", "荒野焰嵐", "無盡探途"], faction: ["聯合陣線"], type: ["創元素賦形者", "權能：創生 / 賦形"], element: ["火"] },
+                tags: { chapter: ["薄明之戰", "再契選篇", "荒野焰嵐", "無盡探途"], faction: ["聯合陣線", "無盡元素", "上古元素"], type: ["創元素賦形者", "權能：創生 / 賦形"], element: ["火"] },
                 bgImage: "images/jareth_bg.jpg", 
                 desc: `賈瑞斯，創元素賦形者
 
@@ -1214,7 +1475,7 @@
                 quote: "「我……我不會停止閃耀的！」",
                 tags: {
                     chapter: ["聚學舍篇", "再契選篇", "荒野焰嵐", "無盡探途"],
-                    faction: ["野性之聲", "無盡元素"],
+                    faction: ["野性之聲", "無盡元素", "上古元素", "聯合陣線"],
                     type: ["耀元素賦形者", "權能：成長"],
                     element: ["土", "光", "重力"]
                 },
@@ -1234,7 +1495,7 @@
                 quote: "「或許那時……我該回頭看你一眼的。」",
                 tags: {
                     chapter: ["再契選篇", "荒野焰嵐", "無盡探途"],
-                    faction: ["誓奪爪盟", "無盡元素"],
+                    faction: ["誓奪爪盟", "無盡元素", "上古元素"],
                     type: ["崩元素賦形者", "權能：崩壞"],
                     element: ["無"]
                 },
@@ -1254,7 +1515,7 @@
             "osae": { 
                 name: "制", 
                 quote: "「看好了——這可是集結我鬣制工藝匠魂的結晶——《無垠號》！」",
-                tags: { chapter: ["再契選篇", "荒野焰嵐", "無盡探途"], faction: ["誓奪爪盟", "無盡元素"], type: ["制元素賦形者", "權能：壓制 / 汲縮"], element: ["無"] },
+                tags: { chapter: ["再契選篇", "荒野焰嵐", "無盡探途"], faction: ["誓奪爪盟", "無盡元素", "上古元素"], type: ["制元素賦形者", "權能：壓制 / 汲縮"], element: ["無"] },
                 bgImage: "images/osae_bg.jpg", 
                 desc: `制，鬣狗族獸人。身形精悍，常年帶著招牌的壞笑，語調輕快瀟灑。
 
@@ -1271,7 +1532,7 @@
             "kage": { 
                 name: "影", 
                 quote: "「那只是因為我們有點相似罷了，都是享樂至上的玩家。」",
-                tags: { chapter: ["再契選篇", "荒野焰嵐", "無盡探途"], faction: ["誓奪爪盟", "無盡元素"], type: ["影元素賦形者", "權能：變質 / 消融"], element: ["無"] },
+                tags: { chapter: ["再契選篇", "荒野焰嵐", "無盡探途"], faction: ["誓奪爪盟", "無盡元素", "上古元素"], type: ["影元素賦形者", "權能：變質 / 消融"], element: ["無"] },
                 bgImage: "images/kage_bg.jpg", 
                 desc: `影，黑豹族獸人。個性高挑優雅、放蕩不羈，總愛尋找刺激與混亂的樂子，平日裡以玩世不恭、玩世砥流的態度遊走於各方勢力之間。
 
@@ -1292,7 +1553,7 @@
                 form2Label: "⏳ 少年型態",   // 切換至第二型態時顯示的按鈕
                 tags: {
                     chapter: ["再契選篇", "荒野焰嵐", "無盡探途"],
-                    faction: ["誓奪爪盟", "無盡元素"],
+                    faction: ["誓奪爪盟", "無盡元素", "上古元素"],
                     type: ["劫元素賦形者", "權能：奪取"],
                     element: ["無"]
                 },
@@ -1332,7 +1593,7 @@
             "tia": { 
                 name: "提婭", 
                 quote: "「我很期待屬於你自己的音樂會是怎麼樣的，之後一定要讓我聽聽看喔！」",
-                tags: { chapter: ["薄明之戰", "荒野焰嵐"], faction: ["狼人村狩獵派"], type: ["元素使用者"], element: ["冰"] },
+                tags: { chapter: ["薄明之戰", "荒野焰嵐"], faction: ["狼人村"], type: ["元素使用者"], element: ["冰"] },
                 bgImage: "images/tia_bg.jpg", 
                 desc: `獵牙提婭，黑狼女性，元素使用者，也是克爾信賴的左膀右臂。當克爾不在村中時，由她全權統籌防衛與指揮事務，處事冷靜而果斷。
 
@@ -1343,7 +1604,7 @@
             "rofena": { 
                 name: "羅菲娜", 
                 quote: "「有客人啊？怎麼沒有事先遞交申請書，還偏偏選這麼冷僻的入口來拜訪呢？」",
-                tags: { chapter: ["聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["艾瑞爾軍"], type: ["元素使用者"], element: ["土", "風", "光"] },
+                tags: { chapter: ["聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["艾瑞爾軍", "貓族村"], type: ["元素使用者"], element: ["土", "風", "光"] },
                 bgImage: "images/rofena_bg.jpg", 
                 desc: `羅菲娜，獅族女性，畢業於聚學舍並以首席之姿脫穎而出，專精於政治與法學。原本她計畫先累積更多實務經驗，再逐步進入艾瑞爾城市政廳任職。然而一場機緣巧合的邀約，卻讓她得以提前入職，成為這個世界最大證物機關的一員，肩負起比同齡人更為沉重的責任。
 
@@ -1496,7 +1757,7 @@
             "gorilla": { 
                 name: "烈塵巡衛", 
                 quote: "「少廢話。快從我眼前消失，我還有事要忙。」",
-                tags: { chapter: ["再契選篇"], faction: ["誓奪爪盟"], type: ["元素使用者"], element: ["土"] },
+                tags: { chapter: ["再契選篇"], faction: ["誓奪爪盟", "砧鍛坊"], type: ["元素使用者"], element: ["土"] },
                 bgImage: "images/gorilla_bg.jpg", 
                 desc: `烈塵巡衛，黑猩猩族的元素使用者。曾自聚學舍畢業，並獲得僅授予少數人的榮譽校友稱號。
 
@@ -1509,7 +1770,7 @@
             "boar": { 
                 name: "鍛魂獷牙", 
                 quote: "「因為科學、因為效率，就能把我的心血這樣端走？這種事太不講理了。」",
-                tags: { chapter: ["再契選篇"], faction: ["誓奪爪盟"], type: ["元素使用者"], element: ["火", "土"] },
+                tags: { chapter: ["再契選篇"], faction: ["誓奪爪盟", "砧鍛坊"], type: ["元素使用者"], element: ["火", "土"] },
                 bgImage: "images/boar_bg.jpg", 
                 desc: `鍛魂獷牙，野豬族獸人，元素使用者。他曾是聚學舍的校友與技術精湛的工匠，可是在某件事情後脫離聚學舍並隨後加入誓奪爪盟，自此在鍛鐵鎮私下開設了一間專屬於自己的工坊──「砧鍛坊」。
 
@@ -1533,7 +1794,7 @@
             "rin": { 
                 name: "嶙安", 
                 quote: "「如果有一天真的離開這裡，我……」",
-                tags: { chapter: ["再契選篇"], faction: [], type: [], element: [] },
+                tags: { chapter: ["再契選篇"], faction: ["砧鍛坊"], type: [], element: [] },
                 bgImage: "images/rin_bg.jpg", 
                 desc: `嶙安，蜥蜴族獸人，是鍛魂獷牙開設的「砧鍛坊」裡不起眼的底層雜工。他長年在充斥著鐵鏽與煤灰的工坊過著忍耐又壓抑生活，連一次重要工作也沒被指名過，甚至在工坊裡遭到同事搶功、推搡與無情嘲弄。長期的壓榨與羞辱在他心底埋下了極深自卑，讓他無數次否定自己，卻又無比渴望能被看見與承認。
 
@@ -3126,6 +3387,66 @@
                 closeFortuneModal();
             }
         });
+        // ==========================================
+        // 🔍 角色圖鑑雙重篩選邏輯（陣營 x 能力類型）
+        // ==========================================
+        let currentFactionFilter = 'all';
+        let currentTypeFilter = 'all';
+
+        function filterCharacters(category, value, btnElem) {
+            // 1. 更新當前選取的篩選值
+            if (category === 'faction') {
+                currentFactionFilter = value;
+            } else if (category === 'type') {
+                currentTypeFilter = value;
+            }
+
+            // 2. 更新同一排按鈕的高亮狀態 (active class)
+            if (btnElem) {
+                const parentGroup = btnElem.parentElement;
+                parentGroup.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btnElem.classList.add('active');
+            }
+
+            // 3. 走訪所有頭像項目進行雙重條件比對
+            const avatarItems = document.querySelectorAll('#avatar-grid .avatar-item');
+            
+            avatarItems.forEach(item => {
+                const charKey = item.getAttribute('data-key');
+                const char = characterData[charKey];
+
+                if (!char) return;
+
+                // --- 條件 1：陣營比對 ---
+                let factionMatch = false;
+                if (currentFactionFilter === 'all') {
+                    factionMatch = true;
+                } else if (char.tags && char.tags.faction) {
+                    factionMatch = char.tags.faction.includes(currentFactionFilter);
+                }
+
+                // --- 條件 2：能力類型比對 ---
+                let typeMatch = false;
+                if (currentTypeFilter === 'all') {
+                    typeMatch = true;
+                } else if (currentTypeFilter === 'none') {
+                    // 「無能力者」：判斷 tags.type 是否為空，或沒填寫「賦形者/使用者/地脈」
+                    const types = (char.tags && char.tags.type) ? char.tags.type.join('') : '';
+                    typeMatch = !types || (!types.includes('賦形者') && !types.includes('使用者') && !types.includes('地脈'));
+                } else {
+                    // 比對「賦形者」、「使用者」或「地脈操流者」
+                    const types = (char.tags && char.tags.type) ? char.tags.type.join('') : '';
+                    typeMatch = types.includes(currentTypeFilter);
+                }
+
+                // 4. 同時滿足陣營與類型條件才顯示，否則隱藏
+                if (factionMatch && typeMatch) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
     </script>
 </body>
 </html>
