@@ -1616,6 +1616,12 @@
 
         // 🌟 出版排程彈窗控制 🌟
         function openScheduleModal() {
+            // 🌟 3. 開啟出版排程彈窗時重置歸零到頂部 🌟
+            const scheduleModalContent = document.querySelector('.schedule-modal-content');
+            if (scheduleModalContent) scheduleModalContent.scrollTop = 0;
+            
+            const scheduleModalText = document.querySelector('.schedule-modal-content .modal-text');
+            if (scheduleModalText) scheduleModalText.scrollTop = 0;
             document.getElementById('schedule-modal').style.display = 'flex';
         }
 
@@ -1634,7 +1640,13 @@
             const bgImg = (char && char.bgImage) ? char.bgImage : `images/${charKey}_bg.jpg`;
 
             document.getElementById('char-title').innerText = titleName;
-            document.getElementById('char-text').innerText = charDesc;
+// 🌟 1. 每次開啟角色彈窗時，將內文與彈窗本體滾動條歸零（回到頂部） 🌟
+            const charTextElem = document.getElementById('char-text');
+            charTextElem.innerText = charDesc;
+            charTextElem.scrollTop = 0;
+            
+            const charModalContent = document.querySelector('.char-modal-content');
+            if (charModalContent) charModalContent.scrollTop = 0;
             
 // 🌟 動態帶入角色名言（若未填寫名言則自動隱藏該框） 🌟
             const quoteElem = document.getElementById('char-quote');
@@ -2223,7 +2235,13 @@
             const item = announcements[currentIndex];
             document.getElementById('modal-title').innerText = item.title;
             document.getElementById('modal-badge').innerText = item.badge;
-            document.getElementById('modal-text').innerText = item.content;
+// 🌟 2. 每次切換篇章時，將右側內文顯示區重置回到開頭頂部 🌟
+            const modalTextElem = document.getElementById('modal-text');
+            modalTextElem.innerText = item.content;
+            modalTextElem.scrollTop = 0;
+            
+            const mainBodyElem = document.querySelector('.event-main-body');
+            if (mainBodyElem) mainBodyElem.scrollTop = 0;
             document.getElementById('chapter-indicator').innerText = `${currentIndex + 1} / ${announcements.length}`;
             
             document.body.style.setProperty('--bg-image', `url('${item.bgImage}')`);
@@ -2252,6 +2270,26 @@
                 updateModalContent();
             }
         }
+        // 🌟 點擊半透明遮罩背景（彈窗外部）自動關閉彈窗 🌟
+        window.addEventListener('click', function(e) {
+            // 點擊角色彈窗背景
+            const charModal = document.getElementById('char-modal');
+            if (e.target === charModal) {
+                closeCharModal();
+            }
+
+            // 點擊主題進展彈窗背景
+            const eventModal = document.getElementById('event-modal');
+            if (e.target === eventModal) {
+                closeEventModal();
+            }
+
+            // 點擊出版排程彈窗背景
+            const scheduleModal = document.getElementById('schedule-modal');
+            if (e.target === scheduleModal) {
+                closeScheduleModal();
+            }
+        });
     </script>
 </body>
 </html>
