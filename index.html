@@ -1395,6 +1395,7 @@
             
             if (playlist[index] && audio) {
                 audio.src = playlist[index].src;
+                audio.volume = 0.4;
                 audio.load(); // 強制重新載入檔案
                 if (titleElem) {
                     titleElem.innerText = playlist[index].title;
