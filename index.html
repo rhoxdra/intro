@@ -1046,7 +1046,7 @@
                     <img src="images/koushou_beast.jpg" alt="高翔" class="avatar">
                     <div class="link-info">
                         <div class="link-title">角色介紹</div>
-                        <div class="link-desc">展開夥伴圖鑑，點選圖像觀看簡介與專屬大圖</div>
+                        <div class="link-desc">展開夥伴圖鑑，點選圖像觀看簡介與專屬全幅大圖</div>
                     </div>
                     <div class="arrow-icon">▼</div>
                 </summary>
@@ -1257,10 +1257,11 @@
                     <!-- 內文將由 JavaScript 自動帶入 -->
                 </div>
 
+                <!-- 🟢 修改後的程式碼（補上 .chapter-nav 包裹容器） 🟢 -->
                 <div class="chapter-nav">
-                    <button onclick="prevChapter()">◄ 下一篇章</button>
+                    <button id="chapter-prev-btn" onclick="prevChapter()">◄ 上一篇章</button>
                     <span id="chapter-indicator">1 / 1</span>
-                    <button onclick="nextChapter()">上一篇章 ►</button>
+                    <button id="chapter-next-btn" onclick="nextChapter()">下一篇章 ►</button>
                 </div>
             </div>
         </div>
@@ -2825,16 +2826,40 @@
             const item = announcements[currentIndex];
             document.getElementById('modal-title').innerText = item.title;
             document.getElementById('modal-badge').innerText = item.badge;
-// 🌟 2. 每次切換篇章時，將右側內文顯示區重置回到開頭頂部 🌟
+            
+            // 每次切換篇章時，將右側內文顯示區重置回到開頭頂部
             const modalTextElem = document.getElementById('modal-text');
             modalTextElem.innerText = item.content;
             modalTextElem.scrollTop = 0;
             
             const mainBodyElem = document.querySelector('.event-main-body');
             if (mainBodyElem) mainBodyElem.scrollTop = 0;
+            
+            // 更新頁碼指示器 (例如：1 / 10)
             document.getElementById('chapter-indicator').innerText = `${currentIndex + 1} / ${announcements.length}`;
             
             document.body.style.setProperty('--bg-image', `url('${item.bgImage}')`);
+            
+            // 🌟 自動控制按鈕顯示與隱藏 🌟
+            const prevBtn = document.getElementById('chapter-prev-btn'); // ◄ 上一篇章
+            const nextBtn = document.getElementById('chapter-next-btn'); // 下一篇章 ►
+
+            if (prevBtn && nextBtn) {
+                // 第 1 篇（最新）：隱藏左邊按鈕
+                if (currentIndex === 0) {
+                    prevBtn.style.visibility = 'hidden';
+                } else {
+                    prevBtn.style.visibility = 'visible';
+                }
+
+                // 最後一篇（最舊）：隱藏右邊按鈕
+                if (currentIndex === announcements.length - 1) {
+                    nextBtn.style.visibility = 'hidden';
+                } else {
+                    nextBtn.style.visibility = 'visible';
+                }
+            }
+
             renderEventSidebar();
         }
 
