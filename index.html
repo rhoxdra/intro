@@ -2190,16 +2190,19 @@
         let currentModalCharKey = null;
         let isBeastFormActive = false;
 
-        // 🌟 純淨觀圖模式開關：鎖定頁面捲動 + 按鈕動態變淺/恢復 🌟
+        // 🌟 純淨觀圖模式開關：點擊瞬間立即變淡 (修正手機版 Focus 問題) + 鎖定捲動 🌟
         function toggleUI() {
             const isHidden = document.body.classList.toggle('ui-hidden');
             const toggleBtn = document.getElementById('ui-toggle-btn');
             
+            // 關鍵：強制讓按鈕失去焦點，防止手機觸控留住 hover/focus 狀態
+            if (toggleBtn) toggleBtn.blur();
+            
             if (isHidden) {
-                // 1. 第一次按下（開啟觀圖模式）：鎖定畫面不讓頁面滑動
+                // 1. 第一次按下（開啟觀圖）：鎖定畫面不讓頁面滑動
                 document.body.classList.add('modal-open');
                 
-                // 2. 按鈕圖示變更，並套用極淺半透明樣式（電腦/手機通用）
+                // 2. 按鈕圖示變更，並套用極淺半透明樣式
                 toggleBtn.innerHTML = '↩';
                 toggleBtn.title = '點擊恢復選單卡片';
                 toggleBtn.style.opacity = '0.2';
@@ -2208,7 +2211,7 @@
                 toggleBtn.style.boxShadow = 'none';
                 toggleBtn.style.backdropFilter = 'none';
             } else {
-                // 1. 第二次按下（還原 UI）：只有在沒有其他彈窗開啟時才解除捲動鎖定
+                // 1. 第二次按下（還原 UI）：若無其他彈窗則解除捲動鎖定
                 const hasOpenModal = document.querySelector('.event-modal-overlay[style*="flex"], .char-modal-overlay[style*="flex"], .schedule-modal-overlay[style*="flex"]');
                 if (!hasOpenModal) {
                     document.body.classList.remove('modal-open');
