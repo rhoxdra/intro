@@ -950,11 +950,12 @@
             transition: opacity 0.3s ease !important;
         }
 
-        /* 觸碰或滑鼠移過去時才亮起 */
-        body.ui-hidden .ui-toggle-btn:active,
-        body.ui-hidden .ui-toggle-btn:hover {
-            opacity: 0.9 !important;
-            background: rgba(56, 189, 248, 0.9) !important;
+        /* 🌟 觀圖模式下：按鈕極淺狀態時的動態觸碰回饋 🌟 */
+        body.ui-hidden .ui-toggle-btn:hover,
+        body.ui-hidden .ui-toggle-btn:active {
+            opacity: 0.85 !important;
+            background: rgba(56, 189, 248, 0.85) !important;
+            border-color: #38bdf8 !important;
         }
     </style>
 </head>
@@ -2189,20 +2190,40 @@
         let currentModalCharKey = null;
         let isBeastFormActive = false;
 
-        // 🌟 純淨觀圖模式開關：切換 body 的 ui-hidden 🌟
+        // 🌟 純淨觀圖模式開關：鎖定頁面捲動 + 按鈕動態變淺/恢復 🌟
         function toggleUI() {
-        const isHidden = document.body.classList.toggle('ui-hidden');
-        const toggleBtn = document.getElementById('ui-toggle-btn');
-    
-        if (isHidden) {
-            toggleBtn.innerHTML = '↩'; // 隱藏卡片後，按鈕顯示返回圖示
-            toggleBtn.title = '點擊恢復選單卡片';
-        } else {
-            toggleBtn.innerHTML = '📷'; // 顯示卡片時，按鈕顯示相機圖示
-            toggleBtn.title = '觀看全幅背景圖';
-    }
-}
-
+            const isHidden = document.body.classList.toggle('ui-hidden');
+            const toggleBtn = document.getElementById('ui-toggle-btn');
+            
+            if (isHidden) {
+                // 1. 第一次按下（開啟觀圖模式）：鎖定畫面不讓頁面滑動
+                document.body.classList.add('modal-open');
+                
+                // 2. 按鈕圖示變更，並套用極淺半透明樣式（電腦/手機通用）
+                toggleBtn.innerHTML = '↩';
+                toggleBtn.title = '點擊恢復選單卡片';
+                toggleBtn.style.opacity = '0.2';
+                toggleBtn.style.background = 'rgba(15, 23, 42, 0.25)';
+                toggleBtn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                toggleBtn.style.boxShadow = 'none';
+                toggleBtn.style.backdropFilter = 'none';
+            } else {
+                // 1. 第二次按下（還原 UI）：只有在沒有其他彈窗開啟時才解除捲動鎖定
+                const hasOpenModal = document.querySelector('.event-modal-overlay[style*="flex"], .char-modal-overlay[style*="flex"], .schedule-modal-overlay[style*="flex"]');
+                if (!hasOpenModal) {
+                    document.body.classList.remove('modal-open');
+                }
+                
+                // 2. 按鈕恢復原本亮藍色與立體光暈
+                toggleBtn.innerHTML = '📷';
+                toggleBtn.title = '觀看全幅背景圖';
+                toggleBtn.style.opacity = '';
+                toggleBtn.style.background = '';
+                toggleBtn.style.borderColor = '';
+                toggleBtn.style.boxShadow = '';
+                toggleBtn.style.backdropFilter = '';
+            }
+        }
         // 🌟 出版排程彈窗控制 🌟
         function openScheduleModal() {
             // 🌟 3. 開啟出版排程彈窗時重置歸零到頂部 🌟
