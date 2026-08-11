@@ -2203,7 +2203,7 @@
             document.getElementById('schedule-modal').style.display = 'none';
         }
 
-        // 🌟 2. 角色詳情彈窗（已加入內文滾動歸零修復） 🌟
+        // 🌟 角色詳情彈窗（使用 requestAnimationFrame 強制在渲染後歸零滾動條） 🌟
         function openCharModal(charKey) {
             currentModalCharKey = charKey;
             isBeastFormActive = false;
@@ -2213,17 +2213,10 @@
             const charDesc = (char && char.desc && char.desc.trim() !== "") ? char.desc : "角色詳細簡介與設定準備中……";
             const bgImg = (char && char.bgImage) ? char.bgImage : `images/${charKey}_bg.jpg`;
 
-            // 設定角色名稱
+            // 設定角色名稱與內文
             document.getElementById('char-title').innerText = titleName;
-
-            // 帶入新內文
             const charTextElem = document.getElementById('char-text');
             charTextElem.innerText = charDesc;
-            
-            /* 🌟 核心修正：確保內文填入後，強制將文字區域與彈窗本體的滾動條重置回最頂端 🌟 */
-            charTextElem.scrollTop = 0;
-            const charModalContent = document.querySelector('.char-modal-content');
-            if (charModalContent) charModalContent.scrollTop = 0;
             
             // 帶入角色名言
             const quoteElem = document.getElementById('char-quote');
@@ -2268,8 +2261,18 @@
                 switchContainer.innerHTML = '';
             }
             
-            document.body.classList.add('modal-open'); // 鎖定後方主頁面捲動
-            document.getElementById('char-modal').style.display = 'flex';
+            // 顯示彈窗與鎖定背景捲動
+            document.body.classList.add('modal-open');
+            const modalOverlay = document.getElementById('char-modal');
+            modalOverlay.style.display = 'flex';
+
+            /* 🌟 核心修正：等瀏覽器渲染顯示後，強制在下一個畫面幀將所有可能捲動的容器通通歸零 🌟 */
+            requestAnimationFrame(() => {
+                const charModalContent = document.querySelector('.char-modal-content');
+                if (charModalContent) charModalContent.scrollTop = 0;
+                if (charTextElem) charTextElem.scrollTop = 0;
+                modalOverlay.scrollTop = 0;
+            });
         }
 
         // 🌟 切換背景大圖與動態按鈕文字 🌟
