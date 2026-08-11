@@ -940,6 +940,22 @@
                 line-height: 1.45 !important;
                 letter-spacing: 0.5px !important;
             }
+            /* 🌟 觀圖模式專用：相機返回按鈕極簡不遮擋樣式 🌟 */
+        body.ui-hidden .ui-toggle-btn {
+            opacity: 0.25 !important;           /* 平時大幅降至極淡的 25% 透明度 */
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            background: rgba(15, 23, 42, 0.3) !important;
+            box-shadow: none !important;        /* 移除陰影與光暈，徹底不搶眼 */
+            backdrop-filter: none !important;
+            transition: opacity 0.3s ease, transform 0.3s ease !important;
+        }
+
+        /* 游標懸停或觸碰按鈕時才清晰顯現 */
+        body.ui-hidden .ui-toggle-btn:hover {
+            opacity: 1 !important;
+            transform: scale(1.1) !important;
+            background: rgba(56, 189, 248, 0.9) !important;
+        }
     </style>
 </head>
 <body>
@@ -3741,6 +3757,16 @@
                 }
             });
         }
+        // 🌟 觀圖模式下：點擊畫面任意空白處直接還原 UI 🌟
+        document.addEventListener('click', function(e) {
+            // 只有在開啟觀圖模式 (body 有 ui-hidden) 時才執行
+            if (document.body.classList.contains('ui-hidden')) {
+                // 避開海報文字與相機按鈕本身，點擊背景或空白處即可返回
+                if (!e.target.closest('#poster-title-box') && !e.target.closest('#ui-toggle-btn')) {
+                    toggleUI(); // 自動切換還原選單
+                }
+            }
+        });
     </script>
     
     <div id="poster-title-box" class="poster-title-box">
