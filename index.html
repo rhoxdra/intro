@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <title>《無限元素》</title>
     <style>
         /* 🌟 浮動音樂播放器樣式（預設改至左下角，放在相機按鈕右側） 🌟 */
@@ -957,6 +958,66 @@
             background: rgba(56, 189, 248, 0.85) !important;
             border-color: #38bdf8 !important;
         }
+        /* 🌟 每日共鳴籤圖卡與 QR Code 品牌水印樣式 🌟 */
+        .fortune-card-capture {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            backdrop-filter: blur(6px);
+            box-sizing: border-box;
+        }
+
+        .fortune-brand-footer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 4px;
+            text-align: left;
+        }
+
+        .fortune-qr-img {
+            width: 52px;
+            height: 52px;
+            border-radius: 6px;
+            border: 1px solid #38bdf8;
+            background: #ffffff;
+            padding: 2px;
+            flex-shrink: 0;
+        }
+
+        .fortune-brand-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .fortune-brand-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .fortune-brand-sub {
+            font-size: 0.72rem;
+            color: #cbd5e1;
+        }
+
+        .fortune-brand-url {
+            font-size: 0.68rem;
+            color: #94a3b8;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -1309,29 +1370,43 @@
 
     <!-- 🌟 每日元素共鳴籤彈出面板 🌟 -->
     <div id="fortune-modal" class="char-modal-overlay" style="display: none;">
-        <div class="char-modal-content" style="text-align: center; align-items: center;">
+        <div class="char-modal-content" style="text-align: center; align-items: center; max-width: 440px;">
             <button class="close-btn" onclick="closeFortuneModal()">✕</button>
-            <span class="event-badge" style="background: #a855f7;">DAILY FORTUNE</span>
-            <h2 id="fortune-title" class="modal-title" style="margin-bottom: 12px;">今日共鳴指引</h2>
+
+            <!-- 📸 圖卡擷取區域（網頁顯示與截圖標的） -->
+            <div id="fortune-capture-area" class="fortune-card-capture">
+                <span class="event-badge" style="background: #a855f7;">DAILY FORTUNE</span>
+                <h2 id="fortune-title" class="modal-title" style="margin-bottom: 12px; margin-top: 4px;">今日共鳴指引</h2>
+                
+                <!-- 網頁頭像（截圖時會自動隱藏） -->
+                <img id="fortune-avatar" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #38bdf8; margin: 4px 0; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                
+                <div id="fortune-char-name" style="font-weight: 700; font-size: 1.15rem; color: #f8fafc; margin-top: 4px;"></div>
+                
+                <!-- 共鳴元素與類型標籤 -->
+                <div id="fortune-element-type" style="font-size: 0.82rem; color: #38bdf8; margin: 4px 0 10px; font-weight: 600;"></div>
+                
+                <!-- 今日指引與名言 -->
+                <div id="fortune-quote" class="char-quote" style="margin: 10px 0; text-align: left; width: 100%;"></div>
+                
+                <!-- 幸運小物與地點 -->
+                <div id="fortune-lucky-info" style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 14px; text-align: left; width: 100%; background: rgba(15, 23, 42, 0.4); padding: 8px 12px; border-radius: 8px; box-sizing: border-box;"></div>
+
+                <!-- 底部品牌 QR Code 水印區 -->
+                <div class="fortune-brand-footer">
+                    <img id="fortune-qr" class="fortune-qr-img" src="" alt="官網 QR Code">
+                    <div class="fortune-brand-text">
+                        <div class="fortune-brand-title">《無限元素》每日共鳴籤</div>
+                        <div class="fortune-brand-sub">掃描 QR Code 抽取你的今日夥伴</div>
+                        <div class="fortune-brand-url">https://rhoxdra.github.io/intro/</div>
+                    </div>
+                </div>
+            </div>
             
-            <!-- 直接沿用圖鑑大頭像 -->
-            <img id="fortune-avatar" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #38bdf8; margin: 8px 0; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
-            
-            <div id="fortune-char-name" style="font-weight: 700; font-size: 1.15rem; color: #f8fafc; margin-top: 4px;"></div>
-            
-            <!-- 共鳴元素與類型標籤 -->
-            <div id="fortune-element-type" style="font-size: 0.82rem; color: #38bdf8; margin: 4px 0 10px; font-weight: 600;"></div>
-            
-            <!-- 今日指引與名言 -->
-            <div id="fortune-quote" class="char-quote" style="margin: 10px 0; text-align: left; width: 100%;"></div>
-            
-            <!-- 幸運小物與地點 -->
-            <div id="fortune-lucky-info" style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 18px; text-align: left; width: 100%; background: rgba(15, 23, 42, 0.4); padding: 8px 12px; border-radius: 8px;"></div>
-            
-            <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
-                <!-- 🌟 加上 id="draw-again-btn" 🌟 -->
-                <button id="draw-again-btn" class="form-switch-btn" onclick="drawDailyFortune()" style="margin-bottom: 0;">🎲 再抽一次 (剩 2 次)</button>
-                <button class="form-switch-btn" onclick="copyFortuneResult()" style="margin-bottom: 0; background: linear-gradient(135deg, #059669 0%, #047857 100%); border-color: rgba(52, 211, 153, 0.5);">📋 複製籤詩結果</button>
+            <!-- 按鈕群組（去掉複製文字，儲存圖片遞補，雙按鈕橫向並排） -->
+            <div style="display: flex; gap: 10px; width: 100%; margin-top: 14px;">
+                <button id="draw-again-btn" class="form-switch-btn" onclick="drawDailyFortune()" style="margin-bottom: 0; flex: 1;">🎲 再抽一次 (剩 2 次)</button>
+                <button class="form-switch-btn" onclick="downloadFortuneImage()" style="margin-bottom: 0; flex: 1; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-color: rgba(56, 189, 248, 0.5);">📸 儲存籤詩圖卡</button>
             </div>
         </div>
     </div>
@@ -3665,27 +3740,29 @@
             }
         ];
 
-        let lastFortuneResult = ""; // 紀錄複製籤詩內容
+        let lastFortuneResult = ""; 
+        let currentFortuneCharName = ""; // 紀錄角色名稱供圖片檔名使用
+        let currentFortuneBgUrl = "";    // 紀錄角色專屬背景圖網址
 
-        // 🌟 執行抽籤與動態邏輯判斷（限制重整前最多抽取 3 次） 🌟
+        // 🌟 執行抽籤邏輯 🌟
         function drawDailyFortune() {
             const redrawBtn = document.getElementById('draw-again-btn');
 
-            // 1. 取得目前已抽取次數（預設為 0）
             let drawCount = parseInt(sessionStorage.getItem('fortuneDrawCount') || '0', 10);
-
-            // 如果已經達到 3 次上限，直接阻斷不執行，不跳任何提醒彈窗
             if (drawCount >= 3) {
                 return;
             }
+
             const randomIndex = Math.floor(Math.random() * fortuneDatabase.length);
             const item = fortuneDatabase[randomIndex];
 
-            // 1. 大頭像直接抓圖鑑路徑
+            currentFortuneCharName = item.name;
+
+            // 1. 帶入大頭像與名字
             document.getElementById('fortune-avatar').src = `images/${item.charKey}.jpg`;
             document.getElementById('fortune-char-name').innerText = item.name;
 
-            // 2. 依照能力類型動態判斷共鳴文字
+            // 2. 共鳴文字判斷
             const typeElem = document.getElementById('fortune-element-type');
             if (item.typeCategory === "賦形者") {
                 typeElem.innerText = `賦形元素共鳴：${item.elementName}`;
@@ -3697,21 +3774,25 @@
                 typeElem.innerText = `沒關係，我們就這樣度過平淡美好的一天也不錯～`;
             }
 
-            // 3. 帶入籤詩對白與幸運物
+            // 3. 帶入指引與幸運物
             document.getElementById('fortune-quote').innerText = item.quote;
             document.getElementById('fortune-lucky-info').innerText = item.lucky;
 
-            // 4. 更換背景大圖
+            // 4. 動態生成官網 QR Code（如果 HTML 裡有 id="fortune-qr" 的標籤）
+            const fortuneQrElem = document.getElementById('fortune-qr');
+            if (fortuneQrElem) {
+                const officialSiteUrl = "https://rhoxdra.github.io/intro/";
+                fortuneQrElem.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(officialSiteUrl)}&color=0f172a`;
+            }
+
+            // 5. 更換背景大圖並紀錄網址
             const bgImg = (characterData[item.charKey] && characterData[item.charKey].bgImage) ? characterData[item.charKey].bgImage : `images/${item.charKey}_bg.jpg`;
+            currentFortuneBgUrl = bgImg;
             document.body.style.setProperty('--bg-image', `url('${bgImg}')`);
 
-            // 存入待複製文字
-            lastFortuneResult = `【《無限元素》今日元素共鳴籤】\n幸運夥伴：${item.name}\n${typeElem.innerText}\n指引：${item.quote}\n${item.lucky}\n👉 點擊連結抽你的今日共鳴： https://rhoxdra.github.io/intro/`;
-            // 3. 累加抽取次數並更新 sessionStorage
             drawCount += 1;
             sessionStorage.setItem('fortuneDrawCount', drawCount.toString());
 
-            // 4. 動態更新按鈕顯示文字與狀態
             const remaining = 3 - drawCount;
             if (redrawBtn) {
                 if (remaining > 0) {
@@ -3724,17 +3805,107 @@
                     redrawBtn.style.cursor = "not-allowed";
                 }
             }
-            document.body.classList.add('modal-open'); // 鎖定後方捲動
+
+            document.body.classList.add('modal-open');
             document.getElementById('fortune-modal').style.display = 'flex';
         }
 
-        // 🌟 一鍵複製結果 🌟
-        function copyFortuneResult() {
-            if (!lastFortuneResult) return;
-            navigator.clipboard.writeText(lastFortuneResult).then(() => {
-                alert("籤詩結果已成功複製到剪貼簿！快去分享給朋友吧！");
+        // 📸 一鍵生成圖卡（網頁顯示保持原本結果畫面；僅產出的 PNG 圖片隱藏頭像與標題，並留白露出角色臉部）
+        function downloadFortuneImage() {
+            const captureArea = document.getElementById("fortune-capture-area");
+            if (!captureArea) {
+                alert("找不到截圖區域，請重新抽籤！");
+                return;
+            }
+
+            if (typeof html2canvas === 'undefined') {
+                alert("截圖套件載入中，請稍後再試！");
+                return;
+            }
+
+            const bgUrl = currentFortuneBgUrl || "images/background.jpg";
+
+            html2canvas(captureArea, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: "#0f172a",
+                onclone: function(clonedDoc) {
+                    const clonedArea = clonedDoc.getElementById("fortune-capture-area");
+                    
+                    if (clonedArea) {
+                        // 1. 套用專屬角色背景圖，縮小內邊距讓整體視覺更精緻
+                        clonedArea.style.backgroundImage = `url('${bgUrl}')`;
+                        clonedArea.style.backgroundSize = "cover";
+                        clonedArea.style.backgroundPosition = "center top";
+                        clonedArea.style.padding = "20px 24px";
+                    }
+
+                    // 2. 產出圖片中隱藏圓形大頭像
+                    const clonedAvatar = clonedDoc.getElementById("fortune-avatar");
+                    if (clonedAvatar) {
+                        clonedAvatar.style.display = "none";
+                    }
+
+                    // 3. 產出圖片中隱藏「今日共鳴指引」標題
+                    const clonedTitle = clonedDoc.getElementById("fortune-title");
+                    if (clonedTitle) {
+                        clonedTitle.style.display = "none";
+                    }
+
+                    // 4. 動態插入留白（140px），將角色名稱與下方內容整體向下調，露出角色的臉龐
+                    const spacer = clonedDoc.createElement("div");
+                    spacer.style.height = "140px"; // 頂部留白高度
+                    spacer.style.width = "100%";
+                    
+                    const nameElem = clonedDoc.getElementById("fortune-char-name");
+                    if (nameElem && clonedArea) {
+                        // 名字大小與下邊距縮小，減少空隙
+                        nameElem.style.fontSize = "1.35rem";
+                        nameElem.style.marginTop = "0px";
+                        nameElem.style.marginBottom = "2px";
+                        nameElem.style.textShadow = "0 0 12px rgba(15,23,42,0.95), 0 3px 12px rgba(0,0,0,0.95)";
+                        clonedArea.insertBefore(spacer, nameElem);
+                    }
+
+                    // 5. 屬性標籤：縮小間距
+                    const typeElem = clonedDoc.getElementById("fortune-element-type");
+                    if (typeElem) {
+                        typeElem.style.fontSize = "0.75rem";
+                        typeElem.style.marginTop = "2px";
+                        typeElem.style.marginBottom = "6px"; // 緊接名言，縮小間距
+                        typeElem.style.textShadow = "0 0 8px rgba(15,23,42,0.95), 0 2px 8px rgba(0,0,0,0.95)";
+                    }
+
+                    // 6. 角色名言金句：字體縮小、行高與上下 margin 縮小
+                    const quoteElem = clonedDoc.getElementById("fortune-quote");
+                    if (quoteElem) {
+                        quoteElem.style.fontSize = "0.78rem"; // 字體縮小
+                        quoteElem.style.lineHeight = "1.45";   // 行高縮小使文字更緊湊
+                        quoteElem.style.marginTop = "4px";
+                        quoteElem.style.marginBottom = "6px";  // 上下間距縮小
+                        quoteElem.style.padding = "4px 0 4px 10px";
+                        quoteElem.style.textShadow = "0 0 8px rgba(15,23,42,0.95), 0 2px 8px rgba(0,0,0,0.95)";
+                    }
+
+                    // 7. 幸運地點與物品：字體縮小、下邊距縮小
+                    const luckyElem = clonedDoc.getElementById("fortune-lucky-info");
+                    if (luckyElem) {
+                        luckyElem.style.fontSize = "0.72rem"; // 字體縮小
+                        luckyElem.style.marginTop = "4px";
+                        luckyElem.style.marginBottom = "8px";  // 下邊距縮小，使下方 QR 區緊湊
+                        luckyElem.style.padding = "6px 10px";
+                        luckyElem.style.textShadow = "0 0 6px rgba(15,23,42,0.95), 0 2px 6px rgba(0,0,0,0.95)";
+                    }
+                }
+            }).then(canvas => {
+                const link = document.createElement("a");
+                link.download = `無限元素_今日共鳴籤_${currentFortuneCharName || "結果"}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
             }).catch(err => {
-                alert("複製失敗，請手動截圖分享喔！");
+                console.error("生成圖片出錯：", err);
+                alert("圖片生成失敗，建議使用手機截圖分享！");
             });
         }
 
