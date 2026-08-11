@@ -219,11 +219,12 @@
             transform: scale(1.1);
         }
 
-        /* 🌟 純淨觀圖模式：一次性順暢隱藏所有卡片、標題與按鈕 🌟 */
+        /* 🌟 純淨觀圖模式：一次性隱藏所有選單、分區標題與彈窗 🌟 */
         body.ui-hidden .story-intro,
         body.ui-hidden .event-card,
         body.ui-hidden .section-title,
         body.ui-hidden .link-list,
+        body.ui-hidden .link-card-dropdown,
         body.ui-hidden .footer,
         body.ui-hidden .music-player-container,
         body.ui-hidden .back-to-top-btn,
@@ -234,6 +235,14 @@
             visibility: hidden !important;
             pointer-events: none !important;
             transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        /* 強制確保頂部標題與副標題在觀圖模式下依然清晰可見 */
+        body.ui-hidden .main-title,
+        body.ui-hidden .tagline {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transition: opacity 0.4s ease;
         }
 
         /* 強制確保頂部標題與副標題在觀圖模式下依然清晰可見 */
@@ -828,6 +837,10 @@
                 right: 16px !important;
             }
         }
+        /* 🌟 彈窗開啟時，鎖定後方主頁面捲動 🌟 */
+        body.modal-open {
+            overflow: hidden !important;
+        }
     </style>
 </head>
 <body>
@@ -1146,7 +1159,7 @@
                 </div>
 
                 <div class="chapter-nav">
-                    <button onclick="prevChapter()">◄ 上一篇章</button>
+                    <button onclick="prevChapter()">◄ 下一篇章</button>
                     <span id="chapter-indicator">1 / 1</span>
                     <button onclick="nextChapter()">上一篇章 ►</button>
                 </div>
@@ -2082,14 +2095,16 @@
             
             const scheduleModalText = document.querySelector('.schedule-modal-content .modal-text');
             if (scheduleModalText) scheduleModalText.scrollTop = 0;
+            document.body.classList.add('modal-open'); // 鎖定後方捲動
             document.getElementById('schedule-modal').style.display = 'flex';
         }
 
         function closeScheduleModal() {
+            document.body.classList.remove('modal-open'); // 解除後方捲動鎖定   
             document.getElementById('schedule-modal').style.display = 'none';
         }
 
-        // 🌟 角色彈窗控制邏輯（含 4 組標籤渲染） 🌟
+        // 🌟 2. 角色詳情彈窗（已加入內文滾動歸零修復） 🌟
         function openCharModal(charKey) {
             currentModalCharKey = charKey;
             isBeastFormActive = false;
@@ -2099,16 +2114,19 @@
             const charDesc = (char && char.desc && char.desc.trim() !== "") ? char.desc : "角色詳細簡介與設定準備中……";
             const bgImg = (char && char.bgImage) ? char.bgImage : `images/${charKey}_bg.jpg`;
 
+            // 設定角色名稱
             document.getElementById('char-title').innerText = titleName;
-// 🌟 1. 每次開啟角色彈窗時，將內文與彈窗本體滾動條歸零（回到頂部） 🌟
+
+            // 帶入新內文
             const charTextElem = document.getElementById('char-text');
             charTextElem.innerText = charDesc;
-            charTextElem.scrollTop = 0;
             
+            /* 🌟 核心修正：確保內文填入後，強制將文字區域與彈窗本體的滾動條重置回最頂端 🌟 */
+            charTextElem.scrollTop = 0;
             const charModalContent = document.querySelector('.char-modal-content');
             if (charModalContent) charModalContent.scrollTop = 0;
             
-// 🌟 動態帶入角色名言（若未填寫名言則自動隱藏該框） 🌟
+            // 帶入角色名言
             const quoteElem = document.getElementById('char-quote');
             if (char && char.quote && char.quote.trim() !== "") {
                 quoteElem.innerText = char.quote;
@@ -2117,10 +2135,10 @@
                 quoteElem.style.display = 'none';
             }
 
-            // 更換為預設背景大圖
+            // 更新背景大圖
             document.body.style.setProperty('--bg-image', `url('${bgImg}')`);
 
-            // 🌟 動態渲染 4 組屬性標籤 (Tags) 🌟
+            // 渲染 4 組屬性標籤 (Tags)
             const tagsContainer = document.getElementById('char-tags-container');
             const tags = (char && char.tags) ? char.tags : {
                 chapter: ["聚學舍篇"],
@@ -2138,10 +2156,9 @@
                 <div class="tag-group"><span class="tag-label">擅長屬性：</span>${renderBadges(tags.element, 'element')}</div>
             `;
 
-            // 🌟 判斷型態切換按鈕（支援自訂按鈕文字） 🌟
+            // 判斷型態切換按鈕
             const switchContainer = document.getElementById('char-switch-container');
             if (char && char.beastBgImage) {
-                // 如果角色有設定 form2Label 就用專屬文字，沒有就預設用 🐾 切換為獸化型態
                 const labelText = char.form2Label || "🐾 切換為獸化型態";
                 switchContainer.innerHTML = `
                     <button id="form-toggle-btn" class="form-switch-btn" onclick="toggleCharForm()">
@@ -2152,6 +2169,7 @@
                 switchContainer.innerHTML = '';
             }
             
+            document.body.classList.add('modal-open'); // 鎖定後方主頁面捲動
             document.getElementById('char-modal').style.display = 'flex';
         }
 
@@ -2180,6 +2198,7 @@
         }
 
         function closeCharModal() {
+            document.body.classList.remove('modal-open'); // 解除後方捲動鎖定      
             document.getElementById('char-modal').style.display = 'none';
         }
 
@@ -2718,11 +2737,13 @@
         }
 
         function openEventModal() {
+            document.body.classList.add('modal-open'); // 鎖定後方捲動
             document.getElementById('event-modal').style.display = 'flex';
             updateModalContent();
         }
 
         function closeEventModal() {
+            document.body.classList.remove('modal-open'); // 解鎖後方捲動
             document.getElementById('event-modal').style.display = 'none';
         }
 
@@ -3507,6 +3528,7 @@
                     redrawBtn.style.cursor = "not-allowed";
                 }
             }
+            document.body.classList.add('modal-open'); // 鎖定後方捲動
             document.getElementById('fortune-modal').style.display = 'flex';
         }
 
@@ -3521,6 +3543,7 @@
         }
 
         function closeFortuneModal() {
+            document.body.classList.remove('modal-open'); // 解鎖後方捲動
             document.getElementById('fortune-modal').style.display = 'none';
         }
 
