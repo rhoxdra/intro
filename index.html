@@ -219,14 +219,15 @@
             transform: scale(1.1);
         }
 
-        /* 🌟 純淨觀圖模式：一次性隱藏所有選單、分區標題與彈窗 🌟 */
+        /* 🌟 純淨觀圖模式：隱藏所有原本頁面上的選單、卡片與頂部標題 🌟 */
+        body.ui-hidden .container,
+        body.ui-hidden .main-title,
+        body.ui-hidden .tagline,
         body.ui-hidden .story-intro,
         body.ui-hidden .event-card,
         body.ui-hidden .section-title,
         body.ui-hidden .link-list,
-        body.ui-hidden .link-card-dropdown,
         body.ui-hidden .footer,
-        body.ui-hidden .music-player-container,
         body.ui-hidden .back-to-top-btn,
         body.ui-hidden .event-modal-overlay,
         body.ui-hidden .char-modal-overlay,
@@ -237,20 +238,71 @@
             transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
-        /* 強制確保頂部標題與副標題在觀圖模式下依然清晰可見 */
-        body.ui-hidden .main-title,
-        body.ui-hidden .tagline {
-            opacity: 1 !important;
-            visibility: visible !important;
-            transition: opacity 0.4s ease;
+        /* 🌟 純淨觀圖模式專用海報文字容器 🌟 */
+        .poster-title-box {
+            position: fixed;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 190;
+            text-align: center;
+            pointer-events: none;
+            width: 90%;
+            max-width: 850px;
+            
+            /* 預設隱藏，開啟觀圖模式時淡入 */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
-        /* 強制確保頂部標題與副標題在觀圖模式下依然清晰可見 */
-        body.ui-hidden .main-title,
-        body.ui-hidden .tagline {
-            opacity: 1 !important;
-            visibility: visible !important;
-            transition: opacity 0.4s ease;
+        body.ui-hidden .poster-title-box {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 1. 《無限元素》主標題：顯著放大 (2.6rem)、純白色 + 立體防護陰影 */
+        .poster-main-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 3px;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            text-shadow: 
+                0 0 12px rgba(15, 23, 42, 0.95),
+                0 3px 14px rgba(0, 0, 0, 0.9);
+        }
+
+        /* 2. 副標題短語：適度縮小 (0.95rem)，保留漸層與發光特效 */
+        .poster-tagline {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            line-height: 1.5;
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6)) 
+                    drop-shadow(0 3px 10px rgba(0, 0, 0, 0.9));
+        }
+
+        /* 🌟 手機版觀圖海報文字適配 🌟 */
+        @media (max-width: 640px) {
+            .poster-title-box {
+                bottom: 120px !important;
+            }
+
+            .poster-main-title {
+                font-size: 1.85rem !important;
+                margin-bottom: 6px !important;
+            }
+
+            .poster-tagline {
+                font-size: 0.8rem !important;
+                line-height: 1.4 !important;
+                letter-spacing: 0.5px !important;
+            }
         }
 
         /* === 標題與主題簡介區 === */
@@ -594,25 +646,6 @@
             overflow-y: auto;
         }
 
-        /* 🌟 1. 直向手機（寬度小於 640px）一律隱藏側邊欄 🌟 */
-        @media (max-width: 640px) {
-            .event-sidebar {
-                display: none !important;
-            }
-            .event-main-body {
-                padding: 18px 16px;
-            }
-        }
-
-        /* 🌟 2. 橫向手機（高度小於 500px）不論寬度多寬，也一律隱藏側邊欄 🌟 */
-        @media (max-height: 500px) {
-            .event-sidebar {
-                display: none !important;
-            }
-            .event-main-body {
-                padding: 14px 16px;
-            }
-        }
 
         .close-btn {
             position: absolute;
@@ -789,9 +822,42 @@
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 6px 16px rgba(56, 189, 248, 0.4);
         }
-        /* 🌟 手機版專屬：將按鈕移至左下方（相機按鈕在最左外側，音樂按鈕在其右側） 🌟 */
+/* ==========================================
+           🌟 彈窗開啟狀態控制 🌟
+           ========================================== */
+        /* 1. 彈窗開啟時，鎖定後方主頁面捲動 */
+        body.modal-open {
+            overflow: hidden !important;
+        }
+
+        /* 2. 僅將音樂播放器淡出隱藏，保留相機按鈕供隨機切換觀圖 */
+        body.modal-open .music-player-container {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+
+        /* ==========================================
+           🌟 響應式裝置適配（橫向手機） 🌟
+           ========================================== */
+        /* 橫向手機（高度小於 500px）：不論寬度多寬，一律隱藏側邊欄 */
+        @media (max-height: 500px) {
+            .event-sidebar {
+                display: none !important;
+            }
+            .event-main-body {
+                padding: 14px 16px !important;
+            }
+        }
+
+
+        /* ==========================================
+           🌟 響應式裝置整合區塊（直向手機 max-width: 640px） 🌟
+           ========================================== */
         @media (max-width: 640px) {
-            /* 1. 標題保持原本最上方位置 */
+            /* 1. 標題與簡介手機版留白 */
             .header {
                 margin-top: 20px !important;
             }
@@ -813,7 +879,7 @@
                 transform: scale(1.1) !important;
             }
 
-            /* 3. 音樂播放器：放在相機按鈕右側（相機按鈕寬 44px + 邊距 16px + 間距 8px = 68px） */
+            /* 3. 音樂播放器：放在相機按鈕右側（相機寬 44px + 邊距 16px + 間距 8px = 68px） */
             .music-player-container {
                 top: auto !important;
                 bottom: 20px !important;
@@ -822,7 +888,7 @@
                 transform: none !important;
             }
 
-            /* 手機版隱藏長歌名，維持極簡圖示按鈕組 */
+            /* 手機版隱藏長歌名，保持極簡圖示按鈕組 */
             .music-title-text {
                 display: none !important;
             }
@@ -831,16 +897,49 @@
                 padding: 4px 8px !important;
             }
 
-            /* 4. 回到頂部按鈕：順延微調，放在畫面右下角，避免與左側按鈕衝突 */
+            /* 4. 回到頂部按鈕：放在右下角，避免與左側按鈕組衝突 */
             .back-to-top-btn {
                 bottom: 20px !important;
                 right: 16px !important;
             }
+
+            /* 5. 主題進展彈窗：手機版隱藏側邊欄，優化內文與底部導覽列留白 */
+            .event-sidebar {
+                display: none !important;
+            }
+
+            .event-modal-content-split {
+                height: 85vh !important; /* 彈窗高度稍微收納，避免貼死螢幕底部 */
+            }
+
+            .event-main-body {
+                padding: 16px 16px 24px !important; /* 加大底部留白 */
+            }
+
+            .chapter-nav {
+                padding-top: 12px !important;
+                margin-top: 16px !important;
+                gap: 8px !important;
+            }
+
+            .chapter-nav button {
+                padding: 8px 14px !important; /* 加大按鈕點擊面積，更方便單手操作 */
+                font-size: 0.82rem !important;
+            }
         }
-        /* 🌟 彈窗開啟時，鎖定後方主頁面捲動 🌟 */
-        body.modal-open {
-            overflow: hidden !important;
-        }
+        /* 🌟 手機版專屬：開啟觀圖模式時，強制隱藏包含主標題在內的所有元素，僅留復原按鈕 🌟 */
+            body.ui-hidden .main-title,
+            body.ui-hidden .tagline {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
+            body.ui-hidden::after {
+                font-size: 1.35rem !important; /* 手機版適度加大，維持主標質感 */
+                bottom: 80px !important;       /* 向上避開左下角的相機與音樂按鈕 */
+                line-height: 1.45 !important;
+                letter-spacing: 0.5px !important;
+            }
     </style>
 </head>
 <body>
@@ -3615,7 +3714,13 @@
             });
         }
     </script>
+    
+    <div id="poster-title-box" class="poster-title-box">
+        <div class="poster-main-title">《無限元素》</div>
+        <div class="poster-tagline">與賦形者相遇，踏入遼闊的世界和獸人夥伴一起展開無盡冒險</div>
+    </div>
     <!-- 🌟 右下角「回到頂部」浮動按鈕 🌟 -->
     <button id="back-to-top-btn" class="back-to-top-btn" onclick="scrollToTop()" title="回到頁面頂部">⬆</button>
+    
 </body>
 </html>
