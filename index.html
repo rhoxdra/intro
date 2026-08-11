@@ -940,20 +940,20 @@
                 line-height: 1.45 !important;
                 letter-spacing: 0.5px !important;
             }
-            /* 🌟 觀圖模式專用：相機返回按鈕極簡不遮擋樣式 🌟 */
+            /* 🌟 觀圖模式：隱藏 UI 後，左下角按鈕變成極淡半透明（手機/電腦通用） 🌟 */
         body.ui-hidden .ui-toggle-btn {
-            opacity: 0.25 !important;           /* 平時大幅降至極淡的 25% 透明度 */
-            border-color: rgba(255, 255, 255, 0.2) !important;
-            background: rgba(15, 23, 42, 0.3) !important;
-            box-shadow: none !important;        /* 移除陰影與光暈，徹底不搶眼 */
+            opacity: 0.2 !important;            /* 平時極淡（20% 透明度），完全不搶戲 */
+            background: rgba(15, 23, 42, 0.25) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            box-shadow: none !important;        /* 移除發光與陰影 */
             backdrop-filter: none !important;
-            transition: opacity 0.3s ease, transform 0.3s ease !important;
+            transition: opacity 0.3s ease !important;
         }
 
-        /* 游標懸停或觸碰按鈕時才清晰顯現 */
+        /* 觸碰或滑鼠移過去時才亮起 */
+        body.ui-hidden .ui-toggle-btn:active,
         body.ui-hidden .ui-toggle-btn:hover {
-            opacity: 1 !important;
-            transform: scale(1.1) !important;
+            opacity: 0.9 !important;
             background: rgba(56, 189, 248, 0.9) !important;
         }
     </style>
@@ -3757,13 +3757,13 @@
                 }
             });
         }
-        // 🌟 觀圖模式下：點擊畫面任意空白處直接還原 UI 🌟
+        // 🌟 觀圖模式下：點擊螢幕任意空白處直接還原 UI（支援手機觸控） 🌟
         document.addEventListener('click', function(e) {
-            // 只有在開啟觀圖模式 (body 有 ui-hidden) 時才執行
+            // 只在開啟觀圖模式 (body 帶有 ui-hidden) 時運作
             if (document.body.classList.contains('ui-hidden')) {
-                // 避開海報文字與相機按鈕本身，點擊背景或空白處即可返回
+                // 點擊點在「海報文字」與「按鈕本身」以外的任意空白處，直接切換還原 UI
                 if (!e.target.closest('#poster-title-box') && !e.target.closest('#ui-toggle-btn')) {
-                    toggleUI(); // 自動切換還原選單
+                    toggleUI();
                 }
             }
         });
