@@ -171,6 +171,7 @@
       color: rgba(255, 255, 255, 0.5);
       transition: opacity 0.3s ease, visibility 0.3s ease;
     }
+    
 
     body.vn-ui-hidden #dialogue-box,
     body.vn-ui-hidden #controls-bar,
@@ -294,7 +295,7 @@
 
     @media (max-width: 768px) {
       #dialogue-box {
-        bottom: 20px !important;       /* 貼近手機底部，釋放上方空間 */
+        bottom: 30px !important;       /* 貼近手機底部，釋放上方空間 */
         width: 95% !important;
         min-height: 110px !important;  /* 縮小手機版對話框最小高度 */
         padding: 12px 16px !important;
@@ -311,14 +312,14 @@
       }
 
       #progress-tag {
-        bottom: 135px !important;       /* 讓進度標籤隨對話框上移 */
+        bottom: 15px !important;       /* 讓進度標籤隨對話框上移 */
       }
     }
 
     /* 針對手機橫式（高度極窄，如高度小於 500px）額外防護 */
     @media (max-height: 500px) and (max-width: 900px) {
       #dialogue-box {
-        bottom: 10px !important;
+        bottom: 20px !important;
         min-height: 95px !important;
         padding: 8px 14px !important;
       }
@@ -329,7 +330,7 @@
       }
 
       #progress-tag {
-        bottom: 110px !important;
+        bottom: 5px !important;
       }
     }
     /* 🌟 左右半邊點擊導覽提示（透明分區，不影響視覺） 🌟 */
@@ -350,6 +351,7 @@
         display: block;
       }
     }
+    
     
   </style>
 </head>
