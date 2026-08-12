@@ -53,12 +53,26 @@
     /* 右上角控制工具列 */
     #controls-bar {
       position: absolute;
-      top: 15px;
-      right: 15px;
+      top: 12px;
+      right: 12px;
       z-index: 100;
       display: flex;
-      gap: 8px;
+      gap: 5px;
       transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .ctrl-btn {
+      background: rgba(30, 41, 59, 0.85);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 5px 10px; /* 手機直式微調按鈕內距 */
+      border-radius: 20px;
+      font-size: 11px;    /* 稍微縮小字體避免擠壓 */
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      white-space: nowrap;
     }
 
     .ctrl-btn {
@@ -281,6 +295,46 @@
     @media (max-width: 640px) {
       #dialogue-box { bottom: 150px; }
       #progress-tag { bottom: 130px; }
+    }
+    @media (max-width: 768px) {
+      #dialogue-box {
+        bottom: 20px !important;       /* 貼近手機底部，釋放上方空間 */
+        width: 95% !important;
+        min-height: 110px !important;  /* 縮小手機版對話框最小高度 */
+        padding: 12px 16px !important;
+      }
+
+      #speaker-name {
+        font-size: 0.95rem !important;  /* 手機版說話者名字變小 */
+        margin-bottom: 4px !important;
+      }
+
+      #content-text {
+        font-size: 0.95rem !important;  /* 手機版內文變小，解決超出範圍問題 */
+        line-height: 1.5 !important;
+      }
+
+      #progress-tag {
+        bottom: 135px !important;       /* 讓進度標籤隨對話框上移 */
+      }
+    }
+
+    /* 針對手機橫式（高度極窄，如高度小於 500px）額外防護 */
+    @media (max-height: 500px) and (max-width: 900px) {
+      #dialogue-box {
+        bottom: 10px !important;
+        min-height: 95px !important;
+        padding: 8px 14px !important;
+      }
+      
+      #content-text {
+        font-size: 0.85rem !important;  /* 橫式極窄時進一步縮小字體確保不溢出 */
+        line-height: 1.4 !important;
+      }
+
+      #progress-tag {
+        bottom: 110px !important;
+      }
     }
   </style>
 </head>
