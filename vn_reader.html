@@ -314,7 +314,11 @@
       #progress-tag {
         bottom: 15px !important;       /* 讓進度標籤隨對話框上移 */
       }
+      #controls-bar .ctrl-btn:last-child {
+        display: none !important;
+      }
     }
+    
 
     /* 針對手機橫式（高度極窄，如高度小於 500px）額外防護 */
     @media (max-height: 500px) and (max-width: 900px) {
@@ -331,6 +335,9 @@
 
       #progress-tag {
         bottom: 5px !important;
+      }
+      #controls-bar .ctrl-btn:last-child {
+        display: none !important;
       }
     }
     /* 🌟 左右半邊點擊導覽提示（透明分區，不影響視覺） 🌟 */
