@@ -292,10 +292,6 @@
       border: 1px solid rgba(56, 189, 248, 0.4);
     }
 
-    @media (max-width: 640px) {
-      #dialogue-box { bottom: 150px; }
-      #progress-tag { bottom: 130px; }
-    }
     @media (max-width: 768px) {
       #dialogue-box {
         bottom: 20px !important;       /* 貼近手機底部，釋放上方空間 */
@@ -336,21 +332,44 @@
         bottom: 110px !important;
       }
     }
+    /* 🌟 左右半邊點擊導覽提示（透明分區，不影響視覺） 🌟 */
+    .click-zone-left, .click-zone-right {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      z-index: 5;
+      display: none; /* 預設隱藏，透過 JS 或手機版啟用 */
+    }
+    .click-zone-left { left: 0; }
+    .click-zone-right { right: 0; }
+
+    /* 手機版啟用左右分區點擊 */
+    @media (max-width: 768px) {
+      .click-zone-left, .click-zone-right {
+        display: block;
+      }
+    }
+    
   </style>
 </head>
 <body>
 
   <div id="stage" onclick="handleStageClick()">
+    <!-- 左右分區點擊區域（手機版專用） -->
+    <div class="click-zone-left" onclick="event.stopPropagation(); handleBack();" title="上一句"></div>
+    <div class="click-zone-right" onclick="event.stopPropagation(); handleAdvance();" title="下一句"></div>
+
     <!-- 雙背景層 -->
     <div id="bg1" class="bg-layer active"></div>
     <div id="bg2" class="bg-layer"></div>
 
     <!-- 右上角控制工具列 -->
     <div id="controls-bar" onclick="event.stopPropagation()">
-      <button class="ctrl-btn" onclick="openChapterModal()">☰ 篇章選擇</button>
+      <button class="ctrl-btn" onclick="openChapterModal()">☰ 篇章</button>
       <button id="auto-btn" class="ctrl-btn" onclick="toggleAuto()">► Auto</button>
-      <button class="ctrl-btn" onclick="openLogModal()">履歷 Log</button>
-      <button class="ctrl-btn" onclick="toggleVnUI(event)" title="隱藏對話框觀看純背景">隱藏介面</button>
+      <button class="ctrl-btn" onclick="openLogModal()">Log</button>
+      <button class="ctrl-btn" onclick="toggleVnUI(event)" title="隱藏對話框觀看純背景">隱藏</button>
     </div>
 
     <!-- 對話框 -->
@@ -714,6 +733,19 @@
     // 初始化第一張背景與文字
     document.getElementById('bg1').style.backgroundImage = `url('${getCurrentStory()[0].bgUrl}')`;
     renderStep();
+    // 🌟 自動偵測手機版並將按鈕文字精簡變短 🌟
+    window.addEventListener('DOMContentLoaded', () => {
+        if (window.innerWidth <= 768) {
+            // 尋找右上角控制列的所有按鈕並修改文字
+            const btns = document.querySelectorAll('#controls-bar .ctrl-btn');
+            btns.forEach(btn => {
+                if (btn.innerText.includes('篇章')) btn.innerText = '☰ 篇章';
+                if (btn.innerText.includes('Auto')) btn.innerText = '► Auto';
+                if (btn.innerText.includes('履歷')) btn.innerText = 'Log';
+                if (btn.innerText.includes('隱藏')) btn.innerText = '隱藏';
+            });
+        }
+    });
   </script>
 </body>
 </html>
