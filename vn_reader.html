@@ -351,6 +351,10 @@
         display: block;
       }
     }
+    /* 當介面隱藏時，讓整個畫面變成隨時可點擊恢復的觸發區 */
+    body.vn-ui-hidden #stage {
+      cursor: pointer;
+    }
     
     
   </style>
@@ -578,10 +582,13 @@
     }
 
     function handleStageClick() {
+      // 🌟 如果目前是「隱藏介面」狀態，點擊畫面任何地方就直接取消隱藏並結束函數
       if (document.body.classList.contains('vn-ui-hidden')) {
         document.body.classList.remove('vn-ui-hidden');
         return;
       }
+      
+      // 正常閱讀狀態下的點擊推進對話
       handleAdvance();
     }
 
