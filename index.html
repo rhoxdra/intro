@@ -282,6 +282,7 @@
             letter-spacing: 1px;
             line-height: 1.5;
             background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6)) 
@@ -1018,6 +1019,69 @@
             color: #94a3b8;
             font-family: monospace;
         }
+        /* 🌟 視覺小說開啟時，隱藏主頁相機按鈕 📷 🌟 */
+    body.vn-open .ui-toggle-btn {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+    /* 🌟 視覺小說全螢幕 Overlay 視窗 🌟 */
+    .vn-modal-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 150;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .vn-iframe-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .vn-iframe-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .vn-top-floating-btns {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 300;
+        display: flex;
+        gap: 8px;
+    }
+
+    .vn-float-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(30, 41, 59, 0.85);
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        color: #38bdf8;
+        font-size: 1.1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        transition: all 0.2s ease;
+    }
+
+    .vn-float-btn:hover {
+        background: rgba(56, 189, 248, 0.9);
+        color: #fff;
+        transform: scale(1.08);
+    }
     </style>
 </head>
 <body>
@@ -1107,11 +1171,11 @@
 
         <div class="section-title">篇章專區</div>
         <div class="link-list">
-            <div class="link-card highlight" onclick="openEventModal()" style="cursor: pointer;">
+            <div class="link-card highlight" onclick="openVNModal()" style="cursor: pointer;">
                 <img src="images/kokumei.jpg" alt="克明" class="avatar">
                 <div class="link-info">
                     <div class="link-title">主題進展 / 回聲殘響</div>
-                    <div class="link-desc">查看當前篇章活動與過往內容，可一併切換背景視覺</div>
+                    <div class="link-desc">進入視覺小說型閱讀體驗，查看當前篇章活動與過往內容</div>
                 </div>
                 <div class="arrow">➔</div>
             </div>
@@ -1344,36 +1408,17 @@
         </div>
     </div>
 
-    <!-- 🌟 2. 主題進展彈出面板（帶目錄側邊欄選單） 🌟 -->
-    <div id="event-modal" class="event-modal-overlay" style="display: none;">
-        <div class="event-modal-content-split">
-            <button class="close-btn" onclick="closeEventModal()">✕</button>
-            
-            <!-- 左側/頂部章節目錄欄 -->
-            <div id="event-sidebar" class="event-sidebar">
-                <!-- 由 JS 自動動態產生選單列表 -->
-            </div>
-
-            <!-- 右側主要內文顯示區 -->
-            <div class="event-main-body">
-                <div>
-                    <span id="modal-badge" class="event-badge">CURRENT EVENT</span>
-                    <h2 id="modal-title" class="modal-title">篇章標題</h2>
-                </div>
-
-                <div id="modal-text" class="modal-text">
-                    <!-- 內文將由 JavaScript 自動帶入 -->
-                </div>
-
-                <!-- 🟢 修改後的程式碼（補上 .chapter-nav 包裹容器） 🟢 -->
-                <div class="chapter-nav">
-                    <button id="chapter-prev-btn" onclick="prevChapter()">◄ 上一篇章</button>
-                    <span id="chapter-indicator">1 / 1</span>
-                    <button id="chapter-next-btn" onclick="nextChapter()">下一篇章 ►</button>
-                </div>
-            </div>
-        </div>
+    <!-- 🌟 視覺小說全螢幕 Overlay 視窗 🌟 -->
+<div id="vn-modal" class="vn-modal-overlay">
+    <div class="vn-top-floating-btns">
+        <button class="vn-float-btn" onclick="toggleVNFullscreen()" title="切換全螢幕">⛶</button>
+        <button class="vn-float-btn" onclick="closeVNModal()" title="關閉視覺小說">✕</button>
     </div>
+    
+    <div id="vn-container" class="vn-iframe-container">
+        <iframe id="vn-iframe" src="about:blank"></iframe>
+    </div>
+</div>
 
     <!-- 🌟 3. 角色詳情彈出面板（含 4 組屬性標籤） 🌟 -->
     <div id="char-modal" class="char-modal-overlay" style="display: none;">
@@ -4021,6 +4066,100 @@
                 }
             }
         });
+        // 🌟 視覺小說 Modal 觸發邏輯 🌟
+    function openVNModal(initialChapterIndex = 0) {
+        const modal = document.getElementById('vn-modal');
+        const iframe = document.getElementById('vn-iframe');
+        
+        if (iframe.src === 'about:blank' || !iframe.src.includes('vn_reader.html')) {
+            iframe.src = 'vn_reader.html';
+        }
+
+        iframe.onload = function() {
+            if (initialChapterIndex > 0) {
+                iframe.contentWindow.postMessage({ type: 'SELECT_CHAPTER_INDEX', index: initialChapterIndex }, '*');
+            }
+            setTimeout(() => {
+                iframe.focus();
+                try {
+                    const innerStage = iframe.contentWindow.document.getElementById('stage');
+                    if (innerStage) innerStage.focus();
+                } catch(e) {}
+            }, 100);
+        };
+
+        modal.style.display = 'flex';
+        document.body.classList.add('ui-hidden'); // 隱藏主頁面卡片 UI
+        document.body.classList.add('vn-open');   // 強制隱藏主頁面的相機按鈕 📷
+
+        setTimeout(() => {
+            iframe.focus();
+        }, 150);
+    }
+
+    // ⚡ 核心關閉邏輯：關閉時自動退出全螢幕，還原主頁點擊狀態 ⚡
+    function closeVNModal() {
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(err => console.log(err));
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        const modal = document.getElementById('vn-modal');
+        modal.style.display = 'none';
+        document.body.classList.remove('ui-hidden'); // 恢復主頁面卡片 UI
+        document.body.classList.remove('vn-open');   // 恢復相機按鈕 📷
+        document.body.classList.remove('modal-open'); // 確保主頁面可正常點擊與捲動
+    }
+
+    // 全螢幕開關邏輯
+    function toggleVNFullscreen() {
+        const elem = document.getElementById('vn-modal');
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => alert(`無法進入全螢幕模式: ${err.message}`));
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        }
+    }
+
+    // 監聽全螢幕狀態改變事件
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
+    function handleFullscreenChange() {
+        const modal = document.getElementById('vn-modal');
+        if (!document.fullscreenElement && !document.webkitFullscreenElement && modal.style.display === 'none') {
+            document.body.classList.remove('modal-open');
+            document.body.classList.remove('vn-open');
+            document.body.classList.remove('ui-hidden');
+        }
+    }
+
+    // 接收來自 vn_reader.html 的背景切換通知
+    window.addEventListener('message', function(e) {
+        if (e.data && (e.data.type === 'CHANGE_BG' || e.type === 'CHANGE_BG')) {
+            const bgUrl = e.data.bgUrl;
+            if (bgUrl) {
+                document.body.style.setProperty('--bg-image', `url('${bgUrl}')`);
+            }
+        }
+    });
     </script>
     
     <div id="poster-title-box" class="poster-title-box">
