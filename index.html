@@ -1029,11 +1029,24 @@
             if (initialChapterIndex > 0) {
                 iframe.contentWindow.postMessage({ type: 'SELECT_CHAPTER_INDEX', index: initialChapterIndex }, '*');
             }
+            // 🌟 核心修正：載入完成後強制讓 iframe 取得焦點，並模擬點擊舞台以啟用鍵盤
+            setTimeout(() => {
+                iframe.focus();
+                try {
+                    const innerStage = iframe.contentWindow.document.getElementById('stage');
+                    if (innerStage) innerStage.focus();
+                } catch(e) {}
+            }, 100);
         };
 
         modal.style.display = 'flex';
         document.body.classList.add('ui-hidden'); // 隱藏主頁面卡片 UI
         document.body.classList.add('vn-open');   // 強制隱藏主頁面的相機按鈕 📷
+
+        // 🌟 再次確保打開當下 iframe 取得焦點
+        setTimeout(() => {
+            iframe.focus();
+        }, 150);
     }
 
     // ⚡ 核心關閉邏輯：關閉時自動退出全螢幕，還原主頁點擊狀態 ⚡
