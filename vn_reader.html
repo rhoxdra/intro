@@ -31,15 +31,17 @@
 
     /* 遊戲舞台容器 */
     #stage {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      outline: none; /* 移除點擊時的藍色框線 */
-    }
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* 🌟 確保視覺小說內部舞台永遠剛好填滿可見區域，不延伸到功能條底下 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    outline: none;
+    background-color: #0f172a;
+}
 
     /* 背景圖層 (Cross-fade 平滑淡入淡出) */
     .bg-layer {
@@ -74,20 +76,6 @@
       background: rgba(30, 41, 59, 0.85);
       color: #38bdf8;
       border: 1px solid rgba(56, 189, 248, 0.4);
-      padding: 5px 10px; /* 手機直式微調按鈕內距 */
-      border-radius: 20px;
-      font-size: 11px;    /* 稍微縮小字體避免擠壓 */
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      white-space: nowrap;
-    }
-
-    .ctrl-btn {
-      background: rgba(30, 41, 59, 0.85);
-      color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.4);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
@@ -95,6 +83,7 @@
       backdrop-filter: blur(8px);
       transition: all 0.2s ease;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      white-space: nowrap;
     }
 
     .ctrl-btn:hover, .ctrl-btn.active {
@@ -103,10 +92,12 @@
       border-color: #38bdf8;
     }
 
-    /* 視覺小說對話框 */
+    /* ====================================================
+       1. 視覺小說對話框 - 預設（PC 電腦大螢幕）
+       ==================================================== */
     #dialogue-box {
       position: absolute;
-      bottom: 180px;
+      bottom: 130px;
       width: 90%;
       max-width: 960px;
       min-height: 160px;
@@ -142,15 +133,16 @@
       word-break: break-word;
     }
 
-    /* 🌟 修正：當沒有說話者時，自動隱藏說話者並讓對話框內容往上靠齊 */
+    /* 無說話者時的排版 */
     #dialogue-box.no-speaker {
-      justify-content: center; /* 讓內部文字在上下空間中自然置中或靠上 */
+      justify-content: flex-start !important;
     }
 
     #dialogue-box.no-speaker #speaker-name {
       display: none !important;
       height: 0 !important;
-      margin-bottom: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .no-speaker #speaker-name {
@@ -171,20 +163,36 @@
       100% { transform: translateY(-5px); opacity: 1; }
     }
 
-    #progress-tag {
+    /* PC 版對話框下方資訊列 */
+    #dialogue-outer-footer {
       position: absolute;
-      bottom: 120px;
-      left: 5%;
+      bottom: 95px; /* 剛好接在 PC 對話框下方 */
+      width: 90%;
+      max-width: 960px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       z-index: 10;
+      padding: 0 4px;
+      pointer-events: none;
+    }
+
+    #progress-tag {
+      position: static !important;
       font-size: 11px;
       color: rgba(255, 255, 255, 0.5);
-      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
-    
 
+    #pc-controls-tip {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.75);
+      letter-spacing: 0.5px;
+    }
+
+    /* 介面隱藏時的狀態 */
     body.vn-ui-hidden #dialogue-box,
     body.vn-ui-hidden #controls-bar,
-    body.vn-ui-hidden #progress-tag {
+    body.vn-ui-hidden #dialogue-outer-footer {
       opacity: 0 !important;
       visibility: hidden !important;
       pointer-events: none !important;
@@ -302,77 +310,150 @@
       border: 1px solid rgba(56, 189, 248, 0.4);
     }
 
-    @media (max-width: 768px) {
-      #dialogue-box {
-        bottom: 30px !important;       /* 貼近手機底部，釋放上方空間 */
-        width: 95% !important;
-        min-height: 110px !important;  /* 縮小手機版對話框最小高度 */
-        padding: 12px 16px !important;
-      }
-
-      #speaker-name {
-        font-size: 0.95rem !important;  /* 手機版說話者名字變小 */
-        margin-bottom: 4px !important;
-      }
-
-      #content-text {
-        font-size: 0.95rem !important;  /* 手機版內文變小，解決超出範圍問題 */
-        line-height: 1.5 !important;
-      }
-
-      #progress-tag {
-        bottom: 15px !important;       /* 讓進度標籤隨對話框上移 */
-      }
-      #controls-bar .ctrl-btn:last-child {
-        display: none !important;
-      }
-    }
-    
-
-    /* 針對手機橫式（高度極窄，如高度小於 500px）額外防護 */
-    @media (max-height: 500px) and (max-width: 900px) {
-      #dialogue-box {
-        bottom: 20px !important;
-        min-height: 95px !important;
-        padding: 8px 14px !important;
-      }
-      
-      #content-text {
-        font-size: 0.85rem !important;  /* 橫式極窄時進一步縮小字體確保不溢出 */
-        line-height: 1.4 !important;
-      }
-
-      #progress-tag {
-        bottom: 5px !important;
-      }
-      #controls-bar .ctrl-btn:last-child {
-        display: none !important;
-      }
-    }
-    /* 🌟 左右半邊點擊導覽提示（透明分區，不影響視覺） 🌟 */
+    /* 左右半邊點擊導覽（手機版專用） */
     .click-zone-left, .click-zone-right {
       position: absolute;
       top: 0;
       width: 50%;
       height: 100%;
       z-index: 5;
-      display: none; /* 預設隱藏，透過 JS 或手機版啟用 */
+      display: none;
     }
     .click-zone-left { left: 0; }
     .click-zone-right { right: 0; }
 
-    /* 手機版啟用左右分區點擊 */
-    @media (max-width: 768px) {
+    /* 平板直式 */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+  #dialogue-box {
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+    width: 92% !important;
+    max-width: 840px !important;
+    min-height: 135px !important;
+    padding: 16px 22px !important;
+  }
+
+  #dialogue-outer-footer {
+    bottom: calc(55px + env(safe-area-inset-bottom, 0px)) !important;
+    width: 92% !important;
+    max-width: 840px !important;
+  }
+}
+
+    /* ====================================================
+       2. 平板模式（769px ~ 1024px）
+       ==================================================== */
+    /* 平板直式：上調留白 + 避開底部功能條 */
+    @media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+      #dialogue-box {
+        bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+        width: 92% !important;
+        max-width: 840px !important;
+        min-height: 135px !important;
+        padding: 16px 22px !important;
+      }
+
+      #dialogue-outer-footer {
+        bottom: calc(55px + env(safe-area-inset-bottom, 0px)) !important;
+        width: 92% !important;
+        max-width: 840px !important;
+      }
+    }
+
+    /* 🌟 平板橫式：保留一行字舒適距離 + 避開橫向功能條與手勢列 🌟 */
+    @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+      #dialogue-box {
+        bottom: calc(50px + env(safe-area-inset-bottom, 0px)) !important;
+        width: 90% !important;
+        max-width: 840px !important;
+        min-height: 130px !important;
+        padding: 14px 20px !important;
+      }
+
+      #dialogue-outer-footer {
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+        width: 90% !important;
+        max-width: 840px !important;
+      }
+    }
+
+    /* ====================================================
+       3. 手機模式（768px 以下）
+       ==================================================== */
+    /* 手機直式：適當上調 + 避開底部功能條 */
+    @media (max-width: 768px) and (orientation: portrait) {
       .click-zone-left, .click-zone-right {
         display: block;
       }
+
+      #dialogue-box {
+        bottom: calc(50px + env(safe-area-inset-bottom, 0px)) !important;
+        width: 95% !important;
+        min-height: 110px !important;
+        padding: 12px 16px !important;
+      }
+
+      #speaker-name {
+        font-size: 0.95rem !important;
+        margin-bottom: 4px !important;
+      }
+
+      #content-text {
+        font-size: 0.95rem !important;
+        line-height: 1.5 !important;
+      }
+
+      #dialogue-outer-footer {
+        bottom: calc(28px + env(safe-area-inset-bottom, 0px)) !important;
+        width: 95% !important;
+      }
+
+      #pc-controls-tip {
+        display: none !important;
+      }
+
+      #controls-bar .ctrl-btn:last-child {
+        display: none !important;
+      }
     }
-    /* 當介面隱藏時，讓整個畫面變成隨時可點擊恢復的觸發區 */
-    body.vn-ui-hidden #stage {
-      cursor: pointer;
+
+    /* 🌟 手機/平板 橫向螢幕（包含高度極窄情況）：精準避開底部與兩側安全邊界 🌟 */
+    @media (max-width: 900px) and (orientation: landscape), (max-height: 520px) {
+      .click-zone-left, .click-zone-right {
+        display: block;
+      }
+
+      #dialogue-box {
+        /* 橫向模式下，基礎高度 22px 搭配安全邊界動態往上推 */
+        bottom: calc(22px + env(safe-area-inset-bottom, 0px)) !important;
+        width: 88% !important;
+        max-width: 720px !important;
+        min-height: 95px !important;
+        padding: 8px 14px !important;
+      }
+      
+      #speaker-name {
+        font-size: 0.9rem !important;
+        margin-bottom: 2px !important;
+      }
+
+      #content-text {
+        font-size: 0.85rem !important;
+        line-height: 1.4 !important;
+      }
+
+      #dialogue-outer-footer {
+        bottom: calc(4px + env(safe-area-inset-bottom, 0px)) !important;
+        width: 88% !important;
+      }
+
+      #pc-controls-tip {
+        display: none !important;
+      }
+
+      #controls-bar .ctrl-btn:last-child {
+        display: none !important;
+      }
     }
-    
-    
   </style>
 </head>
 <body>
@@ -401,7 +482,11 @@
       <div id="next-indicator">▼</div>
     </div>
 
-    <div id="progress-tag">1 / --</div>
+    <!-- 貼在對話框下方的固定資訊列（包含進度與提示） -->
+    <div id="dialogue-outer-footer">
+      <div id="progress-tag">1 / --</div>
+      <div id="pc-controls-tip">提示：使用 ⬅ ➡ 鍵或空白鍵快速翻頁</div>
+    </div>
   </div>
 
   <!-- 歷史履歷 Log 彈窗 -->
@@ -425,6 +510,142 @@
   <script>
     // 原始 15 篇回聲殘響文章庫
     const announcements = [
+    {
+        title: "學園祭 啟幕",
+        badge: "主題進展",
+        bgImage: "images/background.webp",
+        story: [
+          { speaker: "■學園祭 啟幕", text: "聚學舍的學園祭，是這座頂尖學府向世人展示力量的絕佳舞台。科展與園遊會的喧鬧人群間，能聽見此起彼落的歡呼與驚嘆聲。", bgUrl: "images/bg_school.webp"},
+          { text: "然而，今年的慶典中卻流動著一股不尋常的暗湧。" },
+          { text: "由於「荒野焰嵐」與「豹飲豹食」即將舉行現場樂團對邦，作為主辦方的「誓奪爪盟」因此獲得潛入艾瑞爾城的機會。儘管總督嚴格限制了入場名單、排除所有可能的幕後威脅，但這群「特殊人士」的現身，依然在平靜的學園裡投下了震撼彈。" },
+          { text: "當他們一行人踏入校門，無人機便灑下漫天花瓣，伊蕾琪隨即被粉絲重重包圍，展開了全程直播。" },
+          { speaker: "伊蕾琪", text: "嘿，各位蕾寶們！沒想到大家這麼熱情，連校門都快被堵住了啊！" },
+          { text: "緊接著，DJ巨星影、身為伴舞的劫，以及曾被迫推銷「甜心果飆飲」而火紅的崩，也紛紛成為眾人追逐的焦點。" },
+          { speaker: "崩", text: "……它的口感，像是戀愛初吻那樣——酸甜交織、令人心跳不已……" },
+          { text: "棕牛被迫舉起宣傳品，唸著令他頭皮發麻的宣傳詞，在閃光燈下露出極度生硬的尷尬笑容。" },
+          { text: "另一側，劫的耐心地在短短幾分鐘內消磨殆盡。面對前仆後繼、試圖觸碰他的狂熱粉絲與長槍短砲，他周身散發的寒意幾乎要將群眾凝固。劫直勾勾地盯著影，眼神中的訊息再明顯不過：你再不管好他們，我就要動手了。" },
+          { text: "影無奈地輕嘆一聲，眼角瞥見不遠處正在觀察的艾瑞爾與克爾小隊，計上心頭。" },
+          { text: "噠！" },
+          { speaker: "影", text: "嘿！這不是『荒野焰嵐』的主唱嗎？" },
+          { text: "影大喊一聲，隨即發動權能精準破解了克爾的偽裝，將他暴露在無數歌迷眼前。" },
+          { speaker: "克爾", text: "什麼……？喂！你們到底想搞什麼鬼！" },
+          { speaker: "影", text: "為了回饋大家，現在『豹飲豹食』與『荒野焰嵐』將舉辦突發的聯合粉絲簽名會！地點就在中庭喔！" },
+          { speaker: "群眾", text: "哇！" },
+          { text: "伴隨著無人機撒下的號碼牌，原本擁擠的人潮瞬間被成功轉移，留下了一片空地。" },
+          { speaker: "克爾", text: "我可沒興趣陪你們這群瘋子瞎混！我下午還有比賽要打，少來煩我。" },
+          { speaker: "洛爾", text: "冷靜點，就跟去一趟吧。順便……近距離監視誓奪爪盟的動作。別忘了，我們今天必須分別盯好他們的每一個成員。" },
+          { speaker: "克爾", text: "……好吧，也只能先這麼辦了。" },
+          { text: "克爾深吸口氣，將怒火強行壓下悶聲答應。" },
+          { speaker: "影", text: "真是太好了！話說回來，你身為這裡的學生，知不知道聚學舍有什麼好玩的地方？順便帶我參觀參觀……" },
+          { text: "克爾根本懶得搭理他，連一個眼神都沒施捨，便逕自轉身大步往中庭走去。影則是不以為意地聳了聳肩，在跟上腳步前，還不忘轉身對留下的劫等三人揮揮手，輕快地道別。" },
+          { text: "※※※" },
+          { text: "擁擠的人潮散去，耳畔的喧囂總算遠了些。" },
+          { speaker: "劫", text: "你們監督的可真緊啊。怎麼，就這麼怕我們在你們的地盤鬧出什麼亂子嗎？" },
+          { speaker: "艾瑞爾", text: "既然要放任敵對陣營的首領進來領地，我們早就在想著該怎麼在此徹底收拾掉你們。" },
+          { speaker: "劫", text: "少自大了。我們盟的宗旨是『娛樂項目』。如果你們的學園祭不夠有趣，那在我們的直播鏡頭下，丟臉的可是你們。" },
+          { speaker: "艾瑞爾", text: "喔？娛樂？我還以為貴盟的宗旨是『復權』呢。不對，或許該說是……掌控這顆星球？" },
+          { speaker: "劫", text: "哼。" },
+          { text: "劫的肩膀僵了僵，左手腕上的藍色元素刻印瞬間綻放出幽微而危險的光芒。" },
+          { text: "就在劍拔弩張之際，崩厚實的大手沉穩地抓住他的手腕。" },
+          { speaker: "崩", text: "別這樣，劫。別忘了裁佈達過的鐵律，元素一族不准私自廝殺。" },
+          { speaker: "劫", text: "既然如此，那我們今天就好好領教一下，你們這些天之驕子平常過的安逸生活吧。" },
+          { text: "說完，劫連頭也不回地逕自邁開腳步，孤傲的背影與熱鬧的人群顯得極度格格不入。" },
+          { text: "……" },
+          { speaker: "艾瑞爾", text: "阿洛、阿風，你們上午的競賽要開始了，先過去準備吧，這邊有我和五十嵐盯著就行。" },
+          { speaker: "洛爾", text: "好，那上午就拜託你們了，我們活動結束後會立刻聯絡。" },
+          { text: "兩人隨即快步走向學舍裡巨大的擬態設施「沉浸之門」。" },
+          { text: "同伴與敵人都漸漸遠去後，艾瑞爾站在原地，看著天空中緩緩飄落的無人機花瓣，長長地嘆了一口氣。" },
+          { speaker: "艾瑞爾", text: "能做的防範都做了，剩下的……就祈禱這份脆弱的和平能撐到活動結束吧。" },
+          { text: "※※※" },
+          { text: "踏入「沉浸之門」的瞬間，眼前隨即出現宏偉的萬人運動場。這裏舉辦的是對地形起伏與體能有著極致苛求的「無限量級」田徑賽。", bgUrl: "images/bg_run.webp" },
+          { speaker: "亞爾克", text: "這就是……最高水準的競賽起點嗎？" },
+          { text: "亞爾克琥珀色的雙眸倒映著天空中無數翻騰的班旗。五顏六色的布條在護欄上颯颯作響，像要將那股狂熱全數捲入一般。" },
+          { speaker: "亞爾克", text: "沒想到竟然有這麼多人來看，簡直像演唱會的現場！" },
+          { text: "為了掩飾這份小小的怯場，他下意識地拉緊額頭上的運動頭巾。" },
+          { speaker: "洛爾", text: "你沒問題吧？真的不需要我在這裡看著你跑嗎？" },
+          { speaker: "亞爾克", text: "沒問題的。阿洛你也有你的目標，就專心去比你的競賽吧，不用擔心我。" },
+          { speaker: "洛爾", text: "好，那比完之後再會合吧。" },
+          { text: "洛爾伸出手，輕輕揉捏著亞爾克毛茸茸的頭毛。橘犬晃動的尾巴終於平穩下來，表情像是汲取足夠的勇氣般點點頭。" },
+          { speaker: "亞爾克", text: "嗯！約好了，我們都要贏喔！" },
+          { text: "告別洛爾後，亞爾克轉身走入賽場外側的選手準備區。這裏的氣氛明顯凝重許多，在跑道盡頭，怒濤銳步教授正神色泰然地活動著腳踝。那股從容不迫、彷彿與風共生的氣場，無論在課堂還是這擬態競賽場，都一如既往地令人感到威勢。" },
+          { speaker: "銳步", text: "喔？我的好對手終於來了。我們可得好好在今天的『無限量級』分出勝負才行。" },
+          { speaker: "亞爾克", text: "那是當然！為了今天的比賽，這陣子早就跑了好幾趟馬拉松練習。這次我一定會在長途賽中贏過你的，教授！" },
+          { speaker: "銳步", text: "嗯，看來你確實有好好聽話。我很期待你的表現，亞爾克。" },
+          { text: "銳步輕笑一聲，腰間掛著的風元素結晶竟在此刻發出一聲清脆的鳴響，一道細小卻凌厲的氣流繞著身側盤旋而出，像是一封充滿威懾力的挑戰書。" },
+          { text: "嗡——" },
+          { text: "隨著高空的懸浮播報台閃爍起淡紫色信號光，羅菲娜富有磁性的嗓音響徹全場：" },
+          { speaker: "羅菲娜", text: "各位！現在即將開始的，是本屆學園祭話題性的巔峰對決——『無限量級』田徑賽！本次賽事採取積分制，選手們必須在平坦常規路徑與危險的『極限險地』之間做出抉擇。挑戰險地者，將獲得數倍的勇氣加權！" },
+          { speaker: "羅菲娜", text: "全員，預備——！" },
+          { text: "羅菲娜爪尖懸在紅色的啟動按鈕上方，眼神銳利如鷹，掃視著下方這群蓄勢待發的猛獸。" },
+          { text: "在這瞬息之間，亞爾克與銳步的神情驟然收斂。原本那溫和、帶著些許不安的氣息，已漸漸消失得無影無蹤。銳步側過臉，看著身旁這位學生，嘴角總算勾起一抹滿意的弧度。", bgUrl: "images/bg2.webp" },
+          { speaker: "銳步", text: "起跑之後，我們就是完完全全的競爭對手了。我可不會手下留情。" },
+          { text: "兩人目光在空中交火。銳步驚訝地發現，在那雙琥珀色的眼眸深處，原本閃爍的忐忑已然沉澱，取而代之的是一種屬於肉食者、屬於「狩獵者」的冷冽渴求。這份轉變讓銳步內心那股沉寂已久的期待被徹底點燃。" },
+          { speaker: "銳步", text: "這眼神才對……你可要好好表現給我看啊。來吧……" },
+          { text: "銳步微不可察地低語著，風元素結晶更因興奮而不安地躁動。" },
+          { text: "砰！" },
+          { text: "隨著起跑槍響，獵豹族的瞬介憑藉爆發力率先衝出，但很快被身法輕盈、如羽毛般優雅的銳步教授超越。" },
+          { text: "亞爾克咬緊牙關，左胸上的震元素刻印發出昂揚鬥志。他沒有教授那般輕靈的腳步，卻有著屬於迅焰獒一族的野性與執著。" },
+          { text: "當兩人衝向第一個分歧點——近乎九十度直插雲霄的柏壁時，亞爾克與銳步毫不猶豫地縱身躍入險境。" },
+          { speaker: "羅菲娜", text: "領先部隊到達第一個分歧點了！銳步教授與亞爾克選手果然放棄平坦的常規區域！他們連一絲猶豫都沒有，直接衝向了得分最高、但也最為凶險的『垂直峭壁跑道』！" },
+          { text: "在絕壁上，銳步教授如靈羚般以短促躍遷極速上升；亞爾克則將震動權能與土元素壓縮在腳掌，硬生生在垂直岩面上踏出一條狂野的道路。" },
+          { text: "下方的平坦跑道上，瞬介與颯太則憑藉在籃球場上磨練出的驚人爆發力，在沉重得令人窒息的重力區中奮力狂奔。" },
+          { speaker: "亞爾克", text: "呼……" },
+          { text: "高空的浮空踏板區，銳步與亞爾克迎來了最關鍵的交匯。" },
+          { speaker: "銳步", text: "就是這樣……" },
+          { text: "銳步眼神一凜，利用領先優勢，刻意在空中多踏了一個踏板作為誘餌，隨後才與亞爾克同時奔向那塊位於巔峰卻狹窄到僅容一人的浮空點。" },
+          { speaker: "銳步", text: "太好了……" },
+          { text: "交匯的剎那，銳步捕捉到了亞爾克的眼神——琥珀色的瞳孔裡果然沒有一絲退縮，往日的溫順在賽局被徹底撕落。不僅是想搶下領先，也帶著一股要把銳步給撞下去的決絕。" },
+          { speaker: "銳步", text: "來吧！" },
+          { text: "銳步內心湧現一絲期待，他已做好了兩人玉石俱焚、雙雙墜落的覺悟準備正面應戰。" },
+          { text: "咻——" },
+          { text: "一場突如其來的干擾氣流席捲而來，混亂中亞爾克的爪尖不小心鉤落了銳步腰間的風元素結晶。" },
+          { speaker: "亞爾克", text: "啊，教授，您的元素結晶……" },
+          { text: "亞爾克下意識放緩腳步。" },
+          { speaker: "銳步", text: "喂，給我繼續好好跑！在賽場上，丟失武裝是自己的失職，不需要對手的憐憫！現在——用盡你的全力衝刺吧！" },
+          { speaker: "亞爾克", text: "我知道了……抱歉，是我太天真了！" },
+          { text: "亞爾克心頭巨震，終於抹去迷惘。他在風暴中化作一道橘色的雷霆，動作變得前所未有的流暢與狂野，直指顛峰之後的下一區域！" },
+          { text: "※※※" },
+          { text: "運動場外，園遊會的街道上。一處懸掛著「誓奪爪盟」旗幟、販售「競域激鬥」擴充包的攤位前擠滿了狂熱的學生。", bgUrl: "images/bg_naka.webp"},
+          { text: "後方的陰影處，劫獨自一人冷漠地滑著手機，制則熟練地招呼著客人。" },
+          { speaker: "制", text: "喂，幫我從後面的貨箱拿一捆新的庫存出來，這批快賣完了。" },
+          { text: "然而，制伸出去等待接應的手僵在半空中，遲遲沒有等到那份理所應當的重量。猛然驚覺後，脖頸僵硬地轉過去，對上的是劫那雙毫無溫度、冷淡瞥過來的深邃眸子。" },
+          { text: "劫猛然驚覺，對方早已不是當初那個會跟在他身後叫著「制哥哥」的劫小弟了。" },
+          { speaker: "制", text: "……啊，抱歉，我自己去拿就行。" },
+          { text: "制乾笑了一聲。他迅速收回那隻落空的手，掩飾性地搓了搓爪尖，試圖擦掉那份令人尷尬的空虛感。獨自起身，避開劫那毫無波動的注視，默不作聲地走向後方的倉庫堆。" },
+          { text: "周遭的歡呼聲越是熱鬧，那股滲入骨髓的寂寞感便越發清晰。" },
+          { text: "※※※" },
+          { text: "不遠處的競域激鬥報名區，洛爾與嵐懶正對著套牌爭論不休。" },
+          { speaker: "洛爾", text: "……我能感覺到，誓奪爪盟一定在這些卡芯中加了什麼。親自參賽並在實戰中監察，是最好的防範手段！" },
+          { speaker: "嵐懶", text: "少來了，阿洛，你根本只是想炫耀吧？" },
+          { speaker: "洛爾", text: "我才沒有這麼想呢！但難得抽到好東西，不拿出來怎麼行……" },
+          { text: "就在幾人互相鬥嘴之際，一陣清脆又帶節奏感的麥克風測試聲，瞬間中斷了周遭嘈雜的喧囂。只見攤位旁的臨時高台上，如雪般純白的纖細身影——伊蕾琪，正帶著招牌的燦爛笑容傲然佇立，瞬間奪走了在場所有人的目光。" },
+          { speaker: "伊蕾琪", text: "各位蕾寶，以及熱愛冒險、渴望挑戰的統御者們！我們上午場的比賽即將正式開始囉！" },
+          { text: "白狼纖手一揮。隨著指引，身後的空地上突然傳來一陣低沈的機械運轉聲，數座巨大的黑黃相間的矩形方塊隆隆升起，透著一股不詳又迷人的科技感。" },
+          { speaker: "伊蕾琪", text: "本次『競域激鬥卡片大賽』不設複賽，採取一戰決勝淘汰！贏家可以獲得整整一箱的最新系列補充包喔！而為了能讓大家身歷其境，我們誓奪爪盟特地準備了這個特製的競技擂台！" },
+          { speaker: "伊蕾琪", text: "各位將利用特製的『先遣棋子』作為代行者，在微縮環境中進行對決！" },
+          { speaker: "伊蕾琪", text: "現在，展現你們嘔心瀝血構築的牌組的時候到來了，讓我們看看誰才是這激鬥後的真正主宰吧！" },
+          { text: "當參賽者們紛紛將精心構築的卡表交出後，高空的虛擬螢幕隨即閃爍起複雜的演算程序，接著列出排程。" },
+          { text: "噹！" },
+          { text: "輪到嵐懶的回合時，在他抽完牌後，場地上竟激盪出與眾不同、顯得深沉又渾濁的黃橘光芒，帶著一股地底深處、岩漿翻湧前的焦躁不安陡然竄出。" },
+          { speaker: "嵐懶", text: "看招吧！" },
+          { text: "低吼一聲，將手中的契靈卡牌於召喚區重重拍出。剎那間，噴湧而出的光子流在場中央扭曲抽長，隨著一聲足以撕裂耳膜的狂暴咆哮，一頭肩高超過三公尺、肌肉如黑鐵塔般盤結的「熔岩龍」悍然具現。" },
+          { text: "那如石質針刺般的剛硬鱗甲，在陽光下耀眼反射出奪目的冷光；每一次沉重的噴息，胸腔的核心深處便會明滅著熔岩般的駭人紅芒。最令人毛骨悚然的，莫過於那雙充滿原始獸性的瞳孔，正死死鎖定對手的契靈，散發著戰慄的飢渴氣息。" },
+          { text: "這早已超越了普通投影的範疇。" },
+          { speaker: "圍觀人群", text: "這……這真的是投影嗎？" },
+          { text: "龐然大物猛然重踏，眾人腳下的實體地面竟傳來真實的震動感，彷彿牠正強行跨越虛構與現實的邊界。嵐懶感受著回傳的灼熱高溫，眼中燃起瘋狂的鬥志，爪尖在統御區上狠戾地一劃。" },
+          { speaker: "嵐懶", text: "去吧！用掃場的一擊，把對面的契靈全部清掉！" },
+          { text: "吼！" },
+          { text: "純粹且暴力的洪流傾瀉而下。場邊的學生們臉上已不再全是單純的興奮，不少人在那股排山倒海的壓迫感下，臉色卻蒼白地節節後退。各種生理性的情緒與反應在四周悄悄蔓延，眼前的契靈彷彿已非遊戲角色，而是一頭隨時會張開大嘴、將一切燃成灰燼的真實怪物。" },
+          { text: "然而，洛爾的目光並未停留在咆哮的巨龍身上。他掃視全場，敏銳地察覺到周圍學生的情緒，似乎顯得有些「過頭」了。在斑斕光影的映照下，不少學生的臉部異常紅潤、呼吸頻率顯得急促，瞳孔閃爍著高昂的興致。" },
+          { speaker: "洛爾", text: "這個比賽的目的……果然有些奇怪。" },
+          { text: "而隨著嵐懶最後一波攻勢，以碾壓之姿摧毀對手的防線後，賽場上空響起清脆的提示音。" },
+          { speaker: "伊蕾琪", text: "分出勝負了！這局結束的可真快呢。但輸掉比賽的同學也別氣餒，我們還有下午場喔！" },
+          { speaker: "伊蕾琪", text: "接著，下一場比賽，將由聚學舍的洛爾，對戰許顏！" },
+          { text: "與嵐懶那種如野火燎原般的氣場截然不同，洛爾神色自若地走上台。目光看著同樣沉靜的對手神情，氣勢十足地抽出起始手牌。" },
+          { speaker: "洛爾", text: "決鬥！" },
+          { text: "——待續——" }
+        ]
+      },
       {
         title: "✦ 無盡軌跡",
         badge: "回聲殘響",
@@ -447,7 +668,7 @@
         title: "誓奪爪盟",
         badge: "回聲殘響",
         bgImage: "images/OC.webp",
-        rawText: `■歷史淵源：誓奪爪盟是由元素一族的強大賦形者「劫」所一手創立的組織。據熱愛考究與探詢歷史的愛好者所言，這個組織與千年前在艾瑞拉大陸崛起的「霸潮盟」有不少相似之處，行事作風多能看見霸潮盟當年的影子。\n\n箇中原因在於劫千年前曾深受霸潮盟老大的統帥風格影響，使在管理現今的誓奪爪盟時，劫也採用「黑幫家族」的江湖風格進行人才徵召。他看重組織成員的階級實力，卻也將彼此視為不可背叛的「家人」。這種兼具野性、殘酷卻又重視羈絆的凝聚力，正是繼承自霸潮盟的教條遺產。而霸潮盟當年的部分子嗣，在千年後的今日也因緣際會地於暗中提供協助，讓其古老意志得以在現世中重新復甦。\n\n■分崩離析與千年的休眠：誓奪爪盟最初是由劫主導，並召集昔日探索隊「無盡元素」中、同時甦醒的四位元素賦形者共同成立。\n\n在千年前那場遙遠的旅途終點，曾發生過一件令所有成員痛徹心扉的遺憾──探索隊與星球的溝通宣告失敗，並直接導致「無名隊長」喪失性命。群龍無首之下，原本團結的探索隊頓時失去前進的未來與方向。此時，悲憤交加的「劫」主動擔起了統帥權責，自行繼任了隊長職務。\n\n只是，探索隊成員之一的「創」卻有自己的想法而與幾人走了不同的路。他率先接下殘局並自願擔負起與星球溝通的職責，繼任為新一代的星球意識，於往後的數百年裡不斷試圖持續星球進行對話。\n\n由於大家對創的抉擇與行為抱持著極度不信任、卻沒有更好的打算情況下，一行人最終決定進入漫長的「休眠」，以期在未來的某一天重新醒來、繼續完成這場未竟的目標。\n\n■薄明之戰後的甦醒與背叛：千年的時光轉瞬即逝。在近代的「薄明之戰」尾聲，由於救世學者阿爾提瑪的瘋狂行為，導致星球陷入前所未有的毀滅危機。阿爾提瑪在戰敗之際使用「回歸」權能企圖改寫結局；這逼得創不得不將隕落的無名前隊長重新賦形，並在其全力出擊下平定薄明之戰。\n\n然而，這場大戰所引發的權能波動也使正在休眠的劫等人就此甦醒。起初，他們面對這個陌生的新世界尚未有明確的長遠目標，於是眾人以各自探索、融入新社會為短期方針各自活動。\n\n沒想到在經歷並調查現狀後，劫與夥伴們發現，創在薄明之戰後的行為更加背離元素一族當年的初衷──居然挺立造成星球危機的阿爾提瑪繼任新一屆星球意識，這對劫等人而言是比擅自繼任還更無法接受的背叛行為。\n\n「無盡元素」是為了讓正統的元素一族去擔負、引導星球意識，而非讓一位陌生的人族生靈來染指特權。在悲憤與信仰坍塌下，劫決心將探索隊改組為「誓奪爪盟」，正式與創的陣線決裂，並制定了三個明確的方針：\n\n一．尋找出重生的無名前隊長下落，並試著將他拉攏進同一陣線。\n\n二．在民間收集資源與勢力再度舉辦「契選」，以期奪回與星球溝通的「星球意識」選拔特權。\n\n三．為了使契選有絕對獲勝的把握，必須收集能控制地脈能量的「共鳴石」。雖然元素一族無法直接操控地脈，但根據他們的經驗得知，共鳴石只要運用得當便能強化自身的權能，若能壟斷、掌握的話會十分有利。\n\n■同盟的組建與倒戈：在這三個方針之下，崩、制、影、劫、耀五位赋形者組成了利益同盟。他們首要之務，就是逼迫創交出舉辦契選的關鍵核心──被稱為『奧法魯斯的遺物』的萬解核。這個東西是與星球進行溝通的鑰匙，自從創當上星球意識後，便理所當然地將其保管在身。\n\n接著根據線報，他們得知重生、賦形不久的無名前隊長似乎失去了所有的過往記憶。於是重情感的「耀」主動提出由他去接觸、說服前隊長，看看能不能將這個最強戰力拉攏回誓奪爪盟的陣營。\n\n然而事情的發展卻超出劫的預料。耀在深入接觸了擁有新名字「嵐懶」的前隊長後，受到嵐懶那份不變的溫柔與羈絆影響，耀最終改變心意選擇背棄誓奪爪盟，回到屬於創「聯合陣線」的前隊長身邊，這一抉擇導致他與誓奪爪盟正式決裂。不過，由於嵐懶已不再有當時的全盛實力，劫也沒有將其放在眼裡。\n\n■暗流湧動的未來：儘管接連遭遇昔日夥伴的倒戈與背叛，冷酷的劫並沒有就此停下腳步，並將這些遭遇全數化為深沉恨意與前進動力，無所不用其極地尋找可用的勢力與棋子。\n\n首先，他將目光對準現今對艾瑞爾軍掌權體制不滿的激進分子、以及被總督艾瑞爾裁撤的前官僚暗部。劫以「推動復權」為號召在社會基層大肆吸納人才、經營民意，並獲得了如「伊蕾琪」這般實力強大的元素使用者特務協助。\n\n在明面上，他們以保護邊緣者與弱勢群體為口號，並聰明地利用娛樂產業作為掩護從社會的各個縫隙中嶄露頭角。\n\n接著，在復權派金主提供的情報中，誓奪爪盟掌握了「共鳴石」的消息，得知其藏在那些前官僚曾經管理、如今被廢棄的艾瑞爾軍舊研究部門中。自此，誓奪爪盟一面展開對共鳴石的搜索與地脈機關的暗地設置，一方面也讓「崩」去尋找能開採的共鳴石礦脈，以確保未來的戰略供應量。\n\n隨著計畫的進展，誓奪爪盟終於得到夢寐以求的共鳴石，也找到能為其進行打磨的行家。自此，他們開始透過地下管道將共鳴石作為「翻身的禁藥」流通、散佈給那些渴望力量的平民。\n\n這份散佈行為，最初的用意只是為了利用地脈去干涉契選的進行好獲得優勢。不過，與他們合作的復權派官僚金主私底下卻抱持不同的想法──他們企圖利用共鳴石的副作用，替自己打造另一批「私人勢力」，以此顛覆現任總督的政權。對此，劫雖然早已察覺到金主們的意圖，但在彼此「攪亂軍方資源、奪取地脈」著眼點相近情況下，劫選擇冷眼旁觀、默許復權派的行徑。\n\n而今，元素一族之間的契選已進入火熱的後半戰，誓奪爪盟該如何應對這場由他們一手點燃的風暴，將成為決定未來命運的重要分水嶺。`
+        rawText: `■歷史淵源：誓奪爪盟是由元素一族的強大賦形者「劫」所一手創立的組織。據熱愛考究與探詢歷史的愛好者所言，這個組織與千年前在艾瑞拉大陸崛起的「霸潮盟」有不少相似之處，行事作風多能看見霸潮盟當年的影子。\n\n箇中原因在於劫千年前曾深受霸潮盟老大的統帥風格影響，使在管理現今的誓奪爪盟時，劫也採用「黑幫家族」的江湖風格進行人才徵召。他看重組織成員的階級實力，卻也將彼此視為不可背叛的「家人」。這種兼具野性、殘酷卻又重視羈絆的凝聚力，正是繼承自霸潮盟的教條遺產。而霸潮盟當年的部分子嗣，在千年後的今日也因緣際會地於暗中提供協助，讓其古老意志得以在現世中重新復甦。\n\n■分崩離析與千年的休眠：誓奪爪盟最初是由劫主導，並召集昔日探索隊「無盡元素」中、同時甦醒的四位元素賦形者共同成立。\n\n在千年前那場遙遠的旅途終點，曾發生過一件令所有成員痛徹心扉的遺憾──探索隊與星球的溝通宣告失敗，並直接導致「無名隊長」喪失性命。群龍無首之下，原本團結的探索隊頓時失去前進的未來與方向。此時，悲憤交加的「劫」主動擔起了統帥權責，自行繼任了隊長職務。\n\n只是，探索隊成員之一的「創」卻有自己的想法而與幾人走了不同的路。他率先接下殘局並自願擔負起與星球溝通的職責，繼任為新一代的星球意識，於往後的數百年裡不斷試圖持續星球進行對話。\n\n由於大家對創的抉擇與行為抱持著極度不信任、卻沒有更好的打算情況下，一行人最終決定進入漫長的「休眠」，以期在未來的某一天重新醒來、繼續完成這場未竟的目標。\n\n■薄明之戰後的甦醒與背叛：千年的時光轉瞬即逝。在近代的「薄明之戰」尾聲，由於救世學者阿爾提瑪的瘋狂行為，導致星球陷入前所未有的毀滅危機。阿爾提瑪在戰敗之際使用「回歸」權能企圖改寫結局；這逼得創不得不將隕落的無名前隊長重新賦形，並在其全力出擊下平定薄明之戰。\n\n然而，這場大戰所引發的權能波動也使正在休眠的劫等人就此甦醒。起初，他們面對這個陌生的新世界尚未有明確的長遠目標，於是眾人以各自探索、融入新社會為短期方針各自活動。\n\n沒想到在經歷並調查現狀後，劫與夥伴們發現，創在薄明之戰後的行為更加背離元素一族當年的初衷──居然挺立造成星球危機的阿爾提瑪繼任新一屆星球意識，這對劫等人而言是比擅自繼任還更無法接受的背叛行為。\n\n「無盡元素」是為了讓正統的元素一族去擔負、引導星球意識，而非讓一位陌生的人族生靈來染指特權。在悲憤與信仰坍塌下，劫決心將探索隊改組為「誓奪爪盟」，正式與創的陣線決裂，並制定了三個明確的方針：\n\n一．尋找出重生的無名前隊長下落，並試著將他拉攏進同一陣線。\n\n二．在民間收集資源與勢力再度舉辦「契選」，以期奪回與星球溝通的「星球意識」選拔特權。\n\n三．為了使契選有絕對獲勝的把握，必須收集能控制地脈能量的「共鳴石」。雖然元素一族無法直接操控地脈，但根據他們的經驗得知，共鳴石只要運用得當便能強化自身的權能，若能壟斷、掌握的話會十分有利。\n\n■同盟的組建與倒戈：在這三個方針之下，崩、制、影、劫、耀五位赋形者組成了利益同盟。他們首要之務，就是逼迫創交出舉辦契選的關鍵核心──被稱為『奧法魯斯的遺物』的萬解核。這個東西是與星球進行溝通的鑰匙，自從創當上星球意識後，便理所當然地將其保管在身。\n\n接著根據線報，他們得知重生、賦形不久的無名前隊長似乎失去了所有的過往記憶。於是重情感的「耀」主動提出由他去接觸、說服前隊長，看看能不能將這個最強戰力拉攏回誓奪爪盟的陣營。\n\n然而事情的發展卻超出劫的預料。耀在深入接觸了擁有新名字「嵐懶」的前隊長後，受到嵐懶那份不變的溫柔與羈絆影響，耀最終改變心意選擇背棄誓奪爪盟，回到屬於創「聯合陣線」的前隊長身邊，這一抉擇導致他與誓奪爪盟正式決裂。不過，由於嵐懶已不再有當時的全盛實力，劫也沒有將其放在眼裡。\n\n■暗流湧動的未來：儘管接連遭遇昔日夥伴的倒戈與背叛，冷酷的劫並沒有就此停下腳步，並將這些遭遇全數化為深沉恨意與前進動力，無所不用其極地尋找可用的勢力與棋子。\n\n首先，他將目光對準現今對艾瑞爾軍掌權體制不滿的激進分子、以及被總督艾瑞爾裁撤的前官僚暗部。劫以「推動復權」為號召在社會基層大肆吸納人才、經營民意，並獲得了如「伊蕾琪」這般實力強大的元素使用者特務協助。\n\n在明面上，他們以保護邊緣者與弱勢群體為口號，並聰明地利用娛樂產業作為掩護從社會的各個縫隙中嶄露頭角。\n\n接著，在復權派金主提供的情報中，誓奪爪盟掌握了「共鳴石」的消息，得知其藏在那些前官僚曾經管理、如今被廢棄的艾瑞爾軍舊研究部門中。自此，誓奪爪盟一面展開對共鳴石的搜索與地脈機關的暗地設置，一方面也讓「崩」去尋找能開採的共鳴石礦脈，以確保未來的戰略供應量。\n\n隨著計畫的進展，誓奪爪盟終於得到夢寐以求的共鳴石，也找到能為其進行打磨的行家。自此，他們開始透過地下管道將共鳴石作為「翻身的禁藥」流通、散佈給那些渴望力量的平民。\n\n這份散佈行為，最初的用意只是為了利用地脈去干涉契選的進行好獲得優勢。不過，與他們合作的復權派官僚金主私底下卻抱持不同的想法──他們企圖利用共鳴石的副作用，替自己打造另一批「私人勢力」，以此顛覆現任總督的政權。對此，劫雖然早已察查到金主們的意圖，但在彼此「攪亂軍方資源、奪取地脈」著眼點相近情況下，劫選擇冷眼旁觀、默許復權派的行徑。\n\n而今，元素一族之間的契選已進入火熱的後半戰，誓奪爪盟該如何應對這場由他們一手點燃的風暴，將成為決定未來命運的重要分水嶺。`
       },
       {
         title: "詛碼團",
@@ -519,32 +740,51 @@
 
     // 自動切段解讀
     const chaptersData = announcements.map((item, idx) => {
-      const paragraphs = item.rawText.split(/\n\n+/).map(p => p.trim()).filter(p => p.length > 0);
-      const storySteps = paragraphs.map(paragraph => {
-        let speaker = "";
-        let text = paragraph;
+      let storySteps = [];
 
-        const match = paragraph.match(/^([^\n：「」]+)[：:]([\s\S]+)$/);
-        if (match) {
-          speaker = match[1].trim();
-          text = match[2].trim();
-        }
+      if (item.story && Array.isArray(item.story)) {
+        let lastBgUrl = item.bgImage;
+        storySteps = item.story.map(s => {
+          if (s.bgUrl && s.bgUrl.trim() !== "") {
+            lastBgUrl = s.bgUrl;
+          }
+          return {
+            speaker: s.speaker || "",
+            text: s.text || "",
+            bgUrl: lastBgUrl
+          };
+        });
+      } else if (item.rawText) {
+        const paragraphs = item.rawText.split(/\n\n+/).map(p => p.trim()).filter(p => p.length > 0);
+        storySteps = paragraphs.map(paragraph => {
+          let speaker = "";
+          let text = paragraph;
 
-        return {
-          speaker: speaker,
-          text: text,
-          bgUrl: item.bgImage
-        };
-      });
+          const match = paragraph.match(/^([^\n：「」]+)[：:]([\s\S]+)$/);
+          if (match) {
+            speaker = match[1].trim();
+            text = match[2].trim();
+          }
+
+          return {
+            speaker: speaker,
+            text: text,
+            bgUrl: item.bgImage
+          };
+        });
+      }
 
       return {
-        id: "chap_" + idx,
         title: item.title,
         badge: item.badge,
         bgImage: item.bgImage,
         story: storySteps
       };
     });
+
+    let typingTimer = null;
+    let isTyping = false;
+    let fullTextToType = "";
 
     let currentChapterIndex = 0;
     let currentStepIndex = 0;
@@ -562,23 +802,35 @@
 
       const speakerEl = document.getElementById('speaker-name');
       const dialogueBox = document.getElementById('dialogue-box');
+      const contentTextEl = document.getElementById('content-text');
 
-  if (data.speaker && data.speaker.trim() !== "") {
-    speakerEl.innerText = data.speaker;
-    dialogueBox.classList.remove('no-speaker');
-  } else {
-    speakerEl.innerText = "";
-    dialogueBox.classList.add('no-speaker');
-  }
+      if (data.speaker && data.speaker.trim() !== "") {
+        speakerEl.innerText = data.speaker;
+        dialogueBox.classList.remove('no-speaker');
+      } else {
+        speakerEl.innerText = "";
+        dialogueBox.classList.add('no-speaker');
+      }
 
-  document.getElementById('content-text').innerText = data.text;
+      if (typingTimer) clearInterval(typingTimer);
+      fullTextToType = data.text;
+      contentTextEl.innerText = "";
+      isTyping = true;
+
+      let charIndex = 0;
+      const typingSpeed = 15;
+
+      typingTimer = setInterval(() => {
+        if (charIndex < fullTextToType.length) {
+          contentTextEl.innerText += fullTextToType.charAt(charIndex);
+          charIndex++;
+        } else {
+          clearInterval(typingTimer);
+          isTyping = false;
+        }
+      }, typingSpeed);
 
       const targetBgUrl = data.bgUrl || "";
-      
-      const img = new Image();
-      img.src = targetBgUrl;
-      img.onerror = () => console.error("背景圖片找不到:", targetBgUrl);
-
       const bg1El = document.getElementById('bg1');
       const bg2El = document.getElementById('bg2');
       const currentActiveEl = currentActiveBgLayer === 1 ? bg1El : bg2El;
@@ -598,13 +850,18 @@
     }
 
     function handleStageClick() {
-      // 🌟 如果目前是「隱藏介面」狀態，點擊畫面任何地方就直接取消隱藏並結束函數
       if (document.body.classList.contains('vn-ui-hidden')) {
         document.body.classList.remove('vn-ui-hidden');
         return;
       }
-      
-      // 正常閱讀狀態下的點擊推進對話
+
+      if (isTyping) {
+        if (typingTimer) clearInterval(typingTimer);
+        document.getElementById('content-text').innerText = fullTextToType;
+        isTyping = false;
+        return;
+      }
+
       handleAdvance();
     }
 
@@ -710,14 +967,12 @@
       document.getElementById('chapter-modal').style.display = 'none';
     }
 
-    // 🌟 全域鍵盤監聽與彈窗鎖定修正
     window.addEventListener('keydown', function(e) {
       const chapterModal = document.getElementById('chapter-modal');
       const logModal = document.getElementById('log-modal');
-      const isModalOpen = (chapterModal && chapterModal.style.display === 'flex') || 
+      const isModalOpen = (chapterModal && chapterModal.style.display === 'flex') ||
                           (logModal && logModal.style.display === 'flex');
 
-      // 當彈窗開啟時：阻斷上下左右與空白鍵的預設行為（防止背景捲動與穿透）
       if (isModalOpen) {
         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
           e.preventDefault();
@@ -725,7 +980,6 @@
         return;
       }
 
-      // 一般閱讀時：左右鍵、Enter、空白鍵直接切換段落
       if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         handleAdvance();
@@ -755,13 +1009,11 @@
       }
     });
 
-    // 初始化第一張背景與文字
     document.getElementById('bg1').style.backgroundImage = `url('${getCurrentStory()[0].bgUrl}')`;
     renderStep();
-    // 🌟 自動偵測手機版並將按鈕文字精簡變短 🌟
+
     window.addEventListener('DOMContentLoaded', () => {
         if (window.innerWidth <= 768) {
-            // 尋找右上角控制列的所有按鈕並修改文字
             const btns = document.querySelectorAll('#controls-bar .ctrl-btn');
             btns.forEach(btn => {
                 if (btn.innerText.includes('篇章')) btn.innerText = '☰ 篇章';

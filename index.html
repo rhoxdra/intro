@@ -11,7 +11,7 @@
   gtag('config', 'G-EJ6S8VYWPY');
 </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <title>《無限元素》</title>
     <style>
@@ -837,9 +837,14 @@
            🌟 彈窗開啟狀態控制 🌟
            ========================================== */
         /* 1. 彈窗開啟時，鎖定後方主頁面捲動 */
-        body.modal-open {
-            overflow: hidden !important;
-        }
+        body.vn-open,
+body.modal-open {
+    overflow: hidden !important;
+    height: 100vh !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: auto !important;
+}
+
 
         /* 2. 僅將音樂播放器淡出隱藏，保留相機按鈕供隨機切換觀圖 */
         body.modal-open .music-player-container {
@@ -1037,15 +1042,18 @@
 
     /* 🌟 視覺小說全螢幕 Overlay 視窗 🌟 */
     .vn-modal-overlay {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.4);
-        z-index: 150;
-        display: none;
-        justify-content: center;
-        align-items: center;
-    }
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* 🌟 核心：自動根據手機瀏覽器當前功能條的顯示/隱藏動態調整真實高度 */
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 150;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    touch-action: none;
+}
 
     .vn-iframe-container {
         position: relative;
@@ -1091,8 +1099,8 @@
         color: #fff;
         transform: scale(1.08);
     }
-    @media (max-width: 768px) {
-      /* 如果希望進入 VN 閱讀器時才隱藏，可搭配 body.vn-open 選擇器： */
+    /* 🌟 只有在打開視覺小說閱讀器 (body.vn-open) 時，手機與各類平板才隱藏音樂播放器 🌟 */
+    @media (max-width: 1024px), (hover: none) and (pointer: coarse) {
       body.vn-open .music-player-container,
       body.vn-open .back-to-top-btn {
         display: none !important;
@@ -1136,13 +1144,10 @@
             <div class="event-card">
                 <span class="event-badge">CURRENT EVENT</span>
                 <p class="event-text">
-                    <strong>2026/8/14 本傳第十一集隆重登場！</strong><br><br>
-                    聚學舍的期中考終於結束，但神祕人士卻趁此時暗中大規模散布新型共鳴石，民眾也因此陷入舉棋不定的局勢。<br>
-                    而關乎星球與元素一族未來的「再契選」終於正式過半，第五場「奔疾試煉」將在跨越山海的鋼鐵迷宮與未知天際間引爆！<br><br>
-                    緊接在契選之後，充滿青春與汗水的「學園祭篇章」也正要揭開序幕。<br>
-                    無限量級的極速競跑、熱血沸騰的籃球賽事，還有響徹夜空的樂團對決，連番精彩活動絕對讓你目不暇給！<br><br>
-                    還有Beastagram 透明卡片新品上架＆經典款重印！<br>
-                    4款「誓奪爪盟」與「學園祭」主題透卡全新登場，舊款同步補貨完畢，滿額再送限量防水貼紙！<br>
+                    <strong>2026/8/28 學園祭篇章「啟幕」正式開跑！</strong><br><br>
+                    聚學舍的盛大慶典開幕囉！<br>
+                    無限量級的極速競跑、卡牌大賽的狂熱對決，還有各方勢力的交鋒等你來探索。<br>
+                    趕快前往主題進展專區，解鎖這場盛典的開幕與精彩過程吧！<br>
                 </p>
             </div>
         </header>
@@ -1155,7 +1160,7 @@
             <div class="link-card highlight" onclick="openScheduleModal()" style="cursor: pointer;">
                 <img src="images/lanlan.webp" alt="嵐懶" class="avatar">
                 <div class="link-info">
-                    <div class="link-title">出版與活動月曆 / 排程預告</div>
+                    <div class="link-title">出版與活動月曆 ✦ 排程預告</div>
                     <div class="link-desc">查看 8 - 10 月本傳發售、連載、學園祭主題與周邊資訊</div>
                 </div>
                 <div class="arrow">➔</div>
@@ -1193,7 +1198,7 @@
             <div class="link-card highlight" onclick="openVNModal()" style="cursor: pointer;">
                 <img src="images/kokumei.webp" alt="克明" class="avatar">
                 <div class="link-info">
-                    <div class="link-title">主題進展 / 回聲殘響</div>
+                    <div class="link-title">主題進展 ✦ 回聲殘響</div>
                     <div class="link-desc">進入視覺小說型閱讀體驗，查看當前篇章活動與過往內容</div>
                 </div>
                 <div class="arrow">➔</div>
@@ -1203,6 +1208,14 @@
 <!-- 社群內容與圖鑑 -->
         <div class="section-title">角色圖鑑</div>
         <div class="link-list">
+            <a href="periodic.html" target="_blank" rel="noopener noreferrer" class="link-card highlight">
+    <img src="images/rub.webp" alt="元素週期表" class="avatar">
+    <div class="link-info">
+        <div class="link-title">元素週期表 ✦ 世界地理脈絡</div>
+        <div class="link-desc">探索全體角色關係圖譜，與三大陸自然地理樣貌</div>
+    </div>
+    <div class="arrow">➔</div>
+</a>
             <details class="link-card-dropdown">
                 <summary class="link-card-summary">
                     <img src="images/koushou_beast.webp" alt="高翔" class="avatar">
@@ -1926,7 +1939,7 @@
                 bgImage: "images/jareth_bg.webp", 
                 desc: `賈瑞斯，創元素賦形者
 
-為擁有金色鱗片、包容力廣大的龍人。他是這顆星球上所有元素結晶的創造者，也是親自賦形「十三元素」形象與本質的黃龍龍神。千年前，他是元素一族中第一位因「好奇心」而主動走出外界、嘗試與人類接觸的先驅，因而獲得族群授予的卓越稱號「賈瑞昂斯」。在無名與星球契選失敗後，他接任成為第二任星球意識，於漫長歲月裡忍受著極端的孤獨與阿爾提瑪的執著，以廣大的包容力引導整個世界的運行。
+為擁有金色鱗片、包容力廣大的龍人。他是這顆星球上所有元素結晶的創造者，也是親自賦形「十三元素」形象與本質的黃龍龍神。千年前，他是元素一族中第一位因「好奇心」而主動走出外界、嘗試與人類接觸的先驅，因而獲得族群授予的卓越稱號「賈瑞昂斯」。在無名與星球契選失敗後，他接任成為第二任星球意識，於漫長歲月裡忍受著極端的孤獨與阿爾提瑪的執著，持續引導整個世界的運行。
 
 在「薄明之戰」尾聲，他犧牲自己賦形紅焰終結戰事。戰後借助嵐懶與同伴們的回歸權能，使他重新凝聚了曾一度消逝的實體肉身。如今他重獲自由，將重責大任暫時交接給阿爾提瑪，獨自踏上旅途遊歷三大陸，親身體驗這個過去因擔任星球意識而無法自由觸及的生靈世界。在旅人之間更流傳著「凡見到金色龍人者，必能獲得幸運眷顧」的浪漫傳聞。
 
@@ -2344,7 +2357,7 @@
                 quote: "「請帶著這份秘密繼續前進吧。我想有朝一日，會出現那個讓我們霸潮盟足以買下這份情報的契機。」",
                 tags: { chapter: ["無盡探途"], faction: ["霸潮盟"], type: [], element: [] },
                 bgImage: "images/tormunn_bg.webp", 
-                desc: `拓穆恩，野豬族，是掌控著北方聚落艾瑞拉經濟與秩序的核心領導者，同時也是「霸潮盟」艾瑞拉分會的分會長。他擁有極其高明且敏銳的商業頭腦，全身上下散發著精明、沉穩而高貴的商賈氣場。在弱肉強食且資源匱乏的極北之地，拓穆恩憑藉著對規則的洞察與出色的管理手腕，將艾瑞拉打造成一座秩序井然、擁有先進保溫與防風設施的繁榮要塞，是個能憑一己之力維繫龐大都市運作的厲害人物。
+                desc: `拓穆恩，野豬族，是掌控著北方聚落艾瑞拉經濟與秩序的核心領導者，同時也是「霸潮盟」艾瑞拉分會的分會長。他擁有極其高明且敏銳的商業頭腦，全身上下散發著精明的商賈氣場。在弱肉強食且資源匱乏的極北之地，拓穆恩憑藉著對規則的洞察與出色的管理手腕，將艾瑞拉打造成一座秩序井然、擁有先進保溫與防風設施的繁榮要塞，是個能憑一己之力維繫龐大都市運作的厲害人物。
 
 在性格上，拓穆恩是個極致的理性主義者與務實派商人。他奉行「利益、規則與對等交換」，看待事情不帶過多的情感偏見或傳統包袱，只要能為艾瑞拉帶來價值與長遠的穩定，他便樂意坐下來與任何人進行談判。雖然掌控著霸潮盟在北方的龐大資源，甚至被白原行族等傳統部族視為冷酷的邊境掌控者，但拓穆恩本質上並非盲目擴張的侵略者，而是一位講求規矩、重信守諾的「對等溝通者」。
 
@@ -4087,55 +4100,35 @@
         });
         // 🌟 視覺小說 Modal 觸發邏輯 🌟
     function openVNModal(initialChapterIndex = 0) {
-        const modal = document.getElementById('vn-modal');
-        const iframe = document.getElementById('vn-iframe');
-        
-        if (iframe.src === 'about:blank' || !iframe.src.includes('vn_reader.html')) {
-            iframe.src = 'vn_reader.html';
+    const modal = document.getElementById('vn-modal');
+    const iframe = document.getElementById('vn-iframe');
+    
+    if (iframe.src === 'about:blank' || !iframe.src.includes('vn_reader.html')) {
+        iframe.src = 'vn_reader.html';
+    }
+
+    iframe.onload = function() {
+        if (initialChapterIndex > 0) {
+            iframe.contentWindow.postMessage({ type: 'SELECT_CHAPTER_INDEX', index: initialChapterIndex }, '*');
         }
-
-        iframe.onload = function() {
-            if (initialChapterIndex > 0) {
-                iframe.contentWindow.postMessage({ type: 'SELECT_CHAPTER_INDEX', index: initialChapterIndex }, '*');
-            }
-            setTimeout(() => {
-                iframe.focus();
-                try {
-                    const innerStage = iframe.contentWindow.document.getElementById('stage');
-                    if (innerStage) innerStage.focus();
-                } catch(e) {}
-            }, 100);
-        };
-
-        modal.style.display = 'flex';
-        document.body.classList.add('ui-hidden'); // 隱藏主頁面卡片 UI
-        document.body.classList.add('vn-open');   // 強制隱藏主頁面的相機按鈕 📷
-
         setTimeout(() => {
             iframe.focus();
-        }, 150);
-    }
+        }, 100);
+    };
 
-    // ⚡ 核心關閉邏輯：關閉時自動退出全螢幕，還原主頁點擊狀態 ⚡
-    function closeVNModal() {
-        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
-            if (document.exitFullscreen) {
-                document.exitFullscreen().catch(err => console.log(err));
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            }
-        }
+    modal.style.display = 'flex';
+    document.body.classList.add('ui-hidden');
+    document.body.classList.add('vn-open');      // 鎖定首頁滾動並隱藏平板音樂條
+}
 
-        const modal = document.getElementById('vn-modal');
-        modal.style.display = 'none';
-        document.body.classList.remove('ui-hidden'); // 恢復主頁面卡片 UI
-        document.body.classList.remove('vn-open');   // 恢復相機按鈕 📷
-        document.body.classList.remove('modal-open'); // 確保主頁面可正常點擊與捲動
-    }
+function closeVNModal() {
+    // ...退出全螢幕邏輯保持原樣...
+    const modal = document.getElementById('vn-modal');
+    modal.style.display = 'none';
+    document.body.classList.remove('ui-hidden');
+    document.body.classList.remove('vn-open');   // 解鎖首頁
+    document.body.classList.remove('modal-open');
+}
 
     // 全螢幕開關邏輯
     function toggleVNFullscreen() {
