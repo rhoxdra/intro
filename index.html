@@ -343,13 +343,13 @@
         }
 
         .event-card {
-            background: rgba(30, 24, 23, 0.85);
+            background: rgba(30, 24, 23, 0.55);
             border: 1px solid rgba(224, 123, 70, 0.35);
             border-radius: 12px;
             padding: 14px 16px;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(4px);
             text-align: left;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.65);
         }
 
         .event-badge {
@@ -1103,8 +1103,7 @@
               <!-- 上方：世界觀短文與點擊對話互動 -->
               <div class="story-intro" style="background: transparent; border-left: none; padding: 0; margin: 0 0 10px 0; backdrop-filter: none;">
                   <p style="font-size: 0.9rem; line-height: 1.65; color: #e2e8f0; margin-bottom: 6px;">從最初的元素冒險，到如今在聚學舍修練、參與再契選的漫長旅程，賦形者們將在這片世界中探索力量、羈絆，以及隱藏於歷史深處的真相。</p>
-                  <p style="font-size: 0.75rem; color: #38bdf8; opacity: 0.85; margin-bottom: 0; text-align: right;">( ✦ 點擊開啟夥伴對話 ✦ )</p>
-              </div>
+                  <p style="font-size: 0.75rem; color: #d6cbbe; opacity: 0.85; margin-bottom: 0; text-align: right;">( ✦ 點擊開啟夥伴對話 ✦ )</p>              </div>
 
               <!-- 分隔微光線 -->
               <div style="width: 100%; height: 1px; background: rgba(56, 189, 248, 0.2); margin: 10px 0;"></div>
@@ -1159,8 +1158,8 @@
 
 
         <!-- 🌟 1. 核心變現專區置頂（官方商城與最新出版） 🌟 -->
-        <div class="section-title" style="color: #38bdf8; display: flex; align-items: center; gap: 6px;">
-             最新出版 ✦ 官方商城
+        <div class="section-title" style="display: flex; align-items: center; gap: 6px;">
+      最新出版 ✦ 官方商城
         </div>
         <div class="link-list">
             <!-- BookWalker：強化第 11 集與試閱動機 -->
@@ -1545,8 +1544,7 @@
 
             <!-- 📸 圖卡擷取區域（網頁顯示與截圖標的） -->
             <div id="fortune-capture-area" class="fortune-card-capture">
-                <span class="event-badge" style="background: #a855f7;">DAILY FORTUNE</span>
-                <h2 id="fortune-title" class="modal-title" style="margin-bottom: 12px; margin-top: 4px;">今日共鳴指引</h2>
+<span class="event-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #151314;">DAILY FORTUNE</span>                <h2 id="fortune-title" class="modal-title" style="margin-bottom: 12px; margin-top: 4px;">今日共鳴指引</h2>
                 
                 <!-- 網頁頭像（截圖時會自動隱藏） -->
                 <img id="fortune-avatar" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #38bdf8; margin: 4px 0; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
@@ -1575,15 +1573,9 @@
             
             <!-- 按鈕群組（去掉複製文字，儲存圖片遞補，雙按鈕橫向並排） -->
             <div style="display: flex; gap: 10px; width: 100%; margin-top: 14px;">
-                <button id="draw-again-btn" class="form-switch-btn" onclick="drawDailyFortune()" style="margin-bottom: 0; flex: 1;">🎲 再抽一次 (剩 2 次)</button>
-                <button class="form-switch-btn" onclick="downloadFortuneImage()" style="margin-bottom: 0; flex: 1; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-color: rgba(56, 189, 248, 0.5);">📸 儲存籤詩圖卡</button>
-            </div>
-            <!-- 🌟 調整 3：共鳴籤底部賣場引流小連結 🌟 -->
-            <div style="margin-top: 10px; text-align: center;">
-                <a href="https://myship.7-11.com.tw/general/detail/GM2608074156966" target="_blank" onclick="gtag('event', 'Shop711_Click', {'source': 'fortune_modal'});" style="color: #94a3b8; font-size: 0.75rem; text-decoration: underline; transition: color 0.2s;">
-                    ✦ 想讓夥伴陪你度過每一天？前往賣場收藏精選角色實體周邊 ✦
-                </a>
-            </div>
+    <button id="draw-again-btn" class="form-switch-btn" onclick="drawDailyFortune()" style="margin-bottom: 0; flex: 1;"> 再抽一次 (剩 2 次)</button>
+<button class="form-switch-btn" onclick="downloadFortuneImage()" style="margin-bottom: 0; flex: 1; background: linear-gradient(135deg, #f5a623 0%, #d97706 100%); border-color: rgba(245, 166, 35, 0.6);">📸 儲存籤詩圖卡</button>            </div>
+
         </div>
     </div>
     <!-- 🌟 JS 控制腳本 🌟 -->
@@ -3455,8 +3447,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                     <img src="images/${item.charKey}.webp" alt="${item.charKey}" style="width: 48px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid #38bdf8; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
                     <div style="flex-grow: 1;">
                         <p style="font-weight: 600; color: #f8fafc; margin-bottom: 4px; font-size: 0.88rem; line-height: 1.5;">${item.text}</p>
-                        <p style="font-size: 0.72rem; color: #38bdf8; opacity: 0.85; margin-bottom: 0; text-align: right;">( ✦ 點擊切換下一句對話 ✦ )</p>
-                    </div>
+                        <p style="font-size: 0.72rem; color: #d6cbbe; opacity: 0.85; margin-bottom: 0; text-align: right;">( ✦ 點擊切換下一句對話 ✦ )</p>                    </div>
                 </div>
             `;
         };

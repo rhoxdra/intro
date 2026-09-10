@@ -210,8 +210,8 @@
         <div id="header-main-title" class="main-title">《無限元素》元素週期表</div>
         <div id="header-sub-title" class="sub-title">收錄全體角色關係圖譜</div>
         <div class="view-switch-box">
-            <button id="btn-mode-periodic" class="view-btn active" onclick="switchView('periodic')">❖ 元素週期表</button>
-            <button id="btn-mode-geo" class="view-btn" onclick="switchView('geo')">🗺️ 世界地理圖</button>
+            <button id="btn-mode-periodic" class="view-btn active" onclick="switchView('periodic')">元素週期表</button>
+            <button id="btn-mode-geo" class="view-btn" onclick="switchView('geo')">世界地理圖</button>
         </div>
     </div>
 
@@ -242,8 +242,8 @@
         <label><input type="checkbox" id="layer-tier34" checked> 村落與遺跡</label>
         <label><input type="checkbox" id="layer-labels" checked> 區域名稱標示</label>
         <div class="btn-group">
-            <button id="ruler-btn" class="action-btn" onclick="toggleRuler()">📏 空間測距工具 [關閉]</button>
-            <button class="action-btn" onclick="resetGeoView()">⟲ 全景復位 (Space / R)</button>
+            <button id="ruler-btn" class="action-btn" onclick="toggleRuler()">空間測距工具 [關閉]</button>
+            <button class="action-btn" onclick="resetGeoView()">全景復位 (Space / R)</button>
         </div>
     </div>
 
@@ -931,7 +931,7 @@ ctx.shadowBlur = 0; // 畫完立即重置，避免殘留影響下一條線
             rulerPoints = [];
             const btn = document.getElementById('ruler-btn');
             btn.classList.toggle('active', rulerActive);
-            btn.innerText = rulerActive ? "📏 測距模式中 (點選兩點)" : "📏 空間測距工具 [關閉]";
+            btn.innerText = rulerActive ? "測距模式中 (點選兩點)" : "空間測距工具 [關閉]";
             document.getElementById('hint-box').innerText = rulerActive 
                 ? "【測距模式】點擊地圖任意兩點，計算直線航行距離。"
                 : "拖曳平移 ｜ 滾輪縮放 ｜ 點擊地點檢視詳細與高亮航線";
