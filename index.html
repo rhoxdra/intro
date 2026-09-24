@@ -83,11 +83,17 @@
             background: none;
             border: none;
             color: #e07b46;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            font-family: "Segoe UI Symbol", "Apple Symbols", -apple-system, sans-serif !important; /* 強制純文字字型，杜絕 Emoji */
+            font-variant-emoji: text !important; /* 🌟 新增：強制以純文字顯示，絕不轉為彩色 Emoji 🌟 */
             cursor: pointer;
-            padding: 2px;
+            padding: 2px 4px;
             opacity: 0.85;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
         }
 
         .music-sub-btn:hover {
@@ -100,6 +106,58 @@
                 max-width: 70px;
             }
         }
+
+        /* ===== 音樂自選彈窗樣式 ===== */
+        .music-info-panel {
+            cursor: pointer;
+        }
+        .music-info-panel:hover {
+            border-color: #e07b46;
+        }
+
+        #modal-music-select {
+            z-index: 500; /* 高於 VN 介面與所有覆蓋層，確保在任何模式下均能正常開啟操作 */
+        }
+        .music-list-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 12px 0;
+            max-height: 320px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 4px;
+            text-align: left;
+        }
+        .music-track-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(21, 19, 20, 0.85);
+            border: 1px solid rgba(237, 229, 216, 0.15);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+            font-size: 12px;
+            color: #ede5d8;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .music-track-item:hover {
+            background: rgba(224, 123, 70, 0.25);
+            border-color: rgba(224, 123, 70, 0.7);
+            box-shadow: 0 0 8px rgba(224, 123, 70, 0.3);
+        }
+        .music-track-item.playing {
+            border-color: #e07b46;
+            background: rgba(65, 34, 25, 0.95);
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(224, 123, 70, 0.4);
+            color: #fff;
+        }
+
+        /* 🌟 角色圖鑑篩選按鈕樣式 🌟 */
 
         /* 🌟 角色圖鑑篩選按鈕樣式 🌟 */
         .char-filter-container {
@@ -213,7 +271,8 @@
             background: rgba(30, 24, 23, 0.85);
             border: 1px solid rgba(224, 123, 70, 0.5);
             color: #e07b46;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            font-family: "Segoe UI Symbol", "Apple Symbols", -apple-system, sans-serif !important;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -264,9 +323,15 @@
             transition: opacity 0.4s ease, visibility 0.4s ease;
         }
 
-        body.ui-hidden .poster-title-box {
+        body.ui-hidden:not(.vn-open) .poster-title-box {
             opacity: 1;
             visibility: visible;
+        }
+
+        body.vn-open .poster-title-box {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
         }
 
         .poster-main-title {
@@ -800,7 +865,8 @@
             background: rgba(30, 24, 23, 0.85);
             border: 1px solid rgba(224, 123, 70, 0.5);
             color: #e07b46;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
+            font-family: "Segoe UI Symbol", "Apple Symbols", -apple-system, sans-serif !important;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -948,7 +1014,9 @@
             font-family: monospace;
         }
 
-        body.vn-open .ui-toggle-btn {
+        body.vn-open .ui-toggle-btn,
+        body.vn-open .music-player-container,
+        body.vn-open .poster-title-box {
             opacity: 0 !important;
             visibility: hidden !important;
             pointer-events: none !important;
@@ -1075,22 +1143,39 @@
 <body>
 
     <!-- 🌟 右上角懸浮「隱藏 UI 眼睛按鈕（純淨觀圖模式）」 🌟 -->
-<button id="ui-toggle-btn" class="ui-toggle-btn" onclick="toggleUI()" title="觀看全幅背景圖">📷</button>
+<button id="ui-toggle-btn" class="ui-toggle-btn" onclick="toggleUI()" title="觀看全幅背景圖">⛶</button>
+<!-- 🌟 右下角「回到頂部」浮動按鈕（移至此處） 🌟 -->
+<button id="back-to-top-btn" class="back-to-top-btn" onclick="scrollToTop()" title="回到頁面頂部">▲</button>
 <!-- 🌟 浮動音樂播放器 🌟 -->
 <div class="music-player-container">
-    <button id="music-toggle-btn" class="music-btn" onclick="togglePlayMusic()" title="播放/暫停背景音樂">🎵</button>
+    <!-- 純文字古典音符 ♫ ，不再是彩色手機 Emoji -->
+    <button id="music-menu-btn" class="music-btn" onclick="openMusicSelectModal()" title="開啟曲目選單">♫</button>
     
-    <div id="music-info-panel" class="music-info-panel">
-        <span id="music-title" class="music-title-text">點擊播放 BGM</span>
-        <div class="music-controls">
-            <button class="music-sub-btn" onclick="playPrevTrack()" title="上一首">⏮</button>
-            <button class="music-sub-btn" onclick="playNextTrack()" title="下一首">⏭</button>
+    <div id="music-info-panel" class="music-info-panel" onclick="openMusicSelectModal()" title="點擊開啟選單">
+        <span id="music-title" class="music-title-text">點擊選擇 BGM</span>
+        <div class="music-controls" onclick="event.stopPropagation()">
+            <button class="music-sub-btn" onclick="playPrevTrack()" title="上一首">|◀</button>
+            <button class="music-sub-btn" onclick="togglePlayMusic()" id="music-play-pause-btn" title="播放/暫停">▶</button>
+            <button class="music-sub-btn" onclick="playNextTrack()" title="下一首">▶|</button>
         </div>
     </div>
 </div>
 
 <!-- HTML5 音訊標籤 -->
 <audio id="bgm-audio" onended="playNextTrack()"></audio>
+
+<!-- 背景音樂自選彈窗 -->
+<div id="modal-music-select" class="schedule-modal-overlay" style="display: none;">
+    <div class="schedule-modal-content" style="max-width: 380px;">
+        <button class="close-btn" onclick="closeMusicSelectModal()">✕</button>
+        <h3 style="color: #e07b46; margin-bottom: 4px; font-size: 1.15rem;">曲目選擇</h3>
+        <p style="font-size: 11px; color: #d6cbbe; margin-bottom: 10px;">點擊直接切換並播放指定音樂</p>
+        <div class="music-list-grid" id="music-track-list"></div>
+        <div style="margin-top: 14px;">
+            <button class="form-switch-btn" style="width: 100%; margin: 0;" onclick="closeMusicSelectModal()">關閉</button>
+        </div>
+    </div>
+</div>
 
     <div id="main-container" class="container">
         <!-- 頂部標題與精神短語 -->
@@ -1112,40 +1197,49 @@
               <span class="event-badge">CURRENT EVENT</span>
               <div class="carousel-container" id="event-carousel">
                   <div class="carousel-track" id="carousel-track">
-                      <!-- 公告 1 -->
+                    <!-- 公告 1 -->
                       <div class="carousel-slide">
-                          <img src="images/bg2.webp" alt="公告插圖1" class="carousel-img">
+                          <img src="images/news05.webp" alt="公告插圖1" class="carousel-img">
                           <p class="event-text" style="text-align: center;">
-                              <strong>2026/9/11 學園祭篇章「勝手」正式上架！</strong><br>
-                              無限量級的競跑，以及卡牌大賽究竟是誰奪下最終勝利？<br>
-                              趕快前往主題進展專區，觀看比試精彩過程！<br>
+                              <strong>2026/9/25 連鎖消除《Chain Burst》正式上線！</strong><br>
+                              小遊戲專區全新力作，體驗暢快的元素連鎖爆發，<br>
+                              快來協助亞爾克解開與夥伴共鳴的困擾吧！<br>
                           </p>
                       </div>
                       <!-- 公告 2 -->
                       <div class="carousel-slide">
-                          <img src="images/card.webp" alt="公告插圖2" class="carousel-img">
+                          <img src="images/news04.webp" alt="公告插圖2" class="carousel-img">
+                          <p class="event-text" style="text-align: center;">
+                              <strong>2026/9/25 樂團《荒野焰嵐》多首原創新曲震撼登場！</strong><br>
+                              沉浸劇場專區現已收錄完整影音與歌詞，親身感受主唱克爾的渾厚嗓音！<br>
+                              首頁社群連結區亦同步新增官方 YouTube 頻道，歡迎前往聆聽並追蹤最新曲目。<br>
+                          </p>
+                      </div>
+                      <!-- 公告 3 -->
+                      <div class="carousel-slide">
+                          <img src="images/bg2.webp" alt="公告插圖2" class="carousel-img">
+                          <p class="event-text" style="text-align: center;">
+                              <strong>2026/9/11 學園祭篇章「勝手」正式上架！</strong><br>
+                              無限量級的競跑，以及卡牌大賽究竟是誰奪下最終勝利？<br>
+                              趕快前往沉浸劇場專區，觀看比試精彩過程！<br>
+                          </p>
+                      </div>
+                      <!-- 公告 4 -->
+                      <div class="carousel-slide">
+                          <img src="images/card.webp" alt="公告插圖3" class="carousel-img">
                           <p class="event-text" style="text-align: center;">
                               <strong>角色透卡熱銷上架！</strong><br>
                               全新 Beastagram 系列透卡，已在周邊賣場現貨上市。<br>
                               立即前往收藏心儀夥伴，將他們帶回家吧！<br>
                           </p>
                       </div>
-                      <!-- 公告 3 -->
+                      <!-- 公告 5 -->
                       <div class="carousel-slide">
-                          <img src="images/background01.webp" alt="公告插圖3" class="carousel-img">
+                          <img src="images/background01.webp" alt="公告插圖4" class="carousel-img">
                           <p class="event-text" style="text-align: center;">
                               <strong>2026/8/28 學園祭篇章「啟幕」正式開跑！</strong><br>
                               聚學舍的盛大校慶開幕囉！極速競跑與卡牌大賽等你來探索。<br>
-                              趕快前往主題進展專區，參與盛典開幕與精彩過程！<br>
-                          </p>
-                      </div>
-                      <!-- 公告 4 -->
-                      <div class="carousel-slide">
-                          <img src="images/periodic.webp" alt="公告插圖4" class="carousel-img">
-                          <p class="event-text" style="text-align: center;">
-                              <strong>元素週期表正式開放！</strong><br>
-                              元素週期表與世界地理地圖現已正式上線！<br>
-                              帶你完整揭露全體角色關係圖譜，綜覽三大陸自然地理全貌。<br>
+                              趕快前往沉浸劇場專區，參與盛典開幕與精彩過程！<br>
                           </p>
                       </div>
                   </div>
@@ -1190,15 +1284,15 @@
             </a>
         </div>
 
-        <!-- 🌟 2. 最新篇章與連載排程（主題進展 + 月曆排程） 🌟 -->
-        <div class="section-title">沉浸篇章 ✦ 連載排程</div>
+        <!-- 🌟 2. 最新篇章與連載排程（沉浸劇場 + 月曆排程） 🌟 -->
+        <div class="section-title">主題篇章 ✦ 連載排程</div>
         <div class="link-list">
-            <!-- 主題進展 -->
+            <!-- 沉浸劇場 -->
             <div class="link-card highlight" onclick="openVNModal()" style="cursor: pointer;">
                 <img src="images/kokumei.webp" alt="克明" class="avatar">
                 <div class="link-info">
-                    <div class="link-title">主題進展 ✦ 回聲殘響</div>
-                    <div class="link-desc">進入視覺小說型閱讀體驗，查看當前篇章活動與過往內容</div>
+                    <div class="link-title">沉浸劇場 ✦ 回聲殘響</div>
+                    <div class="link-desc">進入視覺小說型閱讀體驗，查看當前篇章活動、樂曲與過往內容</div>
                 </div>
                 <div class="arrow">➔</div>
             </div>
@@ -1325,49 +1419,94 @@
             </details>
         </div>
 
-       <!-- 🌟 3. 夥伴共鳴 ✦ 互動體驗（抽籤 + 心理測驗 往下拉到此處） 🌟 -->
+       <!-- 🌟 3. 夥伴共鳴 ✦ 互動體驗（下拉式選單形式） 🌟 -->
         <div class="section-title">夥伴共鳴 ✦ 互動體驗</div>
         <div class="link-list">
-            <!-- 每日元素共鳴籤 -->
-            <div class="link-card" onclick="drawDailyFortune()" style="cursor: pointer;">
-                <img src="images/arc.webp" alt="亞爾克" class="avatar">
-                <div class="link-info">
-                    <div class="link-title">每日元素共鳴籤</div>
-                    <div class="link-desc">點擊抽取今日幸運夥伴與元素開運指引！</div>
-                </div>
-                <div class="arrow">➔</div>
-            </div>
+            <details class="link-card-dropdown">
+                <summary class="link-card-summary">
+                    <img src="images/kuzure.webp" alt="互動體驗" class="avatar">
+                    <div class="link-info">
+                        <div class="link-title">小遊戲互動專區</div>
+                        <div class="link-desc">Chain Burst 小遊戲、抽取每日共鳴籤與心理測驗</div>
+                    </div>
+                    <div class="arrow-icon">▼</div>
+                </summary>
+                <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px; background: rgba(15, 23, 42, 0.6); border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                    <!-- 1. 置頂：無限元素 Chain Burst 小遊戲 -->
+                    <a href="https://rhoxdra.github.io/Eletsum/" class="link-card highlight" style="border-left: 2px solid #e07b46;">
+                        <img src="images/arc.webp" alt="亞爾克" class="avatar" style="width: 50px; height: 50px; border-color: #e07b46;">
+                        <div class="link-info">
+                            <div class="link-title" style="color: #e07b46; font-weight: 800;">無限元素 Chain Burst </div>
+                            <div class="link-desc">幫助亞爾克與夥伴展開連鎖消除挑戰！</div>
+                        </div>
+                        <div class="arrow" style="color: #e07b46;">➔</div>
+                    </a>
 
-            <!-- 與你契合的夥伴心理測驗 -->
-            <a href="https://rhoxdra.github.io/endless-element-quiz/" target="_blank" class="link-card">
-                <img src="images/jareth.webp" alt="賈瑞斯" class="avatar">
-                <div class="link-info">
-                    <div class="link-title">與你契合的夥伴心理測驗</div>
-                    <div class="link-desc">測測看你在這個世界裡最適合與誰同行？</div>
+                    <!-- 2. 每日元素共鳴籤 -->
+                    <div class="link-card" onclick="drawDailyFortune()" style="cursor: pointer;">
+                        <img src="images/kaiden.webp" alt="凱登" class="avatar" style="width: 50px; height: 50px;">
+                        <div class="link-info">
+                            <div class="link-title">每日元素共鳴籤</div>
+                            <div class="link-desc">抽取今日幸運夥伴與元素開運指引！</div>
+                        </div>
+                        <div class="arrow">➔</div>
+                    </div>
+
+                    <!-- 3. 與你契合的夥伴心理測驗 -->
+                    <a href="https://rhoxdra.github.io/endless-element-quiz/" target="_blank" class="link-card">
+                        <img src="images/jareth.webp" alt="賈瑞斯" class="avatar" style="width: 50px; height: 50px;">
+                        <div class="link-info">
+                            <div class="link-title">與你契合的夥伴心理測驗</div>
+                            <div class="link-desc">測測看你在這個世界裡最適合與誰同行？</div>
+                        </div>
+                        <div class="arrow">➔</div>
+                    </a>
                 </div>
-                <div class="arrow">➔</div>
-            </a>
+            </details>
         </div>
 
-        <!-- 社群專題（緊接在互動體驗後，引導進一步追蹤） -->
+        <!-- 社群專題 ✦ 獨家收錄（下拉式選單形式） -->
         <div class="section-title">社群專題 ✦ 獨家收錄</div>
         <div class="link-list">
-            <a href="https://www.facebook.com/profile.php?id=61572883663242" target="_blank" class="link-card">
-                <img src="images/zarion.webp" alt="澤里恩" class="avatar">
-                <div class="link-info">
-                    <div class="link-title">Facebook 官方粉絲專頁</div>
-                    <div class="link-desc">第一時間獲取最新連載與公告</div>
+            <details class="link-card-dropdown">
+                <summary class="link-card-summary">
+                    <img src="images/zarion.webp" alt="社群專區" class="avatar">
+                    <div class="link-info">
+                        <div class="link-title">官方社群平台</div>
+                        <div class="link-desc">Facebook 專頁、Patreon 插圖集與 YouTube 頻道</div>
+                    </div>
+                    <div class="arrow-icon">▼</div>
+                </summary>
+                <div style="padding: 12px; display: flex; flex-direction: column; gap: 8px; background: rgba(15, 23, 42, 0.6); border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                    <!-- Facebook 官方粉專 -->
+                    <a href="https://www.facebook.com/profile.php?id=61572883663242" target="_blank" class="link-card">
+                        <img src="images/garoz.webp" alt="犺" class="avatar" style="width: 50px; height: 50px;">
+                        <div class="link-info">
+                            <div class="link-title">Facebook 官方粉絲專頁</div>
+                            <div class="link-desc">第一時間獲取最新連載與公告</div>
+                        </div>
+                        <div class="arrow">➔</div>
+                    </a>
+                    <!-- Patreon 專區 -->
+                    <a href="http://patreon.com/rhoxine" target="_blank" class="link-card">
+                        <img src="images/ura.webp" alt="克爾" class="avatar" style="width: 50px; height: 50px;">
+                        <div class="link-info">
+                            <div class="link-title">Patreon 專區</div>
+                            <div class="link-desc">收錄相關插圖作品集，以及角色們不曾公開的一面</div>
+                        </div>
+                        <div class="arrow">➔</div>
+                    </a>
+                    <!-- 新增 YouTube 官方頻道 -->
+                    <a href="https://www.youtube.com/@rhoxdra" target="_blank" class="link-card">
+                        <img src="images/rin.webp" alt="嶙安" class="avatar" style="width: 50px; height: 50px;">
+                        <div class="link-info">
+                            <div class="link-title">YouTube 官方頻道</div>
+                            <div class="link-desc">收錄原創音樂曲目、宣傳短影音與創作記錄</div>
+                        </div>
+                        <div class="arrow">➔</div>
+                    </a>
                 </div>
-                <div class="arrow">➔</div>
-            </a>
-            <a href="http://patreon.com/rhoxine" target="_blank" class="link-card">
-                <img src="images/ura.webp" alt="克爾" class="avatar">
-                <div class="link-info">
-                    <div class="link-title">Patreon 專區</div>
-                    <div class="link-desc">收錄《無限元素》的相關插圖作品集，以及角色們不曾公開的一面</div>
-                </div>
-                <div class="arrow">➔</div>
-            </a>
+            </details>
         </div>
 
         <!-- 🌟 其他各大線上閱讀平台（精簡無備註版） 🌟 -->
@@ -1378,7 +1517,7 @@
                     <img src="images/area.webp" alt="其他閱讀平台" class="avatar">
                     <div class="link-info">
                         <div class="link-title">更多電子書與線上閱讀平台</div>
-                        <div class="link-desc">展開查看 Penana、Readmoo、博客來、Kobo 等通路</div>
+                        <div class="link-desc">查看 Penana、Readmoo、博客來、Kobo 等通路</div>
                     </div>
                     <div class="arrow-icon">▼</div>
                 </summary>
@@ -1393,7 +1532,7 @@
                     </a>
                     <a href="https://cxc.today/zh/@endlesselement/" target="_blank" class="link-card">
                         <img src="images/fox.webp" alt="睿策樺霖" class="avatar" style="width: 50px; height: 50px;">
-                        <div class="link-info"><div class="link-title">CxC 利創市集</div></div><div class="arrow">➔</div>
+                        <div class="link-info"><div class="link-title">CxC 創利市集</div></div><div class="arrow">➔</div>
                     </a>
                     <a href="https://home.gamer.com.tw/profile/index_creation.php?owner=squallroger" target="_blank" class="link-card">
                         <img src="images/gorilla.webp" alt="格洛薩" class="avatar" style="width: 50px; height: 50px;">
@@ -1408,7 +1547,7 @@
                         <div class="link-info"><div class="link-title">博客來</div></div><div class="arrow">➔</div>
                     </a>            
                     <a href="https://ebook.hyread.com.tw/searchList.jsp?search_field=FullText&search_input=%E7%84%A1%E9%99%90%E5%85%83%E7%B4%A0&search_field=PU&search_input=%E5%B5%90%E6%87%B6%E6%9B%B8" target="_blank" class="link-card">
-                        <img src="images/kuzure.webp" alt="崩" class="avatar" style="width: 50px; height: 50px;">
+                        <img src="images/wakima.webp" alt="瓦奇瑪" class="avatar" style="width: 50px; height: 50px;">
                         <div class="link-info"><div class="link-title">HyRead 電子書</div></div><div class="arrow">➔</div>
                     </a>            
                     <a href="https://play.google.com/store/search?q=%E7%84%A1%E9%99%90%E5%85%83%E7%B4%A0&c=books&hl=zh-TW" target="_blank" class="link-card">
@@ -1493,11 +1632,19 @@
         </div>
     </div>
 
-    <!-- 🌟 視覺小說全螢幕 Overlay 視窗 🌟 -->
+<!-- 🌟 視覺小說全螢幕 Overlay 視窗 🌟 -->
 <div id="vn-modal" class="vn-modal-overlay">
-    <div class="vn-top-floating-btns">
-        <button class="vn-float-btn" onclick="toggleVNFullscreen()" title="切換全螢幕">⛶</button>
-        <button class="vn-float-btn" onclick="closeVNModal()" title="關閉視覺小說">✕</button>
+    <div class="vn-top-floating-btns" onclick="event.stopPropagation()">
+        <!-- 將原本的 ⛶ 替換為帶有 ID 的按鈕與專屬全螢幕展開圖示 -->
+        <button id="vn-fullscreen-btn" class="vn-float-btn" onclick="toggleVNFullscreen()" title="進入全螢幕">
+            <svg id="vn-fs-icon-enter" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+            </svg>
+            <svg id="vn-fs-icon-exit" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>
+            </svg>
+        </button>
+        <button class="vn-float-btn" onclick="event.stopPropagation(); closeVNModal();" title="關閉視覺小說">✕</button>
     </div>
     
     <div id="vn-container" class="vn-iframe-container">
@@ -1574,10 +1721,10 @@
             <!-- 按鈕群組（去掉複製文字，儲存圖片遞補，雙按鈕橫向並排） -->
             <div style="display: flex; gap: 10px; width: 100%; margin-top: 14px;">
     <button id="draw-again-btn" class="form-switch-btn" onclick="drawDailyFortune()" style="margin-bottom: 0; flex: 1;"> 再抽一次 (剩 2 次)</button>
-<button class="form-switch-btn" onclick="downloadFortuneImage()" style="margin-bottom: 0; flex: 1; background: linear-gradient(135deg, #f5a623 0%, #d97706 100%); border-color: rgba(245, 166, 35, 0.6);">📸 儲存籤詩圖卡</button>            </div>
-
+<button class="form-switch-btn" onclick="downloadFortuneImage()" style="margin-bottom: 0; flex: 1; background: linear-gradient(135deg, #f5a623 0%, #d97706 100%); border-color: rgba(245, 166, 35, 0.6);">[↓] 儲存籤詩圖卡</button>
         </div>
     </div>
+</div>
     <!-- 🌟 JS 控制腳本 🌟 -->
     <script>
         // ==========================================
@@ -1590,11 +1737,12 @@
             });
         }
 
-        // 監聽頁面滾動事件，捲動超過 300px 才淡入顯示按鈕
+        // 監聽頁面滾動事件，捲動超過 200px 才淡入顯示按鈕
         window.addEventListener('scroll', () => {
             const backToTopBtn = document.getElementById('back-to-top-btn');
+            const scrollDistance = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
             if (backToTopBtn) {
-                if (window.scrollY > 300) {
+                if (scrollDistance > 200) {
                     backToTopBtn.classList.add('show');
                 } else {
                     backToTopBtn.classList.remove('show');
@@ -1604,57 +1752,14 @@
 
 
 // ==========================================
-        // 🎵 背景音樂播放器 logic
+        // 🎵 背景音樂播放器 logic（自選選單 + 循序循環）
         // ==========================================
         const playlist = [
-            {
-                title: "嵐光城的早晨慢跑",
-                src: "music/bgm1.mp3"
-            },
-            {
-                title: "尼爾桑夏日時光",
-                src: "music/bgm2.mp3"
-            },
-            {
-                title: "聚學舍午後一隅",
-                src: "music/bgm3.mp3"
-            },
-            {
-                title: "艾瑞爾城市政廳",
-                src: "music/bgm4.mp3"
-            },
-            {
-                title: "蕾寶來電",
-                src: "music/bgm5.mp3"
-            },
-            {
-                title: "詛碼團基地",
-                src: "music/bgm6.mp3"
-            },
-            {
-                title: "夜晨奇境遊樂園",
-                src: "music/bgm7.mp3"
-            },
-            {
-                title: "荒野焰嵐團練室",
-                src: "music/bgm8.mp3"
-            },
-            {
-                title: "裏網世界",
-                src: "music/bgm9.mp3"
-            },
-            {
-                title: "瞭望燼鐵鎮",
-                src: "music/bgm10.mp3"
-            },
-            {
-                title: "元素之源",
-                src: "music/bgm11.mp3"
-            },
-            {
-                title: "豹飲豹食DJ台",
-                src: "music/bgm12.mp3"
-            }
+                { title: "灼嵐火", src: "music/bgm1.mp3" },
+                { title: "滄月心", src: "music/bgm2.mp3" },
+                { title: "嚎影", src: "music/bgm3.mp3" },
+                { title: "The Iron Ascent", src: "music/bgm4.mp3" },
+                { title: "Piston Heart Anatomy", src: "music/bgm5.mp3" },
         ];
 
         let currentTrackIndex = 0;
@@ -1667,67 +1772,131 @@
             if (playlist[index] && audio) {
                 audio.src = playlist[index].src;
                 audio.volume = 0.4;
-                audio.load(); // 強制重新載入檔案
+                audio.load();
                 if (titleElem) {
                     titleElem.innerText = playlist[index].title;
                 }
+                renderMusicTrackList();
+            }
+        }
+
+        // 同步更新播放控制按鈕狀態圖示
+        function updatePlayControlUI() {
+            const playPauseBtn = document.getElementById('music-play-pause-btn');
+            const menuBtn = document.getElementById('music-menu-btn');
+            if (playPauseBtn) {
+                playPauseBtn.innerText = isMusicPlaying ? "||" : "▶";
+            }
+            if (menuBtn) {
+                menuBtn.style.borderColor = isMusicPlaying ? "#e07b46" : "rgba(224, 123, 70, 0.5)";
+            }
+        }
+
+        // 開啟音樂選單彈窗（注意：不觸發 body.modal-open，確保播放器本身不被隱藏）
+        function openMusicSelectModal() {
+            renderMusicTrackList();
+            document.getElementById('modal-music-select').style.display = 'flex';
+        }
+
+        // 關閉音樂選單彈窗
+        function closeMusicSelectModal() {
+            document.getElementById('modal-music-select').style.display = 'none';
+        }
+
+        // 渲染選單項目
+        function renderMusicTrackList() {
+            const listEl = document.getElementById('music-track-list');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            playlist.forEach((track, idx) => {
+                const item = document.createElement('div');
+                const isCurrent = (idx === currentTrackIndex);
+                item.className = `music-track-item ${isCurrent ? 'playing' : ''}`;
+                item.innerHTML = `
+                    <span>${idx + 1}. ${track.title}</span>
+                    <span style="font-size: 11px; opacity: 0.85;">${isCurrent && isMusicPlaying ? '▶ 播放中' : (isCurrent ? '[就緒]' : '點擊播放')}</span>
+                `;
+                item.onclick = () => {
+                    selectAndPlayTrack(idx);
+                };
+                listEl.appendChild(item);
+            });
+        }
+
+        // 點播指定曲目
+        function selectAndPlayTrack(index) {
+            currentTrackIndex = index;
+            loadTrack(currentTrackIndex);
+
+            const audio = document.getElementById('bgm-audio');
+            if (audio) {
+                audio.play().then(() => {
+                    isMusicPlaying = true;
+                    updatePlayControlUI();
+                    renderMusicTrackList();
+                }).catch(error => {
+                    console.error("音樂播放失敗：", error);
+                });
             }
         }
 
         function togglePlayMusic() {
             const audio = document.getElementById('bgm-audio');
-            const btn = document.getElementById('music-toggle-btn');
+            if (!audio) return;
 
-            if (!audio) {
-                alert("找不到 <audio id='bgm-audio'> 標籤，請檢查 HTML！");
-                return;
+            // 取消隨機，首次由第 1 首開始
+            if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.href) {
+                currentTrackIndex = 0;
+                loadTrack(currentTrackIndex);
             }
-
-            // 初次點擊若尚未載入 src，隨機挑選一首開始播放
-if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.href) {
-    currentTrackIndex = Math.floor(Math.random() * playlist.length); // 隨機亂數索引
-    loadTrack(currentTrackIndex);
-}
 
             if (isMusicPlaying) {
                 audio.pause();
-                btn.innerText = "🎵";
-                btn.style.borderColor = "rgba(56, 189, 248, 0.5)";
                 isMusicPlaying = false;
+                updatePlayControlUI();
+                renderMusicTrackList();
             } else {
-                // 嘗試播放音樂
                 const playPromise = audio.play();
-                
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        btn.innerText = "⏸";
-                        btn.style.borderColor = "#34d399"; // 播放中變綠色
                         isMusicPlaying = true;
+                        updatePlayControlUI(); // 🌟 補上這一行，讓點擊播放時立即更新按鈕圖示
+                        renderMusicTrackList();
                     }).catch(error => {
                         console.error("音樂播放失敗：", error);
-                        alert(`無法播放音樂！\n可能原因：\n1. 找不到檔案 (${playlist[currentTrackIndex].src})\n2. 檔案格式不支援\n3. 瀏覽器阻擋自動播放`);
                     });
                 }
             }
         }
 
         function playNextTrack() {
+            // 循序向後切換，最後一首循環回到第 1 首
             currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
             loadTrack(currentTrackIndex);
             
             const audio = document.getElementById('bgm-audio');
-            if (isMusicPlaying && audio) {
-                audio.play().catch(err => console.log("切換下一首失敗：", err));
+            if (audio) {
+                audio.play().then(() => {
+                    isMusicPlaying = true;
+                    updatePlayControlUI();
+                    renderMusicTrackList();
+                }).catch(err => console.log("切換下一首失敗：", err));
             }
         }
 
         function playPrevTrack() {
+            // 循序向前切換，第 1 首循環回到最後一首
             currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
             loadTrack(currentTrackIndex);
             
             const audio = document.getElementById('bgm-audio');
-            if (isMusicPlaying && audio) {
-                audio.play().catch(err => console.log("切換上一首失敗：", err));
+            if (audio) {
+                audio.play().then(() => {
+                    isMusicPlaying = true;
+                    updatePlayControlUI();
+                    renderMusicTrackList();
+                }).catch(err => console.log("切換上一首失敗：", err));
             }
         }
 
@@ -1895,8 +2064,8 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
             "area": { 
                 name: "艾瑞爾", 
                 quote: "「我是暗夜中展翅翱翔的恐怖，自奈落之淵而來的『黑夜魔君』。所有徬徨、心懷歹念的惡徒啊，接受我的睥睨吧！」",
-                form1Label: "🐱 獸人型態",   // 切換回預設型態時顯示的按鈕
-                form2Label: "👤 人類型態",   // 切換至第二型態時顯示的按鈕
+                form1Label: "〔 獸人型態 〕",   // 切換回預設型態時顯示的按鈕
+                form2Label: "〔 人類型態 〕",   // 切換至第二型態時顯示的按鈕
                 tags: { chapter: ["薄明之戰", "聚學舍篇", "再契選篇", "荒野焰嵐"], faction: ["艾瑞爾軍", "十三元素"], type: ["斷元素賦形者", "權能：斷裂 / 襲轉"], element: ["光", "重力"] },
                 bgImage: "images/area_bg.webp", 
                 beastBgImage: "images/area_human_bg.webp",
@@ -2090,8 +2259,8 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
             "rub": { 
                 name: "劫", 
                 quote: "「真是悲慘的下場呢，這就是和你扯上關係的後果，你的存在，根本不會帶給任何人幸福！」",
-                form1Label: "🐺 成年型態",   // 切換回預設型態時顯示的按鈕
-                form2Label: "⏳ 少年型態",   // 切換至第二型態時顯示的按鈕
+                form1Label: "〔 成年型態 〕",   // 切換回預設型態時顯示的按鈕
+                form2Label: "〔 少年型態 〕",   // 切換至第二型態時顯示的按鈕
                 tags: {
                     chapter: ["再契選篇", "荒野焰嵐", "無盡探途"],
                     faction: ["誓奪爪盟", "無盡元素", "上古元素"],
@@ -2476,7 +2645,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 document.body.classList.add('modal-open');
                 
                 // 2. 按鈕圖示變更，並套用極淺半透明樣式
-                toggleBtn.innerHTML = '↩';
+                toggleBtn.innerHTML = '✕';
                 toggleBtn.title = '點擊恢復選單卡片';
                 toggleBtn.style.opacity = '0.2';
                 toggleBtn.style.background = 'rgba(15, 23, 42, 0.25)';
@@ -2491,7 +2660,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 }
                 
                 // 2. 按鈕恢復原本亮藍色與立體光暈
-                toggleBtn.innerHTML = '📷';
+                toggleBtn.innerHTML = '⛶';
                 toggleBtn.title = '觀看全幅背景圖';
                 toggleBtn.style.opacity = '';
                 toggleBtn.style.background = '';
@@ -2567,7 +2736,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
             // 判斷型態切換按鈕
             const switchContainer = document.getElementById('char-switch-container');
             if (char && char.beastBgImage) {
-                const labelText = char.form2Label || "🐾 切換為獸化型態";
+                const labelText = char.form2Label || "〔 切換為獸化型態 〕";
                 switchContainer.innerHTML = `
                     <button id="form-toggle-btn" class="form-switch-btn" onclick="toggleCharForm()">
                         ${labelText}
@@ -2599,8 +2768,8 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
             const toggleBtn = document.getElementById('form-toggle-btn');
             
             // 讀取專屬按鈕文字（若無則套用預設值）
-            const f1Label = char.form1Label || "👤 切換為人類型態";
-            const f2Label = char.form2Label || "🐾 切換為獸化型態";
+            const f1Label = char.form1Label || "〔切換為人類型態〕";
+            const f2Label = char.form2Label || "〔切換為獸化型態〕";
 
             if (!isBeastFormActive) {
                 // 切換至第二型態背景
@@ -3221,6 +3390,12 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
             if (e.target === scheduleModal) {
                 closeScheduleModal();
             }
+
+            // 點擊音樂選單彈窗背景
+            const musicSelectModal = document.getElementById('modal-music-select');
+            if (e.target === musicSelectModal) {
+                closeMusicSelectModal();
+            }
         });
         // ==========================================
         // 💬 世界觀簡介與點擊後隨機對白（帶角色大頭像版）
@@ -3472,7 +3647,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "無名",
                 quote: "「奇蹟並非出自一人之力，而是每位夥伴以情感與理解共同成就的成果。今天也慢慢來吧～」",
-                lucky: "🍀 幸運地點：遊競前線 ｜ 幸運物品：日式炒麵"
+                lucky: "✦ 幸運地點：遊競前線 ｜ 幸運物品：日式炒麵"
             },
             {
                 charKey: "lanlan",
@@ -3480,7 +3655,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "無名",
                 quote: "「還是等我不懶的時候再開始動工吧……偶爾給自己放個假也是很重要的喔。」",
-                lucky: "🍀 幸運地點：聚學舍助教休息室 ｜ 幸運物品：慵懶抱枕"
+                lucky: "✦ 幸運地點：聚學舍助教休息室 ｜ 幸運物品：慵懶抱枕"
             },
             // --- 克爾 (多套備選) ---
             {
@@ -3489,7 +3664,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "融",
                 quote: "「如果有什麼被壓抑的情緒與痛楚，別憋在心裡，試著全吼出來吧！」",
-                lucky: "🍀 幸運地點：樂團團練室 ｜ 幸運物品：特製熱咖啡"
+                lucky: "✦ 幸運地點：樂團團練室 ｜ 幸運物品：特製熱咖啡"
             },
             {
                 charKey: "kulu",
@@ -3497,7 +3672,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "融",
                 quote: "「理解一個人需要時間，不用急著給自己下定論，慢慢走總會找到方向的。」",
-                lucky: "🍀 幸運地點：狼人村狩獵邊界 ｜ 幸運物品：特製藥草菸"
+                lucky: "✦ 幸運地點：狼人村狩獵邊界 ｜ 幸運物品：特製藥草菸"
             },
             // --- 亞爾克 / 阿風 (多套備選) ---
             {
@@ -3506,7 +3681,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "震",
                 quote: "「今天如果感到些許不安，試著跟隨自己的節奏去跑道上限速奔馳一段吧。」",
-                lucky: "🍀 幸運地點：山間跑道 ｜ 幸運物品：運動頭巾"
+                lucky: "✦ 幸運地點：山間跑道 ｜ 幸運物品：運動頭巾"
             },
             {
                 charKey: "arc",
@@ -3514,7 +3689,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "震",
                 quote: "「若是為了守護如今陪在身旁的夥伴，我會毫不猶豫地踏入險境。今天我也在身後支持你。」",
-                lucky: "🍀 幸運地點：極速賽道 ｜ 幸運物品：貝斯琴撥片"
+                lucky: "✦ 幸運地點：極速賽道 ｜ 幸運物品：貝斯琴撥片"
             },
             // --- 洛爾 (多套備選) ---
             {
@@ -3523,7 +3698,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "零",
                 quote: "「只要大家聚在一起，就沒有跨不過去的難關！今天也一起充滿活力地出發吧！」",
-                lucky: "🍀 幸運地點：嵐光鎮小餐館 ｜ 幸運物品：特製鼓棒"
+                lucky: "✦ 幸運地點：嵐光鎮小餐館 ｜ 幸運物品：特製鼓棒"
             },
             {
                 charKey: "roar",
@@ -3531,7 +3706,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "零",
                 quote: "「累了的話就回餐館坐坐吧！我會準備好熱氣騰騰的餐點等著你。」",
-                lucky: "🍀 幸運地點：聚學舍醫學系教室 ｜ 幸運物品：急救藥箱"
+                lucky: "✦ 幸運地點：聚學舍醫學系教室 ｜ 幸運物品：急救藥箱"
             },
             // --- 核心角色群 ---
             {
@@ -3540,7 +3715,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "沌",
                 quote: "「即使力量帶有反噬，只要心懷理性與溫柔，就能開創跨越隔閡的新時代。」",
-                lucky: "🍀 幸運地點：狼人村狩牙沃野 ｜ 幸運物品：美工繪圖板"
+                lucky: "✦ 幸運地點：狼人村狩牙沃野 ｜ 幸運物品：美工繪圖板"
             },
             {
                 charKey: "koushou",
@@ -3548,7 +3723,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "極",
                 quote: "「去野外走走吧！別讓書本和煩惱框住了你，在野外揮灑汗水才是最棒的解藥！」",
-                lucky: "🍀 幸運地點：尼爾桑廣袤荒野 ｜ 幸運物品：吉他彈片"
+                lucky: "✦ 幸運地點：尼爾桑廣袤荒野 ｜ 幸運物品：吉他彈片"
             },
             {
                 charKey: "takawa",
@@ -3556,7 +3731,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "恆",
                 quote: "「創造希望的人怎麼可以放棄希望？保持踏實的步調，今天的事務也能井井有條。」",
-                lucky: "🍀 幸運地點：艾瑞爾城市政廳實驗室 ｜ 幸運物品：研究筆記本"
+                lucky: "✦ 幸運地點：艾瑞爾城市政廳實驗室 ｜ 幸運物品：研究筆記本"
             },
             {
                 charKey: "igarashi",
@@ -3564,7 +3739,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "嵐",
                 quote: "「我是你們的燈塔，無論前路風浪多大，我都堅信你們能走出屬於自己的昂揚道路。」",
-                lucky: "🍀 幸運地點：嵐光鎮學堂 ｜ 幸運物品：講義教案"
+                lucky: "✦ 幸運地點：嵐光鎮學堂 ｜ 幸運物品：講義教案"
             },
             {
                 charKey: "area",
@@ -3572,7 +3747,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "斷",
                 quote: "「運籌帷幄乃本總督之日常。偶爾展露一下睥睨之氣，也能讓複雜的局勢迎刃而解喔。」",
-                lucky: "🍀 幸運地點：艾瑞爾城市政廳 ｜ 幸運物品：賦形晶樣品"
+                lucky: "✦ 幸運地點：艾瑞爾城市政廳 ｜ 幸運物品：賦形晶樣品"
             },
             {
                 charKey: "wakima",
@@ -3580,7 +3755,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "位",
                 quote: "「今天的心情需要甜點來拯救！快嚐嚐本大明神親自推薦的賽錢箱焦糖派吧！」",
-                lucky: "🍀 幸運地點：豐漁甘神教神社 ｜ 幸運物品：手工烤布丁"
+                lucky: "✦ 幸運地點：豐漁甘神教神社 ｜ 幸運物品：手工烤布丁"
             },
             {
                 charKey: "volt",
@@ -3588,7 +3763,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "滅",
                 quote: "「這是我支配的場域。只要冷靜觀察資訊流向，沒有任何干擾能動搖你。」",
-                lucky: "🍀 幸運地點：裏網核心節點 ｜ 幸運物品：數據傳輸硬碟"
+                lucky: "✦ 幸運地點：裏網核心節點 ｜ 幸運物品：數據傳輸硬碟"
             },
             {
                 charKey: "proto",
@@ -3596,7 +3771,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "毀",
                 quote: "「用實力證明一切。當你專注於雕琢自身技藝時，過去的陰影便無法將你困住。」",
-                lucky: "🍀 幸運地點：野性之聲團練室 ｜ 幸運物品：木雕工具套組"
+                lucky: "✦ 幸運地點：野性之聲團練室 ｜ 幸運物品：木雕工具套組"
             },
             {
                 charKey: "zoma",
@@ -3604,7 +3779,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "究極",
                 quote: "「遵循自身的獨到美學，哪怕走在暗處，也能展現凌駕一切的威嚴。」",
-                lucky: "🍀 幸運地點：新生詛碼團指揮部 ｜ 幸運物品：究極元素碎片"
+                lucky: "✦ 幸運地點：新生詛碼團指揮部 ｜ 幸運物品：究極元素碎片"
             },
             {
                 charKey: "veil",
@@ -3612,7 +3787,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "命",
                 quote: "「哎呀，真是精采的表演呢。保持沉穩與謀略，局勢自然會朝你傾斜。」",
-                lucky: "🍀 幸運地點：地下演講集會廳 ｜ 幸運物品：微型探照燈"
+                lucky: "✦ 幸運地點：地下演講集會廳 ｜ 幸運物品：微型探照燈"
             },
             {
                 charKey: "ultima",
@@ -3620,7 +3795,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "究極",
                 quote: "「知識是理解世界的鑰匙。掌握量識與半衰期的法則，今天也能理性地面對考驗。」",
-                lucky: "🍀 幸運地點：聚學舍元素通識講堂 ｜ 幸運物品：粉筆與定理講義"
+                lucky: "✦ 幸運地點：聚學舍元素通識講堂 ｜ 幸運物品：粉筆與定理講義"
             },
             {
                 charKey: "jareth",
@@ -3628,7 +3803,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "創",
                 quote: "「這顆星球該屬於其上的萬物。記得——你值得被重視，去享受平凡而美好的一天吧！」",
-                lucky: "🍀 幸運地點：熱鬧夜市攤位 ｜ 幸運物品：章魚燒與八寶糕"
+                lucky: "✦ 幸運地點：熱鬧夜市攤位 ｜ 幸運物品：章魚燒與八寶糕"
             },
             {
                 charKey: "zarion",
@@ -3636,7 +3811,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "耀",
                 quote: "「請相信你自己！每天累積的微小努力，一定會像種子一樣綻放出無比耀眼的光芒！」",
-                lucky: "🍀 幸運地點：聚學舍溫室｜ 幸運物品：蘊華微縮罐"
+                lucky: "✦ 幸運地點：聚學舍溫室｜ 幸運物品：蘊華微縮罐"
             },
             {
                 charKey: "kuzure",
@@ -3644,7 +3819,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "崩",
                 quote: "「堅守原則，用剛毅的信念擊碎阻礙！……就算被捉弄，責任感也絕不妥協！」",
-                lucky: "🍀 幸運地點：深山眺望台 ｜ 幸運物品：紅色針織圍巾"
+                lucky: "✦ 幸運地點：深山眺望台 ｜ 幸運物品：紅色針織圍巾"
             },
             {
                 charKey: "osae",
@@ -3652,7 +3827,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "制",
                 quote: "「發揮工藝匠魂吧！只要滿懷熱情，再困難的改裝與挑戰都能順利搞定！」",
-                lucky: "🍀 幸運地點：天才工坊 ｜ 幸運物品：組裝扳手與機油"
+                lucky: "✦ 幸運地點：天才工坊 ｜ 幸運物品：組裝扳手與機油"
             },
             {
                 charKey: "kage",
@@ -3660,7 +3835,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "影",
                 quote: "「人生就是一場遊戲～用優雅又玩世不恭的態度享受音樂與派對吧！」",
-                lucky: "🍀 幸運地點：地下夜店 DJ 台 ｜ 幸運物品：黑膠唱片"
+                lucky: "✦ 幸運地點：地下夜店 DJ 台 ｜ 幸運物品：黑膠唱片"
             },
             {
                 charKey: "rub",
@@ -3668,7 +3843,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "劫",
                 quote: "「將掌控權握在自己手中。對於想要守護的事物與榮耀，就靠實力親手奪回來！」",
-                lucky: "🍀 幸運地點：誓奪爪盟基地 ｜ 幸運物品：黑色長大衣"
+                lucky: "✦ 幸運地點：誓奪爪盟基地 ｜ 幸運物品：黑色長大衣"
             },
             {
                 charKey: "electric",
@@ -3676,7 +3851,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "雷、闇、重力",
                 quote: "「掌握話語權與自信，今天在任何場合你都能展現極致的魅力與光彩～」",
-                lucky: "🍀 幸運地點：蕾寶來電直播間 ｜ 幸運物品：高音質麥克風"
+                lucky: "✦ 幸運地點：蕾寶來電直播間 ｜ 幸運物品：高音質麥克風"
             },
             {
                 charKey: "tia",
@@ -3684,7 +3859,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "冰",
                 quote: "「保持理性與冷靜。戰鬥之外，別忘了給自己一段彈吉他沉思的音樂時光。」",
-                lucky: "🍀 幸運地點：狼人村狩獵派據點 ｜ 幸運物品：木吉他"
+                lucky: "✦ 幸運地點：狼人村狩獵派據點 ｜ 幸運物品：木吉他"
             },
             {
                 charKey: "rofena",
@@ -3692,7 +3867,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "土、風、光",
                 quote: "「用清晰的條理與氣場掌控全場！今天也是展現專業與渲染力的大好時機！」",
-                lucky: "🍀 幸運地點：賽事主播播報台 ｜ 幸運物品：法政法規彙編"
+                lucky: "✦ 幸運地點：賽事主播播報台 ｜ 幸運物品：法政法規彙編"
             },
             {
                 charKey: "arashiyama",
@@ -3700,7 +3875,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「歡迎回家。無論外面的風浪多大，長者深沉的包容與堅毅永遠是你最堅實的後盾。」",
-                lucky: "🍀 幸運地點：貓族村村長宅邸 ｜ 幸運物品：溫熱茶湯"
+                lucky: "✦ 幸運地點：貓族村村長宅邸 ｜ 幸運物品：溫熱茶湯"
             },
             {
                 charKey: "sugar",
@@ -3708,7 +3883,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "水、火",
                 quote: "「傾聽食材與生活微溫的氣息，用心付出烘焙出來的成果，最能療癒人心。」",
-                lucky: "🍀 幸運地點：聚學舍烘焙教室 ｜ 幸運物品：熱氣騰騰的麵包籃"
+                lucky: "✦ 幸運地點：聚學舍烘焙教室 ｜ 幸運物品：熱氣騰騰的麵包籃"
             },
             {
                 charKey: "deer",
@@ -3716,7 +3891,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "水",
                 quote: "「有謎題的地方就必定有解答！用優雅而靈動的藝術視角，解開眼前的懸案吧！」",
-                lucky: "🍀 幸運地點：嵐光城博物館 ｜ 幸運物品：調色盤與水彩筆"
+                lucky: "✦ 幸運地點：嵐光城博物館 ｜ 幸運物品：調色盤與水彩筆"
             },
             {
                 charKey: "owl",
@@ -3724,7 +3899,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "風、水",
                 quote: "「沉著果斷地做出判斷。就算世界陷入失序，你的專長也能成為別人的方向指引。」",
-                lucky: "🍀 幸運地點：附設醫院手術室 ｜ 幸運物品：聽診器"
+                lucky: "✦ 幸運地點：附設醫院手術室 ｜ 幸運物品：聽診器"
             },
             {
                 charKey: "teiner",
@@ -3732,7 +3907,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "土",
                 quote: "「細心呵護當下的泥土與養分，夢想的綠意終會在荒蕪中茁壯生長。」",
-                lucky: "🍀 幸運地點：聚學舍苗圃 ｜ 幸運物品：園藝小鐵鏟"
+                lucky: "✦ 幸運地點：聚學舍苗圃 ｜ 幸運物品：園藝小鐵鏟"
             },
             {
                 charKey: "doutou",
@@ -3740,7 +3915,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "風",
                 quote: "「調整好自身的『氣』與呼吸。如風般敏銳精準地捕捉每個細節，勝利就在掌握中！」",
-                lucky: "🍀 幸運地點：聚學舍田徑跑道 ｜ 幸運物品：專業碼錶"
+                lucky: "✦ 幸運地點：聚學舍田徑跑道 ｜ 幸運物品：專業碼錶"
             },
             {
                 charKey: "kaiden",
@@ -3748,7 +3923,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "水、土",
                 quote: "「豪爽直率地面對挑戰！拿出肌力與氣勢，沒什麼坍方是我們推不開的！」",
-                lucky: "🍀 幸運地點：大海灣 ｜ 幸運物品：舉重腰帶"
+                lucky: "✦ 幸運地點：大海灣 ｜ 幸運物品：舉重腰帶"
             },
             {
                 charKey: "gousuke",
@@ -3756,7 +3931,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「憑藉嚴謹的智慧與溫和的陪伴，就能成為隊友最踏實的基座。」",
-                lucky: "🍀 幸運地點：聚學舍圖書館 ｜ 幸運物品：手作便當盒"
+                lucky: "✦ 幸運地點：聚學舍圖書館 ｜ 幸運物品：手作便當盒"
             },
             {
                 charKey: "chitar",
@@ -3764,7 +3939,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「相信千錘百鍊的自己！自信隨性地揮灑熱情，打破壓迫與緊繃的氣氛吧！」",
-                lucky: "🍀 幸運地點：晨跑林蔭大道 ｜ 幸運物品：跑鞋"
+                lucky: "✦ 幸運地點：晨跑林蔭大道 ｜ 幸運物品：跑鞋"
             },
             {
                 charKey: "horse",
@@ -3772,7 +3947,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「豪爽踏實地走每一步！認準了目標就不服輸，珍惜難得的翻盤機會！」",
-                lucky: "🍀 幸運地點：運動集社活動場 ｜ 幸運物品：運動水壺"
+                lucky: "✦ 幸運地點：運動集社活動場 ｜ 幸運物品：運動水壺"
             },
             {
                 charKey: "raku",
@@ -3780,7 +3955,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "埒",
                 quote: "「沉穩內斂地守候。不管身在何處，真心為對方製作的羈絆永遠不會消逝。」",
-                lucky: "🍀 幸運地點：星空下的草地 ｜ 幸運物品：手作圍巾"
+                lucky: "✦ 幸運地點：星空下的草地 ｜ 幸運物品：手作圍巾"
             },
             {
                 charKey: "garoz",
@@ -3788,7 +3963,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "賦形者",
                 elementName: "犺",
                 quote: "「果斷行動，朝著目標邁進。有些看似脫離大眾的選擇，只有自己知道其意義。」",
-                lucky: "🍀 幸運地點：遺跡碑文前 ｜ 幸運物品：亞榭洛"
+                lucky: "✦ 幸運地點：遺跡碑文前 ｜ 幸運物品：亞榭洛"
             },
             {
                 charKey: "sinn",
@@ -3796,7 +3971,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「老練地在混亂中求生。珍惜並肩作戰累積起來的信任與兄弟情誼吧！」",
-                lucky: "🍀 幸運地點：傭兵休息營地 ｜ 幸運物品：軍用麥重酒杯"
+                lucky: "✦ 幸運地點：傭兵休息營地 ｜ 幸運物品：軍用麥重酒杯"
             },
             {
                 charKey: "gorilla",
@@ -3804,7 +3979,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "土",
                 quote: "「長途奔走、踏實扎根。避開浮躁的喧囂，用最原始可靠的方式完成託付。」",
-                lucky: "🍀 幸運地點：山岩礦石加工廠 ｜ 幸運物品：信差皮包"
+                lucky: "✦ 幸運地點：山岩礦石加工廠 ｜ 幸運物品：信差皮包"
             },
             {
                 charKey: "boar",
@@ -3812,7 +3987,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "火、土",
                 quote: "「把熱血與硬沉熔鑄一體！用長年累積的無撼底蘊，一鎚敲響屬於你的霸氣！」",
-                lucky: "🍀 幸運地點：燼鐵鎮砧鍛坊 ｜ 幸運物品：鍛造鐵鎚"
+                lucky: "✦ 幸運地點：燼鐵鎮砧鍛坊 ｜ 幸運物品：鍛造鐵鎚"
             },
             {
                 charKey: "whissel",
@@ -3820,7 +3995,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "",
                 quote: "「追求真相與知識的平等！勇敢地跨出腳步，用雙眼去記錄真實的世界吧！」",
-                lucky: "🍀 幸運地點：晝光時報採訪現場 ｜ 幸運物品：新聞攝影機"
+                lucky: "✦ 幸運地點：晝光時報採訪現場 ｜ 幸運物品：新聞攝影機"
             },
             {
                 charKey: "rin",
@@ -3828,7 +4003,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「就算現在身處泥濘與壓抑中，也別否定自己，溫暖的陪伴會帶你看到遠方的光。」",
-                lucky: "🍀 幸運地點：燼鐵鎮小巷 ｜ 幸運物品：跑車模型"
+                lucky: "✦ 幸運地點：燼鐵鎮小巷 ｜ 幸運物品：跑車模型"
             },
             {
                 charKey: "fox",
@@ -3836,7 +4011,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "光",
                 quote: "「處變不驚、睿智遠見。在波濤湧動的局勢中保持中立與理智，指引方向。」",
-                lucky: "🍀 幸運地點：聚學舍校長室 ｜ 幸運物品：學者禮服羽毛筆"
+                lucky: "✦ 幸運地點：聚學舍校長室 ｜ 幸運物品：學者禮服羽毛筆"
             },
             {
                 charKey: "racoon",
@@ -3844,7 +4019,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "使用者",
                 elementName: "土、光",
                 quote: "「紀錄只呈現可能性。遠離塵囂喧鬧，在密林與碑文間守護最純粹的真實。」",
-                lucky: "🍀 幸運地點：尼爾桑學識之庫 ｜ 幸運物品：古老古籍羊皮紙"
+                lucky: "✦ 幸運地點：尼爾桑學識之庫 ｜ 幸運物品：古老古籍羊皮紙"
             },
             {
                 charKey: "cat",
@@ -3852,7 +4027,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「縱使面對認知的拆解與不安，用真摯的目光去尋找屬於自己的真實答案吧。」",
-                lucky: "🍀 幸運地點：貓族村集市擺攤區 ｜ 幸運物品：手工手飾"
+                lucky: "✦ 幸運地點：貓族村集市擺攤區 ｜ 幸運物品：手工手飾"
             },
             {
                 charKey: "reva",
@@ -3860,7 +4035,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "地脈操流者",
                 elementName: "火",
                 quote: "「以等價交換與大氣包容待人，只要願意溝通，總能找到和平共處的契機。」",
-                lucky: "🍀 幸運地點：維那嶺城堡圖書館 ｜ 幸運物品：雕花魔法法杖"
+                lucky: "✦ 幸運地點：維那嶺城堡圖書館 ｜ 幸運物品：雕花魔法法杖"
             },
             {
                 charKey: "leon",
@@ -3868,7 +4043,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「果斷決策、責任克制。用開明與尊重異族的姿態，守護身邊重視的人。」",
-                lucky: "🍀 幸運地點：維那嶺避難所工坊 ｜ 幸運物品：領主銀釦外衣"
+                lucky: "✦ 幸運地點：維那嶺避難所工坊 ｜ 幸運物品：領主銀釦外衣"
             },
             {
                 charKey: "tormunn",
@@ -3876,7 +4051,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「講求規則與對等交換。冷靜評估價值，成為連結不同文明之間不可或缺的橋樑。」",
-                lucky: "🍀 幸運地點：艾瑞拉商會總部 ｜ 幸運物品：防風保溫斗篷"
+                lucky: "✦ 幸運地點：艾瑞拉商會總部 ｜ 幸運物品：防風保溫斗篷"
             },
             {
                 charKey: "grossa",
@@ -3884,7 +4059,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "無能力",
                 elementName: "無",
                 quote: "「務實且極守信用！拿出梟雄大人物的肚量與道義，欣賞有膽識的合作者。」",
-                lucky: "🍀 幸運地點：港鎮霸潮盟賭場 ｜ 幸運物品：五芒重鑄撲克牌"
+                lucky: "✦ 幸運地點：港鎮霸潮盟賭場 ｜ 幸運物品：五芒重鑄撲克牌"
             },
             {
                 charKey: "igrahhan",
@@ -3892,7 +4067,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "地脈操流者",
                 elementName: "風",
                 quote: "「恪守規矩與自然法則。看似嚴厲的外表下，隱藏著守護家人最沉重的愛。」",
-                lucky: "🍀 幸運地點：純白茫區祭典冰谷 ｜ 幸運物品：骨製古老骨笛"
+                lucky: "✦ 幸運地點：純白茫區祭典冰谷 ｜ 幸運物品：骨製古老骨笛"
             },
             {
                 charKey: "touphrin",
@@ -3900,7 +4075,7 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                 typeCategory: "地脈操流者",
                 elementName: "土、光",
                 quote: "「昂揚樂觀地面對生活！憑藉勇氣與溫柔的堅毅，為主動開創嶄新道路而努力吧！」",
-                lucky: "🍀 幸運地點：極北地脈導流點 ｜ 幸運物品：地脈引流晶手杖"
+                lucky: "✦ 幸運地點：極北地脈導流點 ｜ 幸運物品：地脈引流晶手杖"
             }
         ];
 
@@ -3960,11 +4135,11 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
             const remaining = 3 - drawCount;
             if (redrawBtn) {
                 if (remaining > 0) {
-                    redrawBtn.innerText = `🎲 再抽一次 (剩 ${remaining} 次)`;
+                    redrawBtn.innerText = `[↻] 再抽一次 (剩 ${remaining} 次)`;
                     redrawBtn.style.opacity = "1";
                     redrawBtn.style.cursor = "pointer";
                 } else {
-                    redrawBtn.innerText = "🔒 次數已達上限";
+                    redrawBtn.innerText = "[×] 次數已達上限";
                     redrawBtn.style.opacity = "0.5";
                     redrawBtn.style.cursor = "not-allowed";
                 }
@@ -4144,29 +4319,39 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
                     item.style.display = 'none';
                 }
             });
-        }
-        // 🌟 觀圖模式下：點擊螢幕任意空白處直接還原 UI（支援手機觸控） 🌟
-        document.addEventListener('click', function(e) {
-            // 只在開啟觀圖模式 (body 帶有 ui-hidden) 時運作
-            if (document.body.classList.contains('ui-hidden')) {
-                // 點擊點在「海報文字」與「按鈕本身」以外的任意空白處，直接切換還原 UI
-                if (!e.target.closest('#poster-title-box') && !e.target.closest('#ui-toggle-btn')) {
-                    toggleUI();
                 }
-            }
-        });
-        // 🌟 視覺小說 Modal 觸發邏輯 🌟
-    function openVNModal(initialChapterIndex = 0) {
+                  // 🌟 觀圖模式下：點擊螢幕任意空白處直接還原 UI（加入 vn-open 與 vn-modal 排除） 🌟
+                   document.addEventListener('click', function(e) {
+                     // 僅在「純淨觀圖模式」運作，若正在閱讀視覺小說 (vn-open) 則絕不觸發
+                        if (document.body.classList.contains('ui-hidden') && !document.body.classList.contains('vn-open')) {
+                            if (!e.target.closest('#poster-title-box') && !e.target.closest('#ui-toggle-btn') && !e.target.closest('#vn-modal')) {
+                              toggleUI();
+                         }
+                   }
+                 });
+    // 🌟 視覺小說 Modal 觸發邏輯 🌟
+    function openVNModal(chapterIndex = null) {
     const modal = document.getElementById('vn-modal');
     const iframe = document.getElementById('vn-iframe');
     
     if (iframe.src === 'about:blank' || !iframe.src.includes('vn_reader.html')) {
         iframe.src = 'vn_reader.html';
+    } else {
+        // 若 iframe 已經載入過，再次打開時立即通知重置回預設篇章/樂曲
+        try {
+            if (typeof chapterIndex === 'number' && chapterIndex >= 0) {
+                iframe.contentWindow.postMessage({ type: 'SELECT_CHAPTER_INDEX', index: chapterIndex }, '*');
+            } else {
+                iframe.contentWindow.postMessage({ type: 'RESET_VN_READER' }, '*');
+            }
+        } catch (e) {}
     }
 
     iframe.onload = function() {
-        if (initialChapterIndex > 0) {
-            iframe.contentWindow.postMessage({ type: 'SELECT_CHAPTER_INDEX', index: initialChapterIndex }, '*');
+        if (typeof chapterIndex === 'number' && chapterIndex >= 0) {
+            iframe.contentWindow.postMessage({ type: 'SELECT_CHAPTER_INDEX', index: chapterIndex }, '*');
+        } else {
+            iframe.contentWindow.postMessage({ type: 'RESET_VN_READER' }, '*');
         }
         setTimeout(() => {
             iframe.focus();
@@ -4179,17 +4364,52 @@ if (!audio.src || audio.src.endsWith('.html') || audio.src === window.location.h
 }
 
 function closeVNModal() {
-    // ...退出全螢幕邏輯保持原樣...
     const modal = document.getElementById('vn-modal');
+    const iframe = document.getElementById('vn-iframe');
+
+    // 1. 若處於全螢幕狀態，立即退出
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen().catch(() => {});
+        }
+    }
+
+    // 2. 停止音樂廣播
+    if (iframe && iframe.contentWindow) {
+        try {
+            iframe.contentWindow.postMessage({ type: 'STOP_FLAME_MUSIC' }, '*');
+        } catch (e) {}
+    }
+
+    // 3. 恢復主頁 BGM
+    if (wasBgmPlayingBeforeVideo) {
+        const audio = document.getElementById('bgm-audio');
+        if (audio) {
+            audio.play().then(() => {
+                isMusicPlaying = true;
+                updatePlayControlUI();
+                renderMusicTrackList();
+            }).catch(err => console.log("恢復播放受阻：", err));
+        }
+        wasBgmPlayingBeforeVideo = false;
+    }
+
+    // 4. 關閉彈窗並強制解鎖所有首頁樣式
     modal.style.display = 'none';
-    document.body.classList.remove('ui-hidden');
-    document.body.classList.remove('vn-open');   // 解鎖首頁
-    document.body.classList.remove('modal-open');
+    document.body.classList.remove('ui-hidden', 'vn-open', 'modal-open');
+    
+    // 5. 確保在畫面渲染後解鎖點擊（避免手機/瀏覽器全螢幕動畫造成的凍結）
+    requestAnimationFrame(() => {
+        document.body.classList.remove('ui-hidden', 'vn-open', 'modal-open');
+    });
 }
 
     // 全螢幕開關邏輯
     function toggleVNFullscreen() {
         const elem = document.getElementById('vn-modal');
+        const poster = document.getElementById('poster-title-box');
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
             if (elem.requestFullscreen) {
                 elem.requestFullscreen().catch(err => alert(`無法進入全螢幕模式: ${err.message}`));
@@ -4208,24 +4428,75 @@ function closeVNModal() {
     }
 
     // 監聽全螢幕狀態改變事件
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+document.addEventListener('fullscreenchange', handleFullscreenChange);
+document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
-    function handleFullscreenChange() {
-        const modal = document.getElementById('vn-modal');
-        if (!document.fullscreenElement && !document.webkitFullscreenElement && modal.style.display === 'none') {
-            document.body.classList.remove('modal-open');
-            document.body.classList.remove('vn-open');
-            document.body.classList.remove('ui-hidden');
+function handleFullscreenChange() {
+    const modal = document.getElementById('vn-modal');
+    const fsBtn = document.getElementById('vn-fullscreen-btn');
+    const iconEnter = document.getElementById('vn-fs-icon-enter');
+    const iconExit = document.getElementById('vn-fs-icon-exit');
+    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+    // 1. 同步切換視覺小說按鈕圖示與 Title
+    if (fsBtn && iconEnter && iconExit) {
+        if (isFullscreen) {
+            iconEnter.style.display = 'none';
+            iconExit.style.display = 'block';
+            fsBtn.title = '退出全螢幕';
+        } else {
+            iconEnter.style.display = 'block';
+            iconExit.style.display = 'none';
+            fsBtn.title = '進入全螢幕';
         }
     }
 
-    // 接收來自 vn_reader.html 的背景切換通知
+    // 2. 原本的關閉判斷
+    if (!isFullscreen && modal && modal.style.display === 'none') {
+        document.body.classList.remove('modal-open');
+        document.body.classList.remove('vn-open');
+        document.body.classList.remove('ui-hidden');
+    }
+}
+
+    // 🌟 接收來自 vn_reader.html 的背景切換與音樂暫停/恢復通知 🌟
+    let wasBgmPlayingBeforeVideo = false;
+
     window.addEventListener('message', function(e) {
-        if (e.data && (e.data.type === 'CHANGE_BG' || e.type === 'CHANGE_BG')) {
+        if (!e.data) return;
+
+        // 1. 背景切換同步
+        if (e.data.type === 'CHANGE_BG' || e.type === 'CHANGE_BG') {
             const bgUrl = e.data.bgUrl;
             if (bgUrl) {
                 document.body.style.setProperty('--bg-image', `url('${bgUrl}')`);
+            }
+        }
+
+        // 2. 視覺小說播放 YouTube 時，暫停主頁 BGM
+        if (e.data.type === 'PAUSE_MAIN_BGM') {
+            const audio = document.getElementById('bgm-audio');
+            if (audio && isMusicPlaying) {
+                wasBgmPlayingBeforeVideo = true;
+                audio.pause();
+                isMusicPlaying = false;
+                updatePlayControlUI();
+                renderMusicTrackList();
+            }
+        }
+
+        // 3. 視覺小說關閉音樂卡片或影片播完時，恢復主頁 BGM
+        if (e.data.type === 'RESUME_MAIN_BGM') {
+            if (wasBgmPlayingBeforeVideo) {
+                const audio = document.getElementById('bgm-audio');
+                if (audio) {
+                    audio.play().then(() => {
+                        isMusicPlaying = true;
+                        updatePlayControlUI();
+                        renderMusicTrackList();
+                    }).catch(err => console.log("恢復播放受阻：", err));
+                }
+                wasBgmPlayingBeforeVideo = false;
             }
         }
     });
@@ -4271,9 +4542,6 @@ window.addEventListener('DOMContentLoaded', () => {
     <div id="poster-title-box" class="poster-title-box">
         <div class="poster-main-title">《無限元素》</div>
         <div class="poster-tagline">與賦形者相遇，和獸人夥伴展開日常冒險</div>
-    </div>
-    <!-- 🌟 右下角「回到頂部」浮動按鈕 🌟 -->
-    <button id="back-to-top-btn" class="back-to-top-btn" onclick="scrollToTop()" title="回到頁面頂部">⬆</button>
-    
+    </div> 
 </body>
 </html>
